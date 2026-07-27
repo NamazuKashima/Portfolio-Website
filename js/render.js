@@ -32,9 +32,12 @@
     }
   }
 
-  // ── FOOTER ─────────────────────────────────────────────────────
+  // ── LOGO + FOOTER ──────────────────────────────────────────────
   if (D.footer) {
-    if (D.footer.logo)      setText('footer-logo', D.footer.logo);
+    if (D.footer.logo) {
+      setText('nav-logo',    D.footer.logo);   // top-left logo
+      setText('footer-logo', D.footer.logo);   // bottom logo
+    }
     if (D.footer.copyright) setText('footer-copy', D.footer.copyright);
   }
 

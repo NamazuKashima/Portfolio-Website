@@ -164,7 +164,7 @@
 
   <!-- NAV -->
   <nav id="navbar" class="scrolled">
-    <a class="nav-logo" href="index.html">V.</a>
+    <a class="nav-logo" id="nav-logo" href="index.html">V.</a>
     <ul class="nav-links">
       <li><a href="index.html#about">About</a></li>
       <li><a href="index.html#projects">Portfolio</a></li>
@@ -226,10 +226,12 @@
     var D = window.PORTFOLIO_DATA;
     if (!D || !D.portfolio) return;
 
-    // footer (shared content)
+    // logo + footer (shared content)
     if (D.footer) {
+      var nLogo = document.getElementById('nav-logo');
       var fLogo = document.getElementById('footer-logo');
       var fCopy = document.getElementById('footer-copy');
+      if (nLogo && D.footer.logo)      nLogo.textContent = D.footer.logo;
       if (fLogo && D.footer.logo)      fLogo.textContent = D.footer.logo;
       if (fCopy && D.footer.copyright) fCopy.textContent = D.footer.copyright;
     }

@@ -608,7 +608,7 @@ function renderSidebar() {
   var bottom = el('div', 'sidebar-section');
   [{ id:'experience', icon:'◈', label:'Experience' },
    { id:'contact',    icon:'◇', label:'Contact' },
-   { id:'footer',     icon:'▤', label:'Footer' }].forEach(function(item) {
+   { id:'footer',     icon:'▤', label:'Logo & Footer' }].forEach(function(item) {
     bottom.appendChild(navItem(item));
   });
   sb.appendChild(bottom);
@@ -1236,12 +1236,12 @@ function panelContact() {
 function panelFooter() {
   if (!DATA.footer) DATA.footer = { logo: 'V.', copyright: '' };
   var d = el('div');
-  d.appendChild(elText('div','panel-title','Footer'));
-  d.appendChild(elText('div','panel-sub','Shown at the bottom of every page'));
+  d.appendChild(elText('div','panel-title','Logo & Footer'));
+  d.appendChild(elText('div','panel-sub','Shown on every page'));
   d.appendChild(divider());
-  d.appendChild(field('Logo / Monogram', DATA.footer.logo,      function(v){ DATA.footer.logo      = v; markDirty(); }));
+  d.appendChild(field('Logo / Monogram (top-left + footer)', DATA.footer.logo, function(v){ DATA.footer.logo = v; markDirty(); }));
   d.appendChild(field('Copyright Line',  DATA.footer.copyright, function(v){ DATA.footer.copyright = v; markDirty(); }));
-  var hint = el('div','photo-hint','Tip: update the year here each January.');
+  var hint = el('div','photo-hint','The logo appears in the navigation bar and at the bottom of every page. Tip: update the copyright year each January.');
   d.appendChild(hint);
   return d;
 }
