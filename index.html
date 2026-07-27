@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Victor — Portfolio</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <div class="nav-logo">V.</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Portfolio</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="menu-btn" aria-label="Toggle menu">
+      <span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <p class="hero-label" id="hero-label">Colorist · Montreal, QC</p>
+      <h1 class="hero-title">
+        <span class="line" id="hero-line1">Victor</span>
+        <span class="line italic" id="hero-line2">Qixun Wu</span>
+      </h1>
+      <p class="hero-desc" id="hero-desc">I shape stories through color and rhythm — crafting the visual language of film and commercial work.</p>
+      <a href="#projects" class="btn-primary">View my work ↓</a>
+    </div>
+    <div class="hero-bg-text" aria-hidden="true">COLOR</div>
+    <div class="hero-scroll-hint">Scroll</div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="section-label">01 — About</div>
+      <div class="about-grid">
+        <div class="about-left">
+          <h2 class="section-title">About<br/><em>Me</em></h2>
+          <div class="about-avatar">
+            <div class="avatar-placeholder">V</div>
+          </div>
+        </div>
+        <div class="about-right">
+          <div id="about-bio"></div>
+          <div class="skills-grid" id="skills-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-label">02 — Portfolio</div>
+      <h2 class="section-title">Selected<br/><em>Work</em></h2>
+      <div class="collection-tabs" id="collectionTabs"></div>
+      <div class="works-grid" id="worksGrid"></div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="container">
+      <div class="section-label">03 — Experience</div>
+      <h2 class="section-title">Work<br/><em>History</em></h2>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-label">04 — Contact</div>
+      <div class="contact-grid">
+        <div class="contact-left">
+          <h2 class="section-title">Let's<br/><em>Connect</em></h2>
+          <p class="contact-desc" id="contact-message">Whether it's a new project, a collaboration, or just a hello — my inbox is always open.</p>
+          <div class="contact-links">
+            <a href="mailto:colorgradingvw@gmail.com" id="contact-email" class="contact-link">
+              <span class="link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="m3 6 9 7 9-7"/></svg>
+              </span>
+              <span class="contact-text">colorgradingvw@gmail.com</span>
+            </a>
+            <a href="tel:+15145704877" id="contact-phone" class="contact-link">
+              <span class="link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+              </span>
+              <span class="contact-text">+1 514-570-4877</span>
+            </a>
+            <a href="https://www.victorqixunwu.com" target="_blank" id="contact-website" class="contact-link">
+              <span class="link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13.5 13.5 0 0 1 0 18M12 3a13.5 13.5 0 0 0 0 18"/></svg>
+              </span>
+              <span class="contact-text">victorqixunwu.com</span>
+            </a>
+            <a href="https://www.instagram.com/victorqixunwu/" target="_blank" id="contact-instagram" class="contact-link">
+              <span class="link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg>
+              </span>
+              <span class="contact-text">@victorqixunwu</span>
+            </a>
+            <a href="https://www.facebook.com/victorqixunwu" target="_blank" id="contact-facebook" class="contact-link">
+              <span class="link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 8.5V7a1.5 1.5 0 0 1 1.5-1.5h1.5V2.8A19 19 0 0 0 15.2 2.7c-2.3 0-3.9 1.4-3.9 4v1.8H8.5v3h2.8V21.2h3.2V11.5h2.9l.5-3z"/></svg>
+              </span>
+              <span class="contact-text">facebook.com/victorqixunwu</span>
+            </a>
+            <div class="contact-link" id="contact-location">
+              <span class="link-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              </span>
+              <span class="contact-text">Montreal, QC, Canada</span>
+            </div>
+          </div>
+        </div>
+        <div class="contact-right">
+          <form class="contact-form" id="contactForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Your name" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" name="subject" placeholder="Project inquiry / Collaboration..." />
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Send Message →</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-inner">
+      <span class="footer-logo">V.</span>
+      <span class="footer-copy">© 2026 Victor. All rights reserved.</span>
+      <div class="footer-socials">
+        <a href="https://www.instagram.com/victorqixunwu/" target="_blank">Instagram</a>
+        <a href="https://www.facebook.com/victorqixunwu" target="_blank">Facebook</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

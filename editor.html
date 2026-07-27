@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Portfolio Editor</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,600;0,700;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070b09;--s1:#0c110e;--s2:#101712;--s3:#151d18;
+  --border:#1a241e;--border2:#243029;
+  --fg:#e9efeb;--fg2:#a3b1a9;--fg3:#5f6d65;
+  --accent:#4fa980;--accent-d:rgba(79,169,128,.12);
+  --green:#22c55e;--red:#ef4444;
+  --ff:'Manrope',sans-serif;--fd:'Cormorant',serif;
+  --r:4px;--t:0.2s ease;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--ff);background:var(--bg);color:var(--fg);font-size:14px}
+button,input,textarea,select{font-family:var(--ff);font-size:14px}
+/* ── LAYOUT ─────────────────────────────────────────── */
+.e-header{
+  height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.25rem;border-bottom:1px solid var(--border);
+  background:var(--s1);flex-shrink:0;position:relative;z-index:10;
+}
+.e-logo{font-family:var(--fd);font-size:1.3rem;font-weight:700;color:var(--fg)}
+.e-header-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:.75rem}
+.save-status{font-size:.72rem;font-weight:600;letter-spacing:.06em}
+.save-status.clean{color:var(--green)}
+.save-status.dirty{color:var(--fg3)}
+.e-actions{display:flex;gap:.5rem}
+.btn{padding:.45rem 1rem;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--border2);background:var(--s2);color:var(--fg2);cursor:pointer;border-radius:var(--r);transition:var(--t)}
+.btn:hover{border-color:var(--fg3);color:var(--fg)}
+.btn.btn-accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.btn-accent:hover{background:transparent;color:var(--accent)}
+.btn.btn-ghost{background:none;border-color:transparent;color:var(--fg3)}
+.btn.btn-ghost:hover{color:var(--fg);border-color:var(--border)}
+
+.e-body{display:flex;height:calc(100vh - 52px);overflow:hidden}
+
+/* ── SIDEBAR ────────────────────────────────────────── */
+.e-sidebar{
+  width:240px;flex-shrink:0;border-right:1px solid var(--border);
+  background:var(--s1);overflow-y:auto;display:flex;flex-direction:column;
+}
+.sidebar-section{padding:.75rem 0;border-bottom:1px solid var(--border)}
+.sidebar-section:last-child{border-bottom:none;flex:1}
+.sidebar-label{
+  font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--fg3);padding:.4rem 1rem .4rem 1rem;
+}
+.nav-item{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.45rem 1rem;font-size:.8rem;font-weight:500;color:var(--fg2);
+  cursor:pointer;transition:var(--t);border-left:2px solid transparent;
+  user-select:none;
+}
+.nav-item:hover{color:var(--fg);background:var(--s2)}
+.nav-item.active{color:var(--fg);background:var(--s2);border-left-color:var(--accent)}
+.nav-item-icon{font-size:.85rem;width:16px;text-align:center;flex-shrink:0;opacity:.7}
+
+/* Portfolio tree */
+.tree-collection{margin-bottom:.25rem}
+.tree-coll-header{
+  display:flex;align-items:center;gap:.4rem;
+  padding:.4rem .75rem .4rem 1rem;cursor:pointer;
+  font-size:.78rem;font-weight:600;color:var(--fg2);
+  user-select:none;transition:var(--t);
+}
+.tree-coll-header:hover{color:var(--fg);background:var(--s2)}
+.tree-coll-header.active{color:var(--fg);background:var(--s2);border-left:2px solid var(--accent)}
+.tree-arrow{font-size:.6rem;transition:transform var(--t);opacity:.5;flex-shrink:0}
+.tree-arrow.open{transform:rotate(90deg)}
+.tree-coll-name{flex:1;font-size:.78rem}
+.tree-works{padding-left:1.5rem;display:none}
+.tree-works.open{display:block}
+.tree-work{
+  display:flex;align-items:center;gap:.35rem;
+  padding:.35rem .5rem;cursor:pointer;border-radius:var(--r);
+  font-size:.75rem;color:var(--fg3);transition:var(--t);
+  border-left:2px solid transparent;
+}
+.tree-work:hover{color:var(--fg2);background:var(--s2)}
+.tree-work.active{color:var(--fg);background:var(--s3);border-left-color:var(--accent)}
+.tree-work-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tree-work-del,.tree-work-dup{
+  opacity:0;font-size:.75rem;color:var(--fg3);background:none;border:none;
+  cursor:pointer;padding:.1rem .25rem;border-radius:2px;line-height:1;
+  transition:var(--t);flex-shrink:0;
+}
+.tree-work:hover .tree-work-del,
+.tree-work:hover .tree-work-dup{opacity:.6}
+.tree-work-del:hover{color:var(--red);opacity:1 !important}
+.tree-work-dup:hover{color:var(--green);opacity:1 !important}
+.tree-add-work{
+  display:flex;align-items:center;gap:.4rem;padding:.3rem .5rem;
+  font-size:.72rem;font-weight:600;letter-spacing:.04em;color:var(--fg3);
+  cursor:pointer;border-radius:var(--r);transition:var(--t);
+  background:none;border:none;width:100%;text-align:left;
+}
+.tree-add-work:hover{color:var(--accent);background:var(--accent-d)}
+.tree-add-coll{
+  display:flex;align-items:center;gap:.4rem;padding:.4rem 1rem;
+  font-size:.72rem;font-weight:600;letter-spacing:.04em;color:var(--fg3);
+  cursor:pointer;transition:var(--t);background:none;border:none;width:100%;text-align:left;
+}
+.tree-add-coll:hover{color:var(--accent)}
+
+/* ── PANEL ──────────────────────────────────────────── */
+.e-panel{flex:1;overflow-y:auto;display:flex;justify-content:center;padding:2.5rem 2rem}
+.e-panel>*{width:100%;max-width:560px}
+.panel-title{
+  font-family:var(--fd);font-size:2rem;font-weight:700;
+  letter-spacing:-.02em;margin-bottom:.25rem;color:var(--fg);
+}
+.panel-sub{font-size:.8rem;color:var(--fg3);margin-bottom:2rem}
+.panel-divider{height:1px;background:var(--border);margin:1.75rem 0}
+.panel-section-title{
+  font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--fg3);margin-bottom:1.1rem;
+}
+
+/* Fields */
+.field-group{margin-bottom:1.1rem}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.field-label{
+  display:block;font-size:.65rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fg3);margin-bottom:.4rem;
+}
+.field-input{
+  width:100%;background:var(--s1);border:1px solid var(--border2);
+  color:var(--fg);padding:.65rem .8rem;border-radius:var(--r);
+  outline:none;transition:border-color var(--t);resize:vertical;
+  font-size:.85rem;
+}
+.field-input:focus{border-color:var(--accent)}
+.field-input::placeholder{color:var(--fg3)}
+textarea.field-input{min-height:90px;line-height:1.6}
+
+/* Tags */
+.tags-wrap{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.tag-chip{
+  display:flex;align-items:center;gap:.3rem;
+  background:var(--s3);border:1px solid var(--border2);
+  color:var(--fg2);font-size:.7rem;padding:.25rem .5rem;border-radius:var(--r);
+}
+.tag-del{
+  background:none;border:none;color:var(--fg3);cursor:pointer;
+  font-size:.85rem;line-height:1;padding:0;transition:color var(--t);
+}
+.tag-del:hover{color:var(--red)}
+.tag-input-inline{
+  background:none;border:none;outline:none;color:var(--fg2);
+  font-size:.72rem;min-width:80px;
+}
+.tag-input-inline::placeholder{color:var(--fg3)}
+
+/* Image upload */
+.img-upload-zone{
+  position:relative;width:100%;aspect-ratio:16/9;
+  background:var(--s2);border:1px dashed var(--border2);border-radius:var(--r);
+  overflow:hidden;cursor:pointer;transition:border-color var(--t);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:.5rem;
+}
+.img-upload-zone:hover{border-color:var(--accent)}
+.img-upload-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.img-upload-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.55);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem;
+  opacity:0;transition:opacity var(--t);
+}
+.img-upload-zone:hover .img-upload-overlay{opacity:1}
+.img-upload-hint{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--fg2)}
+.img-empty-label{font-size:.72rem;color:var(--fg3);letter-spacing:.06em;text-transform:uppercase}
+.img-empty-icon{font-size:1.8rem;opacity:.15}
+.img-url-row{display:flex;gap:.5rem;margin-top:.6rem}
+.img-url-row .field-input{flex:1}
+.img-clear-btn{
+  padding:.65rem .85rem;background:var(--s2);border:1px solid var(--border2);
+  color:var(--fg3);border-radius:var(--r);cursor:pointer;font-size:.75rem;
+  transition:var(--t);white-space:nowrap;
+}
+.img-clear-btn:hover{color:var(--red);border-color:var(--red)}
+
+/* Skills editor */
+.skills-editor{display:flex;flex-direction:column;gap:1.25rem}
+.skill-cat-block{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:1rem}
+.skill-cat-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.skill-cat-input{flex:1;background:none;border:none;color:var(--fg);font-size:.85rem;font-weight:600;outline:none}
+.skill-cat-del{background:none;border:none;color:var(--fg3);cursor:pointer;font-size:1rem;transition:color var(--t)}
+.skill-cat-del:hover{color:var(--red)}
+.skill-items{display:flex;flex-direction:column;gap:.4rem}
+.skill-item-row{display:flex;gap:.4rem;align-items:center}
+.skill-item-input{flex:1;background:var(--s2);border:1px solid var(--border);color:var(--fg2);padding:.4rem .6rem;border-radius:var(--r);font-size:.8rem;outline:none;transition:border-color var(--t)}
+.skill-item-input:focus{border-color:var(--accent)}
+.skill-item-del{background:none;border:none;color:var(--fg3);cursor:pointer;font-size:.85rem;transition:color var(--t);padding:.2rem}
+.skill-item-del:hover{color:var(--red)}
+.skill-add-item{
+  background:none;border:1px dashed var(--border2);color:var(--fg3);
+  padding:.35rem .7rem;border-radius:var(--r);cursor:pointer;font-size:.72rem;
+  transition:var(--t);width:100%;text-align:left;margin-top:.25rem;
+}
+.skill-add-item:hover{color:var(--accent);border-color:var(--accent)}
+.add-skill-cat{
+  display:flex;align-items:center;gap:.4rem;background:none;border:1px dashed var(--border2);
+  color:var(--fg3);padding:.5rem 1rem;border-radius:var(--r);cursor:pointer;
+  font-size:.72rem;font-weight:600;transition:var(--t);width:100%;text-align:left;
+}
+.add-skill-cat:hover{color:var(--accent);border-color:var(--accent)}
+
+/* Experience editor */
+.exp-list{display:flex;flex-direction:column;gap:1rem}
+.exp-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.exp-card-header{
+  display:flex;align-items:center;gap:.5rem;padding:.75rem 1rem;
+  cursor:pointer;border-bottom:1px solid var(--border);background:var(--s2);
+}
+.exp-card-period{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);flex-shrink:0}
+.exp-card-title{flex:1;font-size:.82rem;font-weight:600;color:var(--fg)}
+.exp-card-toggle{color:var(--fg3);font-size:.7rem;transition:transform var(--t)}
+.exp-card-toggle.open{transform:rotate(180deg)}
+.exp-card-body{padding:1rem;display:none}
+.exp-card-body.open{display:block}
+.exp-del-row{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+
+/* Bio editor */
+.bio-list{display:flex;flex-direction:column;gap:.75rem;margin-bottom:.75rem}
+.bio-item-row{display:flex;gap:.5rem;align-items:flex-start}
+.bio-del{background:none;border:none;color:var(--fg3);cursor:pointer;font-size:.9rem;transition:color var(--t);padding:.35rem;margin-top:.25rem}
+.bio-del:hover{color:var(--red)}
+
+/* Danger zone */
+.danger-zone{
+  margin-top:2rem;padding:1rem 1.25rem;border:1px solid rgba(239,68,68,.2);
+  border-radius:var(--r);background:rgba(239,68,68,.04);
+}
+.danger-title{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:.75rem;opacity:.7}
+.btn-danger{
+  background:none;border:1px solid rgba(239,68,68,.3);color:var(--red);
+  padding:.45rem 1rem;border-radius:var(--r);cursor:pointer;font-size:.72rem;
+  font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:var(--t);
+}
+.btn-danger:hover{background:rgba(239,68,68,.1);border-color:var(--red)}
+
+/* Work order btns */
+.work-order-btns{display:flex;gap:.25rem;flex-shrink:0}
+.order-btn{
+  background:none;border:1px solid var(--border);color:var(--fg3);
+  padding:.15rem .4rem;border-radius:2px;cursor:pointer;font-size:.65rem;line-height:1.2;
+  transition:var(--t);
+}
+.order-btn:hover{border-color:var(--fg3);color:var(--fg)}
+
+/* Photo upload + crop */
+.photo-row{display:flex;gap:1.25rem;align-items:flex-start}
+.photo-preview{
+  width:128px;height:160px;flex-shrink:0;
+  background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;transition:border-color var(--t);
+}
+.photo-preview:hover{border-color:var(--accent)}
+.photo-preview img{width:100%;height:100%;object-fit:cover}
+.photo-preview .ph-empty{font-size:.65rem;color:var(--fg3);text-transform:uppercase;letter-spacing:.08em;text-align:center;padding:.5rem}
+.photo-actions{display:flex;flex-direction:column;gap:.5rem}
+.photo-hint{font-size:.72rem;color:var(--fg3);line-height:1.5;max-width:280px}
+
+.crop-modal{
+  position:fixed;inset:0;z-index:500;display:none;
+  align-items:center;justify-content:center;
+}
+.crop-modal.open{display:flex}
+.crop-backdrop{position:absolute;inset:0;background:rgba(4,7,5,.85);backdrop-filter:blur(6px)}
+.crop-card{
+  position:relative;z-index:2;background:var(--s1);border:1px solid var(--border2);
+  border-radius:var(--r);padding:1.5rem;width:360px;max-width:92vw;
+}
+.crop-title{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg2);margin-bottom:1rem}
+.crop-frame{
+  position:relative;width:280px;height:350px;margin:0 auto 1rem;
+  overflow:hidden;background:#000;border:1px solid var(--border2);
+  cursor:grab;touch-action:none;user-select:none;
+}
+.crop-frame.dragging{cursor:grabbing}
+.crop-frame img{position:absolute;pointer-events:none;max-width:none}
+.crop-grid{
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(to right,transparent 33%,rgba(255,255,255,.08) 33.4%,transparent 33.8%,transparent 66%,rgba(255,255,255,.08) 66.4%,transparent 66.8%),
+    linear-gradient(to bottom,transparent 33%,rgba(255,255,255,.08) 33.4%,transparent 33.8%,transparent 66%,rgba(255,255,255,.08) 66.4%,transparent 66.8%);
+}
+.crop-zoom-row{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+.crop-zoom-row label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fg3);flex-shrink:0}
+.crop-zoom{flex:1;accent-color:var(--accent)}
+.crop-btns{display:flex;gap:.5rem;justify-content:flex-end}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;
+  background:var(--s3);border:1px solid var(--border2);color:var(--fg);
+  padding:.6rem 1.25rem;border-radius:var(--r);font-size:.78rem;font-weight:600;
+  opacity:0;transform:translateY(8px);transition:.25s ease;pointer-events:none;z-index:999;
+}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.success{border-color:var(--green);color:var(--green)}
+#toast.error{border-color:var(--red);color:var(--red)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--s1)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="e-header">
+  <div class="e-logo">V. Editor</div>
+  <div class="e-header-center">
+    <span class="save-status clean" id="saveStatus">✓ Saved</span>
+  </div>
+  <div class="e-actions">
+    <button class="btn btn-ghost" id="btnPreview">⌥ Preview</button>
+    <button class="btn" id="btnExport">↓ Export data.js</button>
+    <button class="btn btn-accent" id="btnSave">Save</button>
+  </div>
+</header>
+
+<div class="e-body">
+  <!-- SIDEBAR -->
+  <nav class="e-sidebar" id="sidebar"></nav>
+  <!-- PANEL -->
+  <main class="e-panel" id="panel"></main>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+var DATA = {};
+var VIEW = { section: 'general', collId: null, workId: null };
+var dirty = false;
+var autoSaveTimer = null;
+var expandedColls = {};
+
+var DATA_VERSION = '2026-07-27-cv6';
+
+var DEFAULTS = {
+  meta: { name: "Victor Qixun Wu", siteTitle: "Victor Qixun Wu — Colorist & Editor" },
+  hero: {
+    label: "Colorist · Montreal, QC",
+    line1: "Victor", line2: "Qixun Wu",
+    description: "Imaging and colour specialist with 7+ years of post-production experience across colour grading, digital imaging pipelines, and on-set media workflows — 60+ delivered projects spanning narrative film, VFX-adjacent productions, and branded campaigns."
+  },
+  about: {
+    photo: "",
+    bio: [
+      "<strong>Victor Qixun Wu</strong> is an imaging and colour specialist with 7+ years of post-production experience across colour grading, digital imaging pipelines, and on-set media workflows. Expert in DaVinci Resolve across Rec.709, Log, and HDR colour pipelines including full DCP delivery for cinema.",
+      "Deep hands-on experience in the complete imaging workflow: media ingestion, secure offload, QC, metadata organization, colour space management, and multi-format delivery. Background as on-set DIT bridges creative and technical environments — detail-oriented, collaborative, and built for world-class post production pipelines."
+    ],
+    skills: [
+      { category: "Colour Grading",   items: ["DaVinci Resolve", "Premiere Pro", "Rec.709 / Log / HDR", "LUT Management", "DCP Delivery", "Colour Space Conversions"] },
+      { category: "Camera & On-Set",  items: ["ARRI / Sony / Canon / Blackmagic", "Camera Operation", "Pull Focus", "DIT", "Media Ingestion & Offload", "Cross-Platform QC"] },
+      { category: "Formats & Codecs", items: ["ProRes, DNxHD, H.264/H.265", "RAW Formats", "DCP", "Digital Cinema Resolutions", "Multi-Format Export & Compliance"] },
+      { category: "Post & Tools",     items: ["After Effects", "Photoshop", "Shotput Pro", "Frame.io", "Multicam Editing", "Sound Clean-up"] }
+    ]
+  },
+  portfolio: [
+    {
+      id: "film", name: "Film",
+      works: [
+        { id: "film-1", title: "Crocs of the Caribbean", year: "2026", role: "Colorist", description: "Colour grading for a National Geographic documentary production. Currently in post-production.", tags: ["National Geographic","Documentary","In Progress"], coverImage: "", links: { live: "", case_study: "" } },
+        { id: "film-2", title: "Rêves de Flos", year: "2025", role: "Colorist", description: "Feature-length film. Executed complete colour pipeline — from dailies review through DCP final delivery — with full post supervision and director collaboration. Managed colour space conversions, display calibration, and delivery specifications throughout.", tags: ["Feature Film","DCP","Full Pipeline"], coverImage: "", links: { live: "", case_study: "" } },
+        { id: "film-3", title: "Anastasia", year: "2023", role: "Executive Producer & Colorist", description: "Official Selection, CINELEBU – Lebu International Film Festival 2025 (Oscar & Goya qualifying). Led full colour post pipeline from pre-production through final DCP delivery; oversaw imaging and colour consistency across all deliverables.", tags: ["Short Film","DCP","Oscar Qualifying","Festival"], coverImage: "", links: { live: "", case_study: "" } }
+      ]
+    },
+    {
+      id: "commercial", name: "Commercial",
+      works: [
+        { id: "comm-1", title: "Prada Story Special", year: "2024", role: "Editor & Colorist", description: "High-fashion branded content for Prada. Delivered multi-platform asset suite including social cuts and web masters, maintaining brand-consistent colour language and image integrity across all outputs.", tags: ["Fashion","Prada","Multi-Platform"], coverImage: "", links: { live: "", case_study: "" } },
+        { id: "comm-2", title: "Ader Error Campaign", year: "2023", role: "Colorist", description: "Fashion advertising campaign for the Seoul-based avant-garde label. Delivered a distinct, edgy visual aesthetic with precise colour control across multi-platform outputs.", tags: ["Fashion","Advertising","Campaign"], coverImage: "", links: { live: "", case_study: "" } },
+        { id: "comm-3", title: "Maxi-Cosi Campaign", year: "2023", role: "Colorist", description: "New product launch advertising for Maxi-Cosi. Part of an ongoing client relationship — delivered brand-consistent imaging and colour across multiple campaign phases, maintaining visual continuity across all assets.", tags: ["TVC","Brand","Product Launch"], coverImage: "", links: { live: "", case_study: "" } },
+        { id: "comm-4", title: "Le Vian Jewelry", year: "2023", role: "Colorist", description: "Ongoing commercial work for a U.S.-based luxury jewelry brand. Delivered a premium, polished visual aesthetic closely aligned with established brand identity guidelines across multiple campaigns.", tags: ["Luxury","Jewelry","Ongoing"], coverImage: "", links: { live: "", case_study: "" } },
+        { id: "comm-5", title: "CAMH – An Expert Explains", year: "2022", role: "Editor", description: "20+ episodes of a digital health educational series for the Centre for Addiction and Mental Health. Delivered consistent visual quality and tone at pace across the full series run.", tags: ["Series","20+ Episodes","Digital Health"], coverImage: "", links: { live: "", case_study: "" } }
+      ]
+    }
+  ],
+  experience: [
+    { id: "exp-1", period: "Jan 2020 — Present", title: "Colorist / Editor", company: "Freelance", description: "Managed complete colour pipelines end-to-end — from dailies ingestion through DCP final delivery — for 60+ narrative films, fashion brands, and commercial clients. Executed colour grading in DaVinci Resolve and Premiere Pro across Rec.709, Log, and HDR colour spaces; maintained image integrity and colour consistency across broadcast, social, and web deliverables with full QC sign-off. Built and delivered DCPs for cinema room screenings. Verified metadata, export specifications, and cross-platform compatibility at each delivery stage.", tags: ["DaVinci Resolve","DCP Delivery","HDR","QC"] },
+    { id: "exp-2", period: "Jul 2021 — Present", title: "Camera Operator / Assistant", company: "Freelance", description: "Operated ARRI, Sony, Canon, and Blackmagic camera systems on commercial and narrative productions; executed pull focus and supported lighting setups under DP direction. Managed full on-set media workflow: media ingestion, secure offload, file verification, metadata prep, and cross-platform QC; fulfilled DIT responsibilities across multiple production environments.", tags: ["ARRI","Sony","DIT","On-Set Media"] },
+    { id: "exp-3", period: "Aug 2025 — Sep 2025", title: "Pre-Production Producer", company: "DW Media", description: "Led complete pre-production for a web short drama: budget planning, shooting schedule, resource allocation, and vendor management for equipment, catering, and post-production handoff. Liaised with director, cinematographer, and production designer to align creative vision with production logistics.", tags: ["Producing","Pre-Production","Short Drama"] },
+    { id: "exp-4", period: "Mar 2024 — Sep 2024", title: "Video Editor & Colorist", company: "Black Box Productions", description: "Edited and colour-graded YouTube long-form videos and commercial content from raw footage to final delivery; applied professional colour grading across broadcast, social, and web formats. Managed multiple concurrent projects in a fast-paced production environment.", tags: ["Editing","Colour Grading","YouTube","Commercial"] },
+    { id: "exp-5", period: "Oct 2018 — May 2019", title: "Camera Operator / Editor / Colorist", company: "Hangzhou Lintas Advertising", description: "Shot and edited promotional content for local brands; built foundational skills in camera operation, editing, and look development working directly with clients.", tags: ["Camera","Editing","Advertising"] },
+    { id: "exp-6", period: "2019 — 2023", title: "BFA, Film Production", company: "Mel Hoppenheim School of Cinema · Concordia University", description: "Bachelor of Fine Arts in Film Production, with hands-on training across cinematography, editing, directing, and post-production.", tags: [] }
+  ],
+  contact: {
+    email: "colorgradingvw@gmail.com",
+    phone: "+1 514-570-4877",
+    website: "www.victorqixunwu.com",
+    instagram: "victorqixunwu",
+    facebook: "victorqixunwu",
+    location: "Montreal, QC, Canada",
+    message: "Whether it's a new project, a collaboration, or just a conversation about colour — my inbox is always open."
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+function init() {
+  var saved        = localStorage.getItem('portfolio_data');
+  var savedVersion = localStorage.getItem('portfolio_data_version');
+  try {
+    if (saved && savedVersion === DATA_VERSION) {
+      DATA = JSON.parse(saved);
+    } else {
+      // stale or missing — start from fresh defaults
+      DATA = JSON.parse(JSON.stringify(DEFAULTS));
+      localStorage.removeItem('portfolio_data');
+      localStorage.setItem('portfolio_data_version', DATA_VERSION);
+    }
+  }
+  catch(e) { DATA = JSON.parse(JSON.stringify(DEFAULTS)); }
+
+  // expand all collections by default
+  if (DATA.portfolio) DATA.portfolio.forEach(function(c) { expandedColls[c.id] = true; });
+
+  renderSidebar();
+  navigate('general');
+
+  document.getElementById('btnSave').onclick    = save;
+  document.getElementById('btnExport').onclick  = exportData;
+  document.getElementById('btnPreview').onclick = function() { window.open('index.html','_blank'); };
+}
+
+// ═══════════════════════════════════════════════════════
+//  SAVE / DIRTY
+// ═══════════════════════════════════════════════════════
+function markDirty() {
+  dirty = true;
+  var s = document.getElementById('saveStatus');
+  s.textContent = '● Unsaved changes';
+  s.className = 'save-status dirty';
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(save, 1500);
+}
+
+function save() {
+  var s = document.getElementById('saveStatus');
+  try {
+    localStorage.setItem('portfolio_data', JSON.stringify(DATA));
+    localStorage.setItem('portfolio_data_version', DATA_VERSION);
+    // verify write actually landed
+    if (localStorage.getItem('portfolio_data') === null) throw new Error('write failed');
+    dirty = false;
+    s.textContent = '✓ Saved';
+    s.className = 'save-status clean';
+    showToast('✓ 保存成功', 'success');
+  } catch (err) {
+    s.textContent = '✕ Save failed';
+    s.className = 'save-status dirty';
+    var msg = '✕ 保存失败';
+    if (err && (err.name === 'QuotaExceededError' || String(err).indexOf('quota') > -1)) {
+      msg = '✕ 保存失败：存储空间不足（图片过大，可尝试压缩后重新上传）';
+    }
+    showToast(msg, 'error');
+  }
+}
+
+function exportData() {
+  var content = '// Portfolio Content Data\n// Generated by Portfolio Editor — ' + new Date().toLocaleDateString() + '\n// Save this file as js/data.js in your portfolio folder\n\n(function () {\n  window.PORTFOLIO_DATA = ' + JSON.stringify(DATA, null, 2) + ';\n  window.PORTFOLIO_DEFAULTS = window.PORTFOLIO_DATA;\n})();\n';
+  var blob = new Blob([content], { type: 'text/javascript' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'data.js';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported data.js', 'success');
+}
+
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + (type || '');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.className = ''; }, type === 'error' ? 4500 : 2500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+function navigate(section, collId, workId) {
+  VIEW = { section: section, collId: collId || null, workId: workId || null };
+  renderSidebar();
+  renderPanel();
+}
+
+// ═══════════════════════════════════════════════════════
+//  SIDEBAR
+// ═══════════════════════════════════════════════════════
+function renderSidebar() {
+  var sb = document.getElementById('sidebar');
+  sb.innerHTML = '';
+
+  // Nav items
+  var navItems = [
+    { id: 'general',    icon: '⚙', label: 'General' },
+    { id: 'hero',       icon: '◉', label: 'Hero' },
+    { id: 'about',      icon: '◎', label: 'About' },
+  ];
+
+  var top = el('div', 'sidebar-section');
+  navItems.forEach(function(item) {
+    top.appendChild(navItem(item));
+  });
+  sb.appendChild(top);
+
+  // Portfolio tree
+  var portSection = el('div', 'sidebar-section');
+  portSection.appendChild(elText('div', 'sidebar-label', 'Portfolio'));
+
+  var tree = el('div', 'tree');
+  (DATA.portfolio || []).forEach(function(coll, ci) {
+    tree.appendChild(makeCollNode(coll, ci));
+  });
+
+  var addCollBtn = el('button', 'tree-add-coll');
+  addCollBtn.innerHTML = '+ Add Collection';
+  addCollBtn.onclick = function() {
+    var id = 'coll-' + Date.now();
+    DATA.portfolio.push({ id: id, name: 'New Collection', works: [] });
+    expandedColls[id] = true;
+    markDirty();
+    navigate('collection', id);
+  };
+  tree.appendChild(addCollBtn);
+  portSection.appendChild(tree);
+  sb.appendChild(portSection);
+
+  // Bottom nav
+  var bottom = el('div', 'sidebar-section');
+  [{ id:'experience', icon:'◈', label:'Experience' },
+   { id:'contact',    icon:'◇', label:'Contact' }].forEach(function(item) {
+    bottom.appendChild(navItem(item));
+  });
+  sb.appendChild(bottom);
+}
+
+function navItem(item) {
+  var active = VIEW.section === item.id && !VIEW.workId && !VIEW.collId;
+  var div = el('div', 'nav-item' + (active ? ' active' : ''));
+  div.innerHTML = '<span class="nav-item-icon">' + item.icon + '</span>' + item.label;
+  div.onclick = function() { navigate(item.id); };
+  return div;
+}
+
+function makeCollNode(coll, ci) {
+  var expanded = !!expandedColls[coll.id];
+  var activeIsThisColl = VIEW.section === 'collection' && VIEW.collId === coll.id && !VIEW.workId;
+
+  var wrapper = el('div', 'tree-collection');
+
+  var header = el('div', 'tree-coll-header' + (activeIsThisColl ? ' active' : ''));
+  var arrow  = el('span', 'tree-arrow' + (expanded ? ' open' : ''), '▶');
+  var nameEl = el('span', 'tree-coll-name', coll.name);
+
+  header.appendChild(arrow);
+  header.appendChild(nameEl);
+
+  header.onclick = function(e) {
+    if (e.target === arrow || e.target === nameEl || e.target === header) {
+      expandedColls[coll.id] = !expandedColls[coll.id];
+      navigate('collection', coll.id);
+    }
+  };
+  wrapper.appendChild(header);
+
+  var worksDiv = el('div', 'tree-works' + (expanded ? ' open' : ''));
+
+  (coll.works || []).forEach(function(work, wi) {
+    var activeWork = VIEW.section === 'work' && VIEW.collId === coll.id && VIEW.workId === work.id;
+    var row = el('div', 'tree-work' + (activeWork ? ' active' : ''));
+
+    var orderBtns = el('div', 'work-order-btns');
+    var upBtn = el('button', 'order-btn', '↑');
+    upBtn.title = 'Move up';
+    upBtn.onclick = function(e) {
+      e.stopPropagation();
+      if (wi === 0) return;
+      coll.works.splice(wi - 1, 0, coll.works.splice(wi, 1)[0]);
+      markDirty();
+      navigate('work', coll.id, work.id);
+    };
+    var dnBtn = el('button', 'order-btn', '↓');
+    dnBtn.title = 'Move down';
+    dnBtn.onclick = function(e) {
+      e.stopPropagation();
+      if (wi >= coll.works.length - 1) return;
+      coll.works.splice(wi + 1, 0, coll.works.splice(wi, 1)[0]);
+      markDirty();
+      navigate('work', coll.id, work.id);
+    };
+    orderBtns.appendChild(upBtn);
+    orderBtns.appendChild(dnBtn);
+
+    var titleEl = el('span', 'tree-work-title', work.title || 'Untitled');
+    var dupBtn  = el('button', 'tree-work-dup', '⎘');
+    dupBtn.title = 'Duplicate';
+    dupBtn.onclick = function(e) {
+      e.stopPropagation();
+      duplicateWork(coll, wi);
+    };
+    var delBtn  = el('button', 'tree-work-del', '×');
+    delBtn.title = 'Delete';
+    delBtn.onclick = function(e) {
+      e.stopPropagation();
+      if (!confirm('Delete "' + (work.title || 'Untitled') + '"?')) return;
+      coll.works.splice(wi, 1);
+      markDirty();
+      navigate('collection', coll.id);
+    };
+
+    row.appendChild(orderBtns);
+    row.appendChild(titleEl);
+    row.appendChild(dupBtn);
+    row.appendChild(delBtn);
+    row.onclick = function() { navigate('work', coll.id, work.id); };
+    worksDiv.appendChild(row);
+  });
+
+  var addBtn = el('button', 'tree-add-work');
+  addBtn.innerHTML = '+ Add Work';
+  addBtn.onclick = function() {
+    var wid = coll.id + '-' + Date.now();
+    var newWork = { id: wid, title: 'New Work', year: new Date().getFullYear().toString(), role: '', description: '', tags: [], coverImage: '', links: { live: '', case_study: '' } };
+    coll.works.push(newWork);
+    expandedColls[coll.id] = true;
+    markDirty();
+    navigate('work', coll.id, wid);
+  };
+  worksDiv.appendChild(addBtn);
+  wrapper.appendChild(worksDiv);
+  return wrapper;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PANELS
+// ═══════════════════════════════════════════════════════
+function renderPanel() {
+  var panel = document.getElementById('panel');
+  panel.innerHTML = '';
+
+  switch (VIEW.section) {
+    case 'general':    panel.appendChild(panelGeneral());    break;
+    case 'hero':       panel.appendChild(panelHero());       break;
+    case 'about':      panel.appendChild(panelAbout());      break;
+    case 'collection': panel.appendChild(panelCollection()); break;
+    case 'work':       panel.appendChild(panelWork());       break;
+    case 'experience': panel.appendChild(panelExperience()); break;
+    case 'contact':    panel.appendChild(panelContact());    break;
+    default:           panel.innerHTML = '<p style="color:var(--fg3);padding:2rem">Select a section from the sidebar.</p>';
+  }
+}
+
+/* ── GENERAL ─────────────────────────────────────────── */
+function panelGeneral() {
+  var d = el('div');
+  d.appendChild(elText('div','panel-title','General'));
+  d.appendChild(elText('div','panel-sub','Basic site info'));
+  d.appendChild(divider());
+  d.appendChild(field('Site Title', DATA.meta.siteTitle, function(v){ DATA.meta.siteTitle = v; markDirty(); }));
+  d.appendChild(field('Your Name',  DATA.meta.name,      function(v){ DATA.meta.name = v;      markDirty(); }));
+  return d;
+}
+
+/* ── HERO ────────────────────────────────────────────── */
+function panelHero() {
+  var d = el('div');
+  d.appendChild(elText('div','panel-title','Hero'));
+  d.appendChild(elText('div','panel-sub','The first thing visitors see'));
+  d.appendChild(divider());
+  d.appendChild(field('Badge Label',          DATA.hero.label,       function(v){ DATA.hero.label       = v; markDirty(); }));
+  d.appendChild(field('Title — Line 1',       DATA.hero.line1,       function(v){ DATA.hero.line1       = v; markDirty(); }));
+  d.appendChild(field('Title — Line 2 (italic)', DATA.hero.line2,    function(v){ DATA.hero.line2       = v; markDirty(); }));
+  d.appendChild(field('Description',          DATA.hero.description, function(v){ DATA.hero.description = v; markDirty(); }, 'textarea'));
+  return d;
+}
+
+/* ── ABOUT ───────────────────────────────────────────── */
+function panelAbout() {
+  var d = el('div');
+  d.appendChild(elText('div','panel-title','About'));
+  d.appendChild(elText('div','panel-sub','Photo, bio and skills'));
+  d.appendChild(divider());
+
+  // ── Profile photo
+  d.appendChild(elText('div','panel-section-title','Profile Photo'));
+  var photoRow = el('div','photo-row');
+
+  var preview = el('div','photo-preview');
+  function updatePreview() {
+    preview.innerHTML = DATA.about.photo
+      ? '<img src="' + DATA.about.photo + '" alt="Profile"/>'
+      : '<span class="ph-empty">No photo<br/>Click to upload</span>';
+  }
+  updatePreview();
+
+  var photoFileInp = el('input');
+  photoFileInp.type = 'file';
+  photoFileInp.accept = 'image/*';
+  photoFileInp.style.display = 'none';
+  photoFileInp.addEventListener('change', function() {
+    var file = photoFileInp.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      openCropModal(e.target.result, function(croppedDataUrl) {
+        DATA.about.photo = croppedDataUrl;
+        updatePreview();
+        markDirty();
+      });
+      photoFileInp.value = '';
+    };
+    reader.readAsDataURL(file);
+  });
+  preview.onclick = function() { photoFileInp.click(); };
+
+  var actions = el('div','photo-actions');
+  var upBtn = el('button','btn','Upload Photo');
+  upBtn.onclick = function() { photoFileInp.click(); };
+  var rmBtn = el('button','btn','Remove');
+  rmBtn.onclick = function() {
+    DATA.about.photo = '';
+    updatePreview();
+    markDirty();
+  };
+  var hint = el('div','photo-hint','After upload you can zoom and drag to crop. Displayed at 4:5 ratio on the site.');
+  actions.appendChild(upBtn);
+  actions.appendChild(rmBtn);
+  actions.appendChild(hint);
+
+  photoRow.appendChild(preview);
+  photoRow.appendChild(actions);
+  d.appendChild(photoRow);
+  d.appendChild(photoFileInp);
+
+  d.appendChild(divider());
+
+  // Bio
+  d.appendChild(elText('div','panel-section-title','Biography'));
+  var bioList = el('div','bio-list');
+  bioList.id = 'bioList';
+
+  function rebuildBio() {
+    bioList.innerHTML = '';
+    DATA.about.bio.forEach(function(para, i) {
+      var row = el('div','bio-item-row');
+      var ta  = el('textarea','field-input');
+      ta.value       = para;
+      ta.rows         = 3;
+      ta.style.flex   = '1';
+      ta.addEventListener('input', function() { DATA.about.bio[i] = ta.value; markDirty(); });
+      var delBtn = el('button','bio-del','×');
+      delBtn.onclick = function() {
+        DATA.about.bio.splice(i, 1);
+        markDirty();
+        rebuildBio();
+      };
+      row.appendChild(ta);
+      row.appendChild(delBtn);
+      bioList.appendChild(row);
+    });
+  }
+  rebuildBio();
+  d.appendChild(bioList);
+
+  var addBioBtn = el('button','skill-add-item','+ Add paragraph');
+  addBioBtn.style.marginBottom = '1.5rem';
+  addBioBtn.onclick = function() {
+    DATA.about.bio.push('');
+    markDirty();
+    rebuildBio();
+  };
+  d.appendChild(addBioBtn);
+
+  d.appendChild(divider());
+  d.appendChild(elText('div','panel-section-title','Skills'));
+
+  var skillsWrap = el('div','skills-editor');
+  skillsWrap.id = 'skillsEditor';
+
+  function rebuildSkills() {
+    skillsWrap.innerHTML = '';
+    DATA.about.skills.forEach(function(cat, ci) {
+      var block  = el('div','skill-cat-block');
+      var hdr    = el('div','skill-cat-header');
+      var catInp = el('input','skill-cat-input');
+      catInp.value = cat.category;
+      catInp.placeholder = 'Category name';
+      catInp.addEventListener('input', function() { DATA.about.skills[ci].category = catInp.value; markDirty(); });
+      var catDel = el('button','skill-cat-del','×');
+      catDel.onclick = function() {
+        DATA.about.skills.splice(ci,1);
+        markDirty();
+        rebuildSkills();
+      };
+      hdr.appendChild(catInp);
+      hdr.appendChild(catDel);
+      block.appendChild(hdr);
+
+      var items = el('div','skill-items');
+      cat.items.forEach(function(item, ii) {
+        var row = el('div','skill-item-row');
+        var inp = el('input','skill-item-input');
+        inp.value = item;
+        inp.addEventListener('input', function() { DATA.about.skills[ci].items[ii] = inp.value; markDirty(); });
+        var del = el('button','skill-item-del','×');
+        del.onclick = function() {
+          DATA.about.skills[ci].items.splice(ii,1);
+          markDirty();
+          rebuildSkills();
+        };
+        row.appendChild(inp);
+        row.appendChild(del);
+        items.appendChild(row);
+      });
+      var addItem = el('button','skill-add-item','+ Add item');
+      addItem.onclick = function() {
+        DATA.about.skills[ci].items.push('');
+        markDirty();
+        rebuildSkills();
+      };
+      items.appendChild(addItem);
+      block.appendChild(items);
+      skillsWrap.appendChild(block);
+    });
+
+    var addCat = el('button','add-skill-cat','+ Add Category');
+    addCat.onclick = function() {
+      DATA.about.skills.push({ category: 'New Category', items: [''] });
+      markDirty();
+      rebuildSkills();
+    };
+    skillsWrap.appendChild(addCat);
+  }
+  rebuildSkills();
+  d.appendChild(skillsWrap);
+  return d;
+}
+
+/* ── COLLECTION ──────────────────────────────────────── */
+function panelCollection() {
+  var coll = (DATA.portfolio || []).find(function(c) { return c.id === VIEW.collId; });
+  if (!coll) return elText('div','','Collection not found.');
+
+  var d = el('div');
+  d.appendChild(elText('div','panel-title','Collection'));
+  d.appendChild(elText('div','panel-sub', coll.works.length + ' work' + (coll.works.length !== 1 ? 's' : '')));
+  d.appendChild(divider());
+
+  d.appendChild(field('Collection Name', coll.name, function(v) {
+    coll.name = v;
+    markDirty();
+    renderSidebar(); // update tree label
+  }));
+
+  // Summary of works
+  if (coll.works.length) {
+    d.appendChild(divider());
+    d.appendChild(elText('div','panel-section-title','Works in this collection'));
+    coll.works.forEach(function(w) {
+      var row = el('div');
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;background:var(--s1);border:1px solid var(--border);border-radius:4px;margin-bottom:.4rem;cursor:pointer';
+      var title = el('span','',w.title);
+      title.style.cssText = 'font-size:.82rem;color:var(--fg2)';
+      var year = el('span','',w.year);
+      year.style.cssText = 'font-size:.7rem;color:var(--fg3)';
+      row.appendChild(title);
+      row.appendChild(year);
+      row.onclick = function() { navigate('work', coll.id, w.id); };
+      d.appendChild(row);
+    });
+  }
+
+  // Danger zone - delete collection
+  var dz = el('div','danger-zone');
+  dz.appendChild(elText('div','danger-title','Danger Zone'));
+  var delBtn = el('button','btn-danger','Delete Collection');
+  delBtn.onclick = function() {
+    if (!confirm('Delete "' + coll.name + '" and all its works?')) return;
+    DATA.portfolio = DATA.portfolio.filter(function(c) { return c.id !== coll.id; });
+    delete expandedColls[coll.id];
+    markDirty();
+    navigate('general');
+  };
+  dz.appendChild(delBtn);
+  d.appendChild(dz);
+  return d;
+}
+
+/* ── WORK ────────────────────────────────────────────── */
+function panelWork() {
+  var coll = (DATA.portfolio || []).find(function(c) { return c.id === VIEW.collId; });
+  var work = coll && coll.works.find(function(w) { return w.id === VIEW.workId; });
+  if (!work) return elText('div','','Work not found.');
+
+  var d = el('div');
+  d.appendChild(elText('div','panel-title', work.title || 'Untitled Work'));
+  d.appendChild(elText('div','panel-sub', coll.name + ' · ' + (work.year || '—')));
+  d.appendChild(divider());
+
+  // ── Cover image
+  d.appendChild(elText('div','panel-section-title','Cover Image'));
+  var zone = el('div','img-upload-zone');
+  zone.id = 'imgZone-' + work.id;
+
+  function updateZone() {
+    zone.innerHTML = '';
+    if (work.coverImage) {
+      var img = el('img');
+      img.src = work.coverImage;
+      zone.appendChild(img);
+      var ov = el('div','img-upload-overlay');
+      ov.innerHTML = '<span class="img-upload-hint">Change Image</span>';
+      zone.appendChild(ov);
+    } else {
+      zone.innerHTML = '<span class="img-empty-icon">⬚</span><span class="img-empty-label">Click to upload image</span>';
+    }
+  }
+  updateZone();
+
+  var fileInp = el('input');
+  fileInp.type   = 'file';
+  fileInp.accept = 'image/*';
+  fileInp.style.display = 'none';
+  fileInp.addEventListener('change', function() {
+    var file = fileInp.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      work.coverImage = e.target.result;
+      updateZone();
+      updateUrlField();
+      markDirty();
+    };
+    reader.readAsDataURL(file);
+  });
+  zone.onclick = function() { fileInp.click(); };
+  d.appendChild(zone);
+  d.appendChild(fileInp);
+
+  var urlRow = el('div','img-url-row');
+  var urlInp = el('input','field-input');
+  urlInp.placeholder = 'Or paste image URL (https://...)';
+  urlInp.id = 'imgUrlInp-' + work.id;
+
+  function updateUrlField() {
+    urlInp.value = (work.coverImage && !work.coverImage.startsWith('data:')) ? work.coverImage : '';
+  }
+  updateUrlField();
+
+  urlInp.addEventListener('input', function() {
+    var v = urlInp.value.trim();
+    if (v && !v.startsWith('data:')) {
+      work.coverImage = v;
+      updateZone();
+      markDirty();
+    }
+  });
+
+  var clearBtn = el('button','img-clear-btn','Remove');
+  clearBtn.onclick = function() {
+    work.coverImage = '';
+    urlInp.value = '';
+    updateZone();
+    markDirty();
+  };
+  urlRow.appendChild(urlInp);
+  urlRow.appendChild(clearBtn);
+  d.appendChild(urlRow);
+
+  d.appendChild(divider());
+  d.appendChild(elText('div','panel-section-title','Details'));
+
+  // Fields
+  var titleFg = field('Title', work.title, function(v) {
+    work.title = v;
+    markDirty();
+    // Update sidebar + panel title live
+    document.querySelector('.panel-title').textContent = v || 'Untitled Work';
+    var activeTree = document.querySelector('.tree-work.active .tree-work-title');
+    if (activeTree) activeTree.textContent = v || 'Untitled';
+  });
+  d.appendChild(titleFg);
+
+  var metaRow = el('div','field-row');
+  metaRow.appendChild(field('Year', work.year, function(v) { work.year = v; markDirty(); }));
+  metaRow.appendChild(field('Role', work.role, function(v) { work.role = v; markDirty(); }));
+  d.appendChild(metaRow);
+
+  d.appendChild(field('Description', work.description, function(v) { work.description = v; markDirty(); }, 'textarea'));
+
+  // Tags
+  d.appendChild(divider());
+  d.appendChild(elText('div','panel-section-title','Tags'));
+  d.appendChild(makeTags(work));
+
+  // Links
+  d.appendChild(divider());
+  d.appendChild(elText('div','panel-section-title','Links'));
+  d.appendChild(field('Watch / Live URL',  work.links.live,       function(v) { work.links.live       = v; markDirty(); }));
+  d.appendChild(field('Case Study URL',    work.links.case_study, function(v) { work.links.case_study = v; markDirty(); }));
+
+  // Duplicate
+  d.appendChild(divider());
+  var dupRow = el('div');
+  dupRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--s1);border:1px solid var(--border);border-radius:var(--r)';
+  var dupInfo = el('div');
+  dupInfo.innerHTML = '<div style="font-size:.8rem;font-weight:600;color:var(--fg)">Duplicate Work</div><div style="font-size:.72rem;color:var(--fg3);margin-top:.15rem">Creates a copy with all fields preserved</div>';
+  var dupBtn2 = el('button','btn','⎘ Duplicate');
+  dupBtn2.style.cssText = 'flex-shrink:0;color:var(--green);border-color:rgba(34,197,94,.3)';
+  dupBtn2.onclick = function() {
+    var wi = coll.works.findIndex(function(w) { return w.id === work.id; });
+    duplicateWork(coll, wi);
+  };
+  dupRow.appendChild(dupInfo);
+  dupRow.appendChild(dupBtn2);
+  d.appendChild(dupRow);
+
+  // Danger zone
+  var dz = el('div','danger-zone');
+  dz.appendChild(elText('div','danger-title','Danger Zone'));
+  var delBtn = el('button','btn-danger','Delete This Work');
+  delBtn.onclick = function() {
+    if (!confirm('Delete "' + (work.title || 'Untitled') + '"?')) return;
+    coll.works = coll.works.filter(function(w) { return w.id !== work.id; });
+    markDirty();
+    navigate('collection', coll.id);
+  };
+  dz.appendChild(delBtn);
+  d.appendChild(dz);
+
+  return d;
+}
+
+/* ── EXPERIENCE ──────────────────────────────────────── */
+function panelExperience() {
+  var d = el('div');
+  d.appendChild(elText('div','panel-title','Experience'));
+  d.appendChild(elText('div','panel-sub','Work history & education'));
+  d.appendChild(divider());
+
+  var list = el('div','exp-list');
+  list.id = 'expList';
+
+  function rebuildExp() {
+    list.innerHTML = '';
+    DATA.experience.forEach(function(exp, ei) {
+      var card   = el('div','exp-card');
+      var hdr    = el('div','exp-card-header');
+      var period = elText('span','exp-card-period', exp.period || '—');
+      var title  = elText('span','exp-card-title',  exp.title  || 'Untitled');
+      var tog    = elText('span','exp-card-toggle', '▾');
+
+      var body = el('div','exp-card-body');
+      var isOpen = false;
+
+      hdr.onclick = function() {
+        isOpen = !isOpen;
+        body.classList.toggle('open', isOpen);
+        tog.classList.toggle('open', isOpen);
+      };
+
+      hdr.appendChild(period);
+      hdr.appendChild(title);
+      hdr.appendChild(tog);
+      card.appendChild(hdr);
+
+      // Body fields
+      var pRow = el('div','field-row');
+      var pInp = field('Period', exp.period, function(v) {
+        DATA.experience[ei].period = v;
+        period.textContent = v || '—';
+        markDirty();
+      });
+      var tInp = field('Job Title', exp.title, function(v) {
+        DATA.experience[ei].title = v;
+        title.textContent = v || 'Untitled';
+        markDirty();
+      });
+      pRow.appendChild(pInp);
+      pRow.appendChild(tInp);
+      body.appendChild(pRow);
+      body.appendChild(field('Company / Institution', exp.company,     function(v) { DATA.experience[ei].company     = v; markDirty(); }));
+      body.appendChild(field('Description',           exp.description, function(v) { DATA.experience[ei].description = v; markDirty(); }, 'textarea'));
+
+      body.appendChild(elText('div','panel-section-title','Tags / Skills'));
+      body.appendChild(makeTags(DATA.experience[ei]));
+
+      var delRow = el('div','exp-del-row');
+      var delBtn = el('button','btn-danger','Delete');
+      delBtn.onclick = function() {
+        if (!confirm('Delete this experience?')) return;
+        DATA.experience.splice(ei, 1);
+        markDirty();
+        rebuildExp();
+      };
+      delRow.appendChild(delBtn);
+      body.appendChild(delRow);
+      card.appendChild(body);
+      list.appendChild(card);
+    });
+  }
+  rebuildExp();
+  d.appendChild(list);
+
+  var addBtn = el('button','add-skill-cat','+ Add Experience');
+  addBtn.style.marginTop = '1rem';
+  addBtn.onclick = function() {
+    DATA.experience.unshift({ id: 'exp-'+Date.now(), period: '', title: '', company: '', description: '', tags: [] });
+    markDirty();
+    rebuildExp();
+  };
+  d.appendChild(addBtn);
+  return d;
+}
+
+/* ── CONTACT ─────────────────────────────────────────── */
+function panelContact() {
+  var d = el('div');
+  d.appendChild(elText('div','panel-title','Contact'));
+  d.appendChild(elText('div','panel-sub','How people reach you'));
+  d.appendChild(divider());
+  d.appendChild(field('Message',   DATA.contact.message,   function(v){ DATA.contact.message   = v; markDirty(); }, 'textarea'));
+  d.appendChild(field('Email',     DATA.contact.email,     function(v){ DATA.contact.email     = v; markDirty(); }));
+  d.appendChild(field('Phone',     DATA.contact.phone,     function(v){ DATA.contact.phone     = v; markDirty(); }));
+  d.appendChild(field('Website',   DATA.contact.website,   function(v){ DATA.contact.website   = v; markDirty(); }));
+  d.appendChild(field('Instagram Handle', DATA.contact.instagram, function(v){ DATA.contact.instagram = v.replace(/^@/,''); markDirty(); }));
+  d.appendChild(field('Facebook Handle',  DATA.contact.facebook,  function(v){ DATA.contact.facebook  = v; markDirty(); }));
+  d.appendChild(field('Location',  DATA.contact.location,  function(v){ DATA.contact.location  = v; markDirty(); }));
+  return d;
+}
+
+// ═══════════════════════════════════════════════════════
+//  SHARED COMPONENTS
+// ═══════════════════════════════════════════════════════
+function makeTags(obj) {
+  var wrap = el('div','tags-wrap');
+
+  function rebuild() {
+    wrap.innerHTML = '';
+    (obj.tags || []).forEach(function(tag, ti) {
+      var chip = el('div','tag-chip');
+      chip.appendChild(document.createTextNode(tag));
+      var del = el('button','tag-del','×');
+      del.onclick = function() { obj.tags.splice(ti,1); markDirty(); rebuild(); };
+      chip.appendChild(del);
+      wrap.appendChild(chip);
+    });
+    var inp = el('input','tag-input-inline');
+    inp.placeholder = 'Type & press Enter';
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && inp.value.trim()) {
+        e.preventDefault();
+        if (!obj.tags) obj.tags = [];
+        obj.tags.push(inp.value.trim());
+        markDirty();
+        rebuild();
+      }
+      if (e.key === 'Backspace' && !inp.value && obj.tags && obj.tags.length) {
+        obj.tags.pop();
+        markDirty();
+        rebuild();
+      }
+    });
+    wrap.appendChild(inp);
+    setTimeout(function(){ inp.focus(); }, 0);
+  }
+  rebuild();
+  return wrap;
+}
+
+function field(label, value, onChange, type) {
+  var g   = el('div','field-group');
+  var lbl = elText('label','field-label', label);
+  var inp = el(type === 'textarea' ? 'textarea' : 'input', 'field-input');
+  if (type !== 'textarea') inp.type = 'text';
+  inp.value = value || '';
+  inp.addEventListener('input', function() { onChange(inp.value); });
+  g.appendChild(lbl);
+  g.appendChild(inp);
+  return g;
+}
+
+function divider() { return el('div','panel-divider'); }
+
+function el(tag, cls, html) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+function elText(tag, cls, text) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  e.textContent = text;
+  return e;
+}
+
+// ═══════════════════════════════════════════════════════
+//  CROP MODAL (zoom + drag pan, 4:5 output)
+// ═══════════════════════════════════════════════════════
+function openCropModal(srcDataUrl, onApply) {
+  var FRAME_W = 280, FRAME_H = 350;    // display frame (4:5)
+  var OUT_W   = 640, OUT_H   = 800;    // output resolution
+
+  // build modal once
+  var modal = document.getElementById('cropModal');
+  if (!modal) {
+    modal = el('div','crop-modal');
+    modal.id = 'cropModal';
+    modal.innerHTML =
+      '<div class="crop-backdrop" id="cropBackdrop"></div>' +
+      '<div class="crop-card">' +
+        '<div class="crop-title">Crop Photo — drag to move, slider to zoom</div>' +
+        '<div class="crop-frame" id="cropFrame"><img id="cropImg" draggable="false"/><div class="crop-grid"></div></div>' +
+        '<div class="crop-zoom-row"><label>Zoom</label><input type="range" class="crop-zoom" id="cropZoom" min="100" max="300" value="100"/></div>' +
+        '<div class="crop-btns">' +
+          '<button class="btn" id="cropCancel">Cancel</button>' +
+          '<button class="btn btn-accent" id="cropApply">Apply</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+  }
+
+  var frame = document.getElementById('cropFrame');
+  var imgEl = document.getElementById('cropImg');
+  var zoomEl = document.getElementById('cropZoom');
+
+  var natW = 0, natH = 0, baseScale = 1;
+  var z = 1, tx = 0, ty = 0;
+
+  var img = new Image();
+  img.onload = function() {
+    natW = img.naturalWidth;
+    natH = img.naturalHeight;
+    baseScale = Math.max(FRAME_W / natW, FRAME_H / natH);  // cover
+    z = 1; tx = 0; ty = 0;
+    zoomEl.value = 100;
+    imgEl.src = srcDataUrl;
+    layout();
+    modal.classList.add('open');
+  };
+  img.src = srcDataUrl;
+
+  function drawSize() {
+    var s = baseScale * z;
+    return { w: natW * s, h: natH * s };
+  }
+
+  function clamp() {
+    var d = drawSize();
+    var minX = FRAME_W - d.w, minY = FRAME_H - d.h; // <= 0
+    var x = (FRAME_W - d.w) / 2 + tx;
+    var y = (FRAME_H - d.h) / 2 + ty;
+    if (x > 0) tx -= x;
+    if (y > 0) ty -= y;
+    if (x < minX) tx += (minX - x);
+    if (y < minY) ty += (minY - y);
+  }
+
+  function layout() {
+    clamp();
+    var d = drawSize();
+    var x = (FRAME_W - d.w) / 2 + tx;
+    var y = (FRAME_H - d.h) / 2 + ty;
+    imgEl.style.width  = d.w + 'px';
+    imgEl.style.height = d.h + 'px';
+    imgEl.style.left   = x + 'px';
+    imgEl.style.top    = y + 'px';
+  }
+
+  // drag to pan
+  var dragging = false, lastX = 0, lastY = 0;
+  frame.onpointerdown = function(e) {
+    dragging = true;
+    lastX = e.clientX; lastY = e.clientY;
+    frame.classList.add('dragging');
+    frame.setPointerCapture(e.pointerId);
+  };
+  frame.onpointermove = function(e) {
+    if (!dragging) return;
+    tx += e.clientX - lastX;
+    ty += e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    layout();
+  };
+  frame.onpointerup = frame.onpointercancel = function(e) {
+    dragging = false;
+    frame.classList.remove('dragging');
+  };
+
+  // zoom slider — keep center stable
+  zoomEl.oninput = function() {
+    var newZ = zoomEl.value / 100;
+    var ratio = newZ / z;
+    tx *= ratio; ty *= ratio;
+    z = newZ;
+    layout();
+  };
+
+  // wheel zoom
+  frame.onwheel = function(e) {
+    e.preventDefault();
+    var newZ = Math.min(3, Math.max(1, z + (e.deltaY < 0 ? 0.08 : -0.08)));
+    var ratio = newZ / z;
+    tx *= ratio; ty *= ratio;
+    z = newZ;
+    zoomEl.value = Math.round(z * 100);
+    layout();
+  };
+
+  function cleanup() {
+    modal.classList.remove('open');
+    frame.onpointerdown = frame.onpointermove = frame.onpointerup = frame.onwheel = null;
+    zoomEl.oninput = null;
+  }
+
+  document.getElementById('cropCancel').onclick   = cleanup;
+  document.getElementById('cropBackdrop').onclick = cleanup;
+
+  document.getElementById('cropApply').onclick = function() {
+    var d = drawSize();
+    var x = (FRAME_W - d.w) / 2 + tx;
+    var y = (FRAME_H - d.h) / 2 + ty;
+    var k = OUT_W / FRAME_W;
+    var canvas = document.createElement('canvas');
+    canvas.width = OUT_W; canvas.height = OUT_H;
+    var ctx = canvas.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, x * k, y * k, d.w * k, d.h * k);
+    var result = canvas.toDataURL('image/jpeg', 0.88);
+    cleanup();
+    onApply(result);
+    showToast('Photo cropped', 'success');
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  DUPLICATE WORK
+// ═══════════════════════════════════════════════════════
+function duplicateWork(coll, wi) {
+  var original = coll.works[wi];
+  var copy = JSON.parse(JSON.stringify(original));
+  copy.id    = coll.id + '-' + Date.now();
+  copy.title = 'Copy of ' + (original.title || 'Untitled');
+  coll.works.splice(wi + 1, 0, copy);
+  markDirty();
+  navigate('work', coll.id, copy.id);
+  showToast('Duplicated', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+//  START
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

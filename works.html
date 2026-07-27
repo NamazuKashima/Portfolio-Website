@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Work — Victor Qixun Wu</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── archive page specific ── */
+    body { cursor: auto; }
+    a, button, .work-card { cursor: pointer; }
+
+    #archive {
+      padding: 10rem 0 6rem;
+      min-height: 100vh;
+    }
+    .archive-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .archive-head .section-title { margin-bottom: 0; }
+    .archive-count {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gray);
+      padding-bottom: 0.75rem;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 2rem;
+      transition: color var(--t);
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* ── modal ── */
+    .work-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .work-modal.open { display: flex; }
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(4, 7, 5, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .modal-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 760px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .modal-img {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--bg);
+      overflow: hidden;
+    }
+    .modal-img img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-img .work-placeholder { position: absolute; inset: 0; }
+    .modal-body { padding: 2rem 2.25rem 2.25rem; }
+    .modal-meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.4rem;
+    }
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -0.01em;
+    }
+    .modal-year {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--gray);
+      flex-shrink: 0;
+    }
+    .modal-role {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    .modal-desc {
+      font-size: 0.925rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+    .modal-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+    .modal-tags span {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(79,169,128,0.25);
+      padding: 0.18rem 0.5rem;
+    }
+    .modal-links { display: flex; gap: 1.5rem; }
+    .modal-close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      z-index: 3;
+      width: 36px; height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(7,11,9,0.7);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: var(--t);
+    }
+    .modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    .work-card { cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar" class="scrolled">
+    <a class="nav-logo" href="index.html">V.</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#projects">Portfolio</a></li>
+      <li><a href="index.html#experience">Experience</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <button class="menu-btn" aria-label="Toggle menu">
+      <span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ARCHIVE -->
+  <section id="archive">
+    <div class="container">
+      <a href="index.html#projects" class="back-link">← Back to home</a>
+      <div class="section-label">Archive</div>
+      <div class="archive-head">
+        <h2 class="section-title">All<br/><em>Work</em></h2>
+        <div class="archive-count" id="archiveCount"></div>
+      </div>
+      <div class="collection-tabs" id="collectionTabs"></div>
+      <div class="works-grid" id="worksGrid"></div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-inner">
+      <span class="footer-logo">V.</span>
+      <span class="footer-copy">© 2026 Victor Qixun Wu. All rights reserved.</span>
+      <div class="footer-socials">
+        <a href="https://www.victorqixunwu.com" target="_blank">Website</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL -->
+  <div class="work-modal" id="workModal">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose">×</button>
+      <div class="modal-img" id="modalImg"></div>
+      <div class="modal-body">
+        <div class="modal-meta">
+          <div class="modal-title" id="modalTitle"></div>
+          <div class="modal-year" id="modalYear"></div>
+        </div>
+        <div class="modal-role" id="modalRole"></div>
+        <div class="modal-tags" id="modalTags"></div>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-links" id="modalLinks"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script>
+  (function () {
+    var D = window.PORTFOLIO_DATA;
+    if (!D || !D.portfolio) return;
+
+    var tabsEl  = document.getElementById('collectionTabs');
+    var gridEl  = document.getElementById('worksGrid');
+    var countEl = document.getElementById('archiveCount');
+
+    var collections = D.portfolio;
+    var totalWorks  = collections.reduce(function(n, c) { return n + c.works.length; }, 0);
+    var activeId    = 'all';
+
+    function buildTabs() {
+      var html = '<button class="col-tab' + (activeId === 'all' ? ' active' : '') + '" data-id="all">All</button>';
+      html += collections.map(function(c) {
+        return '<button class="col-tab' + (c.id === activeId ? ' active' : '') + '" data-id="' + c.id + '">' + c.name + ' (' + c.works.length + ')</button>';
+      }).join('');
+      tabsEl.innerHTML = html;
+    }
+
+    function activeWorks() {
+      if (activeId === 'all') {
+        return collections.reduce(function(arr, c) {
+          return arr.concat(c.works.map(function(w) { var x = Object.assign({}, w); x._coll = c.name; return x; }));
+        }, []);
+      }
+      var col = collections.find(function(c) { return c.id === activeId; });
+      return col ? col.works.map(function(w) { var x = Object.assign({}, w); x._coll = col.name; return x; }) : [];
+    }
+
+    function buildGrid() {
+      var works = activeWorks();
+      countEl.textContent = works.length + ' / ' + totalWorks + ' projects';
+      if (!works.length) { gridEl.innerHTML = '<p style="color:var(--gray);padding:2rem 0">No works yet.</p>'; return; }
+      gridEl.innerHTML = works.map(function(w, i) {
+        var imgHTML = w.coverImage
+          ? '<img src="' + w.coverImage + '" alt="' + w.title + '" />'
+          : '<div class="work-placeholder"><span>' + w.title + '</span></div>';
+        return '<div class="work-card" data-wid="' + w.id + '">'
+          + '<div class="work-img">' + imgHTML
+          + '<div class="work-overlay"><div class="overlay-title">' + w.title + '</div><div class="overlay-role">' + w.role + '</div></div>'
+          + '</div>'
+          + '<div class="work-info">'
+          + '<div class="work-meta-row"><span class="work-title-text">' + w.title + '</span><span class="work-year">' + w.year + '</span></div>'
+          + '<div class="work-tags">' + (w.tags || []).map(function(t) { return '<span>' + t + '</span>'; }).join('') + '</div>'
+          + '<p class="work-desc">' + w.description + '</p>'
+          + '</div></div>';
+      }).join('');
+    }
+
+    buildTabs();
+    buildGrid();
+
+    tabsEl.addEventListener('click', function(e) {
+      var btn = e.target.closest('.col-tab');
+      if (!btn) return;
+      activeId = btn.dataset.id;
+      buildTabs();
+      buildGrid();
+    });
+
+    // ── modal ──
+    var modal = document.getElementById('workModal');
+
+    function findWork(id) {
+      for (var i = 0; i < collections.length; i++) {
+        var w = collections[i].works.find(function(x) { return x.id === id; });
+        if (w) return w;
+      }
+      return null;
+    }
+
+    gridEl.addEventListener('click', function(e) {
+      var card = e.target.closest('.work-card');
+      if (!card) return;
+      var w = findWork(card.dataset.wid);
+      if (!w) return;
+      openModal(w);
+    });
+
+    function openModal(w) {
+      document.getElementById('modalImg').innerHTML = w.coverImage
+        ? '<img src="' + w.coverImage + '" alt="' + w.title + '" />'
+        : '<div class="work-placeholder"><span>' + w.title + '</span></div>';
+      document.getElementById('modalTitle').textContent = w.title;
+      document.getElementById('modalYear').textContent  = w.year;
+      document.getElementById('modalRole').textContent  = w.role;
+      document.getElementById('modalDesc').textContent  = w.description;
+      document.getElementById('modalTags').innerHTML    = (w.tags || []).map(function(t) { return '<span>' + t + '</span>'; }).join('');
+      var links = '';
+      if (w.links && w.links.live)       links += '<a href="' + w.links.live       + '" class="link-arrow" target="_blank">Watch →</a>';
+      if (w.links && w.links.case_study) links += '<a href="' + w.links.case_study + '" class="link-arrow" target="_blank">Case Study →</a>';
+      document.getElementById('modalLinks').innerHTML = links;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('modalClose').onclick    = closeModal;
+    document.getElementById('modalBackdrop').onclick = closeModal;
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+  })();
+  </script>
+</body>
+</html>
