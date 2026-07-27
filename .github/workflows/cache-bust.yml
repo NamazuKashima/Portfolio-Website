@@ -15,8 +15,10 @@ permissions:
 jobs:
   bump:
     runs-on: ubuntu-latest
-    # Skip the commit this workflow makes itself, to avoid an infinite loop
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    # Skip the commit this workflow makes itself, to avoid an infinite loop.
+    # NOTE: uses a custom marker, not [skip ci] — [skip ci] would also stop
+    # GitHub's own "pages build and deployment" from running on that commit.
+    if: "!contains(github.event.head_commit.message, '[cache-bust]')"
 
     steps:
       - uses: actions/checkout@v4
@@ -44,5 +46,5 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Cache bust assets [skip ci]"
+          git commit -m "Cache bust assets [cache-bust]"
           git push
