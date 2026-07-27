@@ -267,6 +267,16 @@ textarea.field-input{min-height:90px;line-height:1.6}
 .photo-actions{display:flex;flex-direction:column;gap:.5rem}
 .photo-hint{font-size:.72rem;color:var(--fg3);line-height:1.5;max-width:280px}
 
+/* CV block */
+.cv-status{
+  font-size:.75rem;padding:.65rem .8rem;border-radius:var(--r);
+  border:1px solid var(--border2);background:var(--s1);margin-bottom:.6rem;
+  word-break:break-all;line-height:1.5;
+}
+.cv-status.empty{color:var(--fg3)}
+.cv-status.ok{color:var(--accent);border-color:rgba(79,169,128,.3)}
+.cv-btn-row{display:flex;gap:.5rem}
+
 .crop-modal{
   position:fixed;inset:0;z-index:500;display:none;
   align-items:center;justify-content:center;
@@ -825,6 +835,99 @@ function panelAbout() {
   photoRow.appendChild(actions);
   d.appendChild(photoRow);
   d.appendChild(photoFileInp);
+
+  d.appendChild(divider());
+
+  // ── CV / Resume
+  if (!DATA.about.cvLabel)    DATA.about.cvLabel    = 'Download CV';
+  if (!DATA.about.cvFileName) DATA.about.cvFileName = 'CV.pdf';
+
+  d.appendChild(elText('div','panel-section-title','CV / Resume'));
+
+  var cvStatus = el('div','cv-status');
+  function fmtSize(bytes) {
+    return bytes > 1048576 ? (bytes/1048576).toFixed(1) + ' MB'
+                           : Math.round(bytes/1024) + ' KB';
+  }
+  function updateCvStatus() {
+    var v = DATA.about.cvUrl || '';
+    if (!v) {
+      cvStatus.className = 'cv-status empty';
+      cvStatus.textContent = 'No CV uploaded — the button stays hidden on the site.';
+    } else if (v.indexOf('data:') === 0) {
+      var bytes = Math.round((v.length - v.indexOf(',') - 1) * 0.75);
+      cvStatus.className = 'cv-status ok';
+      cvStatus.textContent = '✓ Embedded file · ' + (DATA.about.cvFileName || 'CV.pdf') + ' · ' + fmtSize(bytes);
+    } else {
+      cvStatus.className = 'cv-status ok';
+      cvStatus.textContent = '✓ Linked file · ' + v;
+    }
+  }
+  updateCvStatus();
+
+  var cvFileInp = el('input');
+  cvFileInp.type = 'file';
+  cvFileInp.accept = 'application/pdf,.pdf,.doc,.docx';
+  cvFileInp.style.display = 'none';
+  cvFileInp.addEventListener('change', function() {
+    var file = cvFileInp.files[0];
+    if (!file) return;
+    if (file.size > 4 * 1024 * 1024) {
+      showToast('✕ File too large (' + fmtSize(file.size) + ') — keep it under 4 MB', 'error');
+      cvFileInp.value = '';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      DATA.about.cvUrl      = e.target.result;
+      DATA.about.cvFileName = file.name;
+      cvUrlInp.value = '';
+      updateCvStatus();
+      markDirty();
+      showToast('✓ CV uploaded', 'success');
+      cvFileInp.value = '';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  var cvBtnRow = el('div','cv-btn-row');
+  var cvUpBtn = el('button','btn','Upload CV (PDF)');
+  cvUpBtn.onclick = function() { cvFileInp.click(); };
+  var cvRmBtn = el('button','btn','Remove');
+  cvRmBtn.onclick = function() {
+    DATA.about.cvUrl = '';
+    cvUrlInp.value = '';
+    updateCvStatus();
+    markDirty();
+  };
+  cvBtnRow.appendChild(cvUpBtn);
+  cvBtnRow.appendChild(cvRmBtn);
+
+  d.appendChild(cvStatus);
+  d.appendChild(cvBtnRow);
+  d.appendChild(cvFileInp);
+
+  var cvUrlInp = el('input','field-input');
+  cvUrlInp.placeholder = 'Or link a file instead (e.g. assets/cv.pdf or https://…)';
+  cvUrlInp.style.marginTop = '0.6rem';
+  cvUrlInp.value = (DATA.about.cvUrl && DATA.about.cvUrl.indexOf('data:') !== 0) ? DATA.about.cvUrl : '';
+  cvUrlInp.addEventListener('input', function() {
+    var v = cvUrlInp.value.trim();
+    DATA.about.cvUrl = v;
+    updateCvStatus();
+    markDirty();
+  });
+  d.appendChild(cvUrlInp);
+
+  d.appendChild(field('Button Label', DATA.about.cvLabel, function(v) {
+    DATA.about.cvLabel = v; markDirty();
+  }));
+  d.appendChild(field('Download File Name', DATA.about.cvFileName, function(v) {
+    DATA.about.cvFileName = v; markDirty();
+  }));
+
+  var cvHint = el('div','photo-hint','Uploading embeds the file in your content data — fine for a normal PDF. For a large file, put it in the repo (e.g. assets/cv.pdf) and link it above instead.');
+  d.appendChild(cvHint);
 
   d.appendChild(divider());
 

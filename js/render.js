@@ -107,6 +107,20 @@
         return '<p class="about-bio">' + p + '</p>';
       }).join(''));
     }
+    // Download CV button — only shown when a file/URL is set
+    var cvEl = $id('about-cv');
+    if (cvEl) {
+      var cv = (D.about.cvUrl || '').trim();
+      if (cv) {
+        cvEl.href = cv;
+        cvEl.hidden = false;
+        cvEl.setAttribute('download', D.about.cvFileName || 'CV.pdf');
+        setText('about-cv-label', D.about.cvLabel || 'Download CV');
+      } else {
+        cvEl.hidden = true;
+      }
+    }
+
     if (D.about.skills) {
       setHTML('skills-grid', D.about.skills.map(function(s) {
         return '<div class="skill-group">'

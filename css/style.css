@@ -451,6 +451,38 @@ ul { list-style: none; }
   margin-bottom: 0.4rem;
 }
 
+/* ---------- DOWNLOAD CV ---------- */
+.btn-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 2.5rem;
+  padding: 0.8rem 1.5rem 0.8rem 0.8rem;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: var(--t);
+  cursor: none;
+}
+.btn-cv:hover { border-color: var(--accent); color: var(--accent); }
+.btn-cv[hidden] { display: none; }
+.cv-icon {
+  width: 28px; height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--bg);
+  transition: var(--t);
+}
+.cv-icon svg { width: 14px; height: 14px; }
+.btn-cv:hover .cv-icon { transform: translateY(2px); }
+
 /* ---------- PORTFOLIO ---------- */
 #projects {
   padding: 9rem 0;
@@ -918,7 +950,7 @@ footer {
 @media (hover: none), (pointer: coarse) {
   .cursor, .cursor-ring { display: none !important; }
   body { cursor: auto; }
-  a, button, .work-card, .col-tab, .btn-primary, .btn-reel,
+  a, button, .work-card, .col-tab, .btn-primary, .btn-reel, .btn-cv,
   .contact-cta, .menu-btn, .modal-close, .reel-close { cursor: pointer; }
   /* hover overlays never un-stick on touch, so keep cards legible */
   .work-overlay { display: none; }
