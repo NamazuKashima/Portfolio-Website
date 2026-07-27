@@ -1,0 +1,48 @@
+name: Cache bust assets
+
+on:
+  push:
+    branches: [main]
+
+# Never let two runs fight over the same commit
+concurrency:
+  group: cache-bust
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    # Skip the commit this workflow makes itself, to avoid an infinite loop
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rewrite ?v= on css/js links
+        run: |
+          STAMP=$(date -u +%Y%m%d%H%M%S)
+          echo "Using version: $STAMP"
+          for f in *.html; do
+            [ -f "$f" ] || continue
+            perl -0pi -e "s{(href=\"css/[^\"?]+)(\?v=[^\"]*)?\"}{\$1?v=$STAMP\"}g" "$f"
+            perl -0pi -e "s{(src=\"js/[^\"?]+)(\?v=[^\"]*)?\"}{\$1?v=$STAMP\"}g"   "$f"
+            echo "  updated $f"
+          done
+          grep -o '\(href\|src\)="\(css\|js\)/[^"]*"' *.html || true
+
+      - name: Commit if anything changed
+        run: |
+          if git diff --quiet; then
+            echo "No changes — assets already current."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Cache bust assets [skip ci]"
+          git push
