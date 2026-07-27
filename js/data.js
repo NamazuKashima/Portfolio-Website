@@ -504,7 +504,7 @@
     "message": "Whether it's a new project, a collaboration, or just a conversation about color — my inbox is always open."
   },
   "footer": {
-    "logo": "V.",
+    "logo": "VW.",
     "copyright": "© 2026 Victor Qixun Wu. All rights reserved."
   }
 };
