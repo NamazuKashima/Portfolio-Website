@@ -941,14 +941,15 @@ function panelWork() {
   fileInp.addEventListener('change', function() {
     var file = fileInp.files[0];
     if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      work.coverImage = e.target.result;
+    zone.style.opacity = '0.5';
+    compressImage(file, 1600, 0.82, function(dataUrl) {
+      zone.style.opacity = '';
+      if (!dataUrl) { showToast('✕ Failed to process image', 'error'); return; }
+      work.coverImage = dataUrl;
       updateZone();
       updateUrlField();
       markDirty();
-    };
-    reader.readAsDataURL(file);
+    });
   });
   zone.onclick = function() { fileInp.click(); };
   d.appendChild(zone);
@@ -1210,6 +1211,36 @@ function elText(tag, cls, text) {
   if (cls) e.className = cls;
   e.textContent = text;
   return e;
+}
+
+// ═══════════════════════════════════════════════════════
+//  IMAGE COMPRESSION (resize + re-encode before storing)
+// ═══════════════════════════════════════════════════════
+function compressImage(file, maxDim, quality, cb) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.naturalWidth, h = img.naturalHeight;
+      var scale = Math.min(1, maxDim / Math.max(w, h));
+      var outW = Math.max(1, Math.round(w * scale));
+      var outH = Math.max(1, Math.round(h * scale));
+      var canvas = document.createElement('canvas');
+      canvas.width = outW; canvas.height = outH;
+      var ctx = canvas.getContext('2d');
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, outW, outH);
+      try {
+        cb(canvas.toDataURL('image/jpeg', quality));
+      } catch (err) {
+        cb(null);
+      }
+    };
+    img.onerror = function() { cb(null); };
+    img.src = e.target.result;
+  };
+  reader.onerror = function() { cb(null); };
+  reader.readAsDataURL(file);
 }
 
 // ═══════════════════════════════════════════════════════
