@@ -136,26 +136,6 @@ if (sections.length && navItems.length) {
 }
 
 
-// ---------- CONTACT FORM ----------
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-  contactForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('button[type="submit"]');
-    const original = btn.textContent;
-    btn.textContent = '已发送 ✓';
-    btn.style.pointerEvents = 'none';
-    btn.style.opacity = '0.7';
-    setTimeout(() => {
-      btn.textContent = original;
-      btn.style.pointerEvents = '';
-      btn.style.opacity = '';
-      this.reset();
-    }, 3000);
-  });
-}
-
-
 // ---------- STAGGER PROJECT CARDS ----------
 document.querySelectorAll('.project-card').forEach((card, i) => {
   card.style.transitionDelay = `${i * 0.1}s`;

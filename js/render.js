@@ -150,6 +150,12 @@
     }
 
     setContactLink('contact-email',   'mailto:' + D.contact.email,           D.contact.email);
+
+    var ctaEl = $id('contact-cta');
+    if (ctaEl && D.contact.email) {
+      ctaEl.href = 'mailto:' + D.contact.email;
+      setText('contact-cta-mail', D.contact.email);
+    }
     setContactLink('contact-phone',   'tel:' + (D.contact.phone || '').replace(/\s/g,''), D.contact.phone);
     setContactLink('contact-website', 'https://' + (D.contact.website || '').replace(/^https?:\/\//,''), D.contact.website);
     if (D.contact.instagram) setContactLink('contact-instagram', 'https://www.instagram.com/' + D.contact.instagram + '/', '@' + D.contact.instagram);
