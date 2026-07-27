@@ -165,7 +165,7 @@ textarea.field-input{min-height:90px;line-height:1.6}
   flex-direction:column;gap:.5rem;
 }
 .img-upload-zone:hover{border-color:var(--accent)}
-.img-upload-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.img-upload-zone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 .img-upload-overlay{
   position:absolute;inset:0;background:rgba(0,0,0,.55);
   display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem;
@@ -275,11 +275,12 @@ textarea.field-input{min-height:90px;line-height:1.6}
 .crop-backdrop{position:absolute;inset:0;background:rgba(4,7,5,.85);backdrop-filter:blur(6px)}
 .crop-card{
   position:relative;z-index:2;background:var(--s1);border:1px solid var(--border2);
-  border-radius:var(--r);padding:1.5rem;width:360px;max-width:92vw;
+  border-radius:var(--r);padding:1.5rem;max-width:92vw;
+  display:inline-block;
 }
 .crop-title{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--fg2);margin-bottom:1rem}
 .crop-frame{
-  position:relative;width:280px;height:350px;margin:0 auto 1rem;
+  position:relative;margin:0 auto 1rem;max-width:100%;
   overflow:hidden;background:#000;border:1px solid var(--border2);
   cursor:grab;touch-action:none;user-select:none;
 }
@@ -942,13 +943,21 @@ function panelWork() {
     var file = fileInp.files[0];
     if (!file) return;
     zone.style.opacity = '0.5';
-    compressImage(file, 1600, 0.82, function(dataUrl) {
+    // downscale first (keeps crop preview fast + memory low), then open 16:9 cropper
+    compressImage(file, 2400, 0.92, function(dataUrl) {
       zone.style.opacity = '';
+      fileInp.value = '';
       if (!dataUrl) { showToast('✕ Failed to process image', 'error'); return; }
-      work.coverImage = dataUrl;
-      updateZone();
-      updateUrlField();
-      markDirty();
+      openCropModal(dataUrl, function(cropped) {
+        work.coverImage = cropped;
+        updateZone();
+        updateUrlField();
+        markDirty();
+      }, {
+        frameW: 480, frameH: 270,     // 16:9 preview frame
+        outW:  1600, outH:  900,      // 16:9 output
+        title: 'Crop Cover — drag to move, slider to zoom (16:9)'
+      });
     });
   });
   zone.onclick = function() { fileInp.click(); };
@@ -1015,7 +1024,7 @@ function panelWork() {
   d.appendChild(divider());
   d.appendChild(elText('div','panel-section-title','Links'));
   d.appendChild(field('Watch / Live URL',  work.links.live,       function(v) { work.links.live       = v; markDirty(); }));
-  d.appendChild(field('Case Study URL',    work.links.case_study, function(v) { work.links.case_study = v; markDirty(); }));
+  d.appendChild(field('More Info URL (IMDb, project page…)', work.links.case_study, function(v) { work.links.case_study = v; markDirty(); }));
 
   // Duplicate
   d.appendChild(divider());
@@ -1246,9 +1255,11 @@ function compressImage(file, maxDim, quality, cb) {
 // ═══════════════════════════════════════════════════════
 //  CROP MODAL (zoom + drag pan, 4:5 output)
 // ═══════════════════════════════════════════════════════
-function openCropModal(srcDataUrl, onApply) {
-  var FRAME_W = 280, FRAME_H = 350;    // display frame (4:5)
-  var OUT_W   = 640, OUT_H   = 800;    // output resolution
+function openCropModal(srcDataUrl, onApply, opts) {
+  opts = opts || {};
+  var FRAME_W = opts.frameW || 280, FRAME_H = opts.frameH || 350;  // display frame (default 4:5)
+  var OUT_W   = opts.outW   || 640, OUT_H   = opts.outH   || 800;  // output resolution
+  var TITLE   = opts.title  || 'Crop Photo — drag to move, slider to zoom';
 
   // build modal once
   var modal = document.getElementById('cropModal');
@@ -1272,6 +1283,11 @@ function openCropModal(srcDataUrl, onApply) {
   var frame = document.getElementById('cropFrame');
   var imgEl = document.getElementById('cropImg');
   var zoomEl = document.getElementById('cropZoom');
+
+  // apply per-call frame size + title
+  modal.querySelector('.crop-title').textContent = TITLE;
+  frame.style.width  = FRAME_W + 'px';
+  frame.style.height = FRAME_H + 'px';
 
   var natW = 0, natH = 0, baseScale = 1;
   var z = 1, tx = 0, ty = 0;

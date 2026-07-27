@@ -378,29 +378,31 @@ ul { list-style: none; }
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
-  background: var(--border);
+  background: transparent;
 }
 .work-card {
   background: var(--bg);
   overflow: hidden;
   cursor: none;
+  outline: 1px solid var(--border);
 }
 .work-card.featured { grid-column: 1 / -1; }
 
 .work-img {
   position: relative;
   width: 100%;
-  padding-bottom: 56.25%;
+  padding-bottom: 56.25%;   /* strict 16:9 for every card */
   overflow: hidden;
   background: var(--surface);
 }
-.work-card.featured .work-img { padding-bottom: 42%; }
 
 .work-img img {
   position: absolute;
   inset: 0;
   width: 100%; height: 100%;
-  object-fit: cover;
+  object-fit: cover;         /* scale up/down to fill, crop overflow */
+  object-position: center;
+  display: block;
   transition: transform var(--t);
 }
 .work-card:hover .work-img img { transform: scale(1.04); }
@@ -444,6 +446,9 @@ ul { list-style: none; }
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.01em;
+  text-align: center;
+  padding: 0 1.5rem;
+  line-height: 1.15;
 }
 .overlay-role {
   font-size: 0.65rem;
@@ -461,6 +466,7 @@ ul { list-style: none; }
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 0.55rem;
 }
 .work-title-text {
@@ -468,12 +474,16 @@ ul { list-style: none; }
   font-weight: 600;
   color: var(--fg);
   letter-spacing: -0.01em;
+  line-height: 1.35;
+  min-width: 0;
 }
 .work-year {
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   color: var(--gray);
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .work-tags {
   display: flex;

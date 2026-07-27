@@ -98,7 +98,14 @@
     var gridEl = $id('worksGrid');
     if (!tabsEl || !gridEl) return;
 
-    var collections = D.portfolio || [];
+    // Display order for collections (ids not listed keep their original order, after these)
+    var ORDER = ['commercial', 'film'];
+    var collections = (D.portfolio || []).slice().sort(function(a, b) {
+      var ia = ORDER.indexOf(a.id), ib = ORDER.indexOf(b.id);
+      if (ia === -1) ia = ORDER.length;
+      if (ib === -1) ib = ORDER.length;
+      return ia - ib;
+    });
     if (!collections.length) { gridEl.innerHTML = '<p style="color:#555;padding:2rem">No works yet.</p>'; return; }
 
     var activeId = collections[0].id;
@@ -126,8 +133,8 @@
           ? '<img src="' + w.coverImage + '" alt="' + w.title + '" />'
           : '<div class="work-placeholder"><span>' + w.title + '</span></div>';
         var liveLink   = w.links && w.links.live       ? '<a href="' + w.links.live       + '" class="link-arrow" target="_blank">Watch →</a>' : '';
-        var caseLink   = w.links && w.links.case_study ? '<a href="' + w.links.case_study + '" class="link-arrow" target="_blank">Case Study →</a>' : '';
-        return '<div class="work-card' + (i === 0 ? ' featured' : '') + '">'
+        var caseLink   = w.links && w.links.case_study ? '<a href="' + w.links.case_study + '" class="link-arrow" target="_blank">More Info →</a>' : '';
+        return '<div class="work-card">'
           + '<div class="work-img">'
           + imgHTML
           + '<div class="work-overlay"><div class="overlay-title">' + w.title + '</div><div class="overlay-role">' + w.role + '</div></div>'
