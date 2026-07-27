@@ -355,6 +355,7 @@ var DEFAULTS = {
   hero: {
     label: "Colorist · Montreal, QC",
     line1: "Victor", line2: "Qixun Wu",
+    reelUrl: "", reelLabel: "Watch Showreel",
     description: "Imaging and colour specialist with 7+ years of post-production experience across colour grading, digital imaging pipelines, and on-set media workflows — 60+ delivered projects spanning narrative film, VFX-adjacent productions, and branded campaigns."
   },
   about: {
@@ -689,6 +690,19 @@ function panelHero() {
   d.appendChild(field('Title — Line 1',       DATA.hero.line1,       function(v){ DATA.hero.line1       = v; markDirty(); }));
   d.appendChild(field('Title — Line 2 (italic)', DATA.hero.line2,    function(v){ DATA.hero.line2       = v; markDirty(); }));
   d.appendChild(field('Description',          DATA.hero.description, function(v){ DATA.hero.description = v; markDirty(); }, 'textarea'));
+
+  d.appendChild(divider());
+  d.appendChild(elText('div','panel-section-title','Showreel Button'));
+  d.appendChild(field('Showreel URL (Vimeo, YouTube…)', DATA.hero.reelUrl || '', function(v){
+    DATA.hero.reelUrl = v.trim();
+    markDirty();
+  }));
+  d.appendChild(field('Button Label', DATA.hero.reelLabel || 'Watch Showreel', function(v){
+    DATA.hero.reelLabel = v;
+    markDirty();
+  }));
+  var reelHint = el('div','photo-hint','Leave the URL empty to hide the button on the homepage.');
+  d.appendChild(reelHint);
   return d;
 }
 

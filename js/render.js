@@ -16,6 +16,73 @@
     setText('hero-line1', D.hero.line1);
     setText('hero-line2', D.hero.line2);
     setText('hero-desc',  D.hero.description);
+
+    // Showreel CTA — only shown when a URL is set
+    var reelEl = $id('hero-reel');
+    if (reelEl) {
+      var url = (D.hero.reelUrl || '').trim();
+      if (url) {
+        reelEl.href = url;
+        reelEl.hidden = false;
+        setText('hero-reel-label', D.hero.reelLabel || 'Watch Showreel');
+        setupReelLightbox(reelEl, url);
+      } else {
+        reelEl.hidden = true;
+      }
+    }
+  }
+
+  // ── SHOWREEL LIGHTBOX ──────────────────────────────────────────
+  function toEmbedUrl(url) {
+    var m;
+    // YouTube: youtu.be/ID  |  youtube.com/watch?v=ID  |  /embed/ID  |  /shorts/ID
+    m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/);
+    if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&rel=0&modestbranding=1';
+
+    // Vimeo: vimeo.com/ID  |  vimeo.com/ID/HASH (unlisted)  |  player.vimeo.com/video/ID
+    m = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([\w]+))?/);
+    if (m) {
+      var src = 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1&title=0&byline=0&portrait=0';
+      if (m[2]) src += '&h=' + m[2];
+      return src;
+    }
+
+    // Direct video file
+    if (/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(url)) return { video: url };
+
+    return null;
+  }
+
+  function setupReelLightbox(trigger, url) {
+    var modal   = $id('reelModal');
+    var frame   = $id('reelFrame');
+    var closeBt = $id('reelClose');
+    var backdrop= $id('reelBackdrop');
+    if (!modal || !frame) return;
+
+    var embed = toEmbedUrl(url);
+
+    trigger.addEventListener('click', function(e) {
+      // Unrecognized link (portfolio site, Frame.io, etc.) → open normally
+      if (!embed) { trigger.target = '_blank'; trigger.rel = 'noopener'; return; }
+      e.preventDefault();
+      frame.innerHTML = embed.video
+        ? '<video src="' + embed.video + '" controls autoplay playsinline></video>'
+        : '<iframe src="' + embed + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function close() {
+      modal.classList.remove('open');
+      frame.innerHTML = '';               // stops playback
+      document.body.style.overflow = '';
+    }
+    if (closeBt)  closeBt.onclick  = close;
+    if (backdrop) backdrop.onclick = close;
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) close();
+    });
   }
 
   // ── ABOUT ──────────────────────────────────────────────────────
@@ -150,8 +217,7 @@
       // "View all" link below grid (replace previous one on tab switch)
       var oldRow = document.getElementById('viewAllRow');
       if (oldRow) oldRow.remove();
-      var totalAll = collections.reduce(function(n, c) { return n + c.works.length; }, 0);
-      var label = 'View all ' + totalAll + ' projects →';
+      var label = 'View all projects →';
       gridEl.insertAdjacentHTML('afterend',
         '<div class="view-all-row" id="viewAllRow"><a href="works.html" class="btn-primary">' + label + '</a></div>');
     }

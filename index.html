@@ -33,7 +33,15 @@
         <span class="line italic" id="hero-line2">Qixun Wu</span>
       </h1>
       <p class="hero-desc" id="hero-desc">I shape stories through color and rhythm — crafting the visual language of film and commercial work.</p>
-      <a href="#projects" class="btn-primary">View my work ↓</a>
+      <div class="hero-actions">
+        <a href="#" id="hero-reel" class="btn-reel" hidden>
+          <span class="reel-play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
+          </span>
+          <span class="reel-label" id="hero-reel-label">Watch Showreel</span>
+        </a>
+        <a href="#projects" class="btn-primary">View my work ↓</a>
+      </div>
     </div>
     <div class="hero-bg-text" aria-hidden="true">COLOR</div>
     <div class="hero-scroll-hint">Scroll</div>
@@ -162,6 +170,15 @@
       </div>
     </div>
   </footer>
+
+  <!-- SHOWREEL LIGHTBOX -->
+  <div class="reel-modal" id="reelModal">
+    <div class="reel-backdrop" id="reelBackdrop"></div>
+    <div class="reel-card">
+      <button class="reel-close" id="reelClose" aria-label="Close">×</button>
+      <div class="reel-frame" id="reelFrame"></div>
+    </div>
+  </div>
 
   <script src="js/data.js"></script>
   <script src="js/render.js"></script>

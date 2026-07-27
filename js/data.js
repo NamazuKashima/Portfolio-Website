@@ -8,6 +8,8 @@
       label: "Colorist · Montreal, QC",
       line1: "Victor",
       line2: "Qixun Wu",
+      reelUrl: "",
+      reelLabel: "Watch Showreel",
       description: "Imaging and colour specialist with 7+ years of post-production experience across colour grading, digital imaging pipelines, and on-set media workflows — 60+ delivered projects spanning narrative film, VFX-adjacent productions, and branded campaigns."
     },
     about: {

@@ -32,7 +32,7 @@ document.addEventListener('mousemove', e => {
 })();
 
 function bindCursorHover(root) {
-  (root || document).querySelectorAll('a, button, .project-card, .work-card, .col-tab, input, textarea').forEach(el => {
+  (root || document).querySelectorAll('a, button, .project-card, .work-card, .col-tab, .btn-reel, input, textarea').forEach(el => {
     el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); cursorRing.classList.add('hover'); });
     el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); cursorRing.classList.remove('hover'); });
   });
