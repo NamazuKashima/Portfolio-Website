@@ -67,19 +67,30 @@ const menuBtn  = document.querySelector('.menu-btn');
 const navLinks = document.querySelector('.nav-links');
 
 if (menuBtn && navLinks) {
-  menuBtn.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
+  const setMenu = (open) => {
+    navLinks.classList.toggle('open', open);
+    document.body.classList.toggle('menu-open', open);
     const spans = menuBtn.querySelectorAll('span');
-    const isOpen = navLinks.classList.contains('open');
-    spans[0].style.transform = isOpen ? 'translateY(6.5px) rotate(45deg)' : '';
-    spans[1].style.transform = isOpen ? 'translateY(-6.5px) rotate(-45deg)' : '';
+    spans[0].style.transform = open ? 'translateY(3.5px) rotate(45deg)'  : '';
+    spans[1].style.transform = open ? 'translateY(-3.5px) rotate(-45deg)' : '';
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+
+  menuBtn.addEventListener('click', () => {
+    setMenu(!navLinks.classList.contains('open'));
   });
 
   navLinks.querySelectorAll('a').forEach(a => {
-    a.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      menuBtn.querySelectorAll('span').forEach(s => s.style.transform = '');
-    });
+    a.addEventListener('click', () => setMenu(false));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setMenu(false);
+  });
+
+  // Close if the viewport grows back to desktop while the menu is open
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 980 && navLinks.classList.contains('open')) setMenu(false);
   });
 }
 

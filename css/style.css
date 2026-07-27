@@ -851,18 +851,52 @@ footer {
   #navbar.scrolled { padding: 0.875rem 1.5rem; }
   .nav-links      { display: none; }
   .menu-btn       { display: flex; }
+
+  /* While the menu is open, drop the navbar's backdrop-filter.
+     On iOS Safari a backdrop-filter ancestor becomes the containing block for
+     fixed children, which would trap the fullscreen overlay inside the navbar. */
+  body.menu-open #navbar,
+  body.menu-open #navbar.scrolled {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
+  body.menu-open { overflow: hidden; }
+
   .nav-links.open {
     display: flex;
     flex-direction: column;
     position: fixed;
-    inset: 0;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;              /* correct height with mobile browser chrome */
+    margin: 0;
     background: var(--bg);
     align-items: center;
     justify-content: center;
-    gap: 2.5rem;
+    gap: 0;
     z-index: 99;
   }
-  .nav-links.open a { font-size: 1.1rem; color: var(--fg); }
+  .nav-links.open li {
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+  }
+  .nav-links.open a {
+    display: block;
+    padding: 1.15rem 0;
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--fg);
+  }
+  .nav-links.open li + li a { border-top: 1px solid var(--border); }
+  .nav-links.open a::after  { display: none; }
+  .nav-links.open a:active  { color: var(--accent); }
 }
 
 @media (max-width: 560px) {
@@ -870,4 +904,22 @@ footer {
   .skills-grid { grid-template-columns: 1fr; }
   footer      { padding: 1.5rem; }
   .footer-inner { flex-direction: column; gap: 0.75rem; text-align: center; }
+
+  .hero-title    { font-size: clamp(3.2rem, 15vw, 5rem); }
+  .hero-desc     { font-size: 0.9rem; }
+  .hero-actions  { gap: 0.75rem; }
+  .btn-reel, .hero-actions .btn-primary { width: 100%; justify-content: center; }
+  .hero-scroll-hint { display: none; }
+  .work-info     { padding: 1.25rem; }
+}
+
+/* ---------- TOUCH DEVICES ---------- */
+/* No pointer to follow — hide the custom cursor and restore native behaviour */
+@media (hover: none), (pointer: coarse) {
+  .cursor, .cursor-ring { display: none !important; }
+  body { cursor: auto; }
+  a, button, .work-card, .col-tab, .btn-primary, .btn-reel,
+  .contact-cta, .menu-btn, .modal-close, .reel-close { cursor: pointer; }
+  /* hover overlays never un-stick on touch, so keep cards legible */
+  .work-overlay { display: none; }
 }
