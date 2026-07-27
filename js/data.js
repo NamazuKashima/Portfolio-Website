@@ -502,6 +502,10 @@
     "facebook": "victorqixunwu",
     "location": "Montreal, QC, Canada",
     "message": "Whether it's a new project, a collaboration, or just a conversation about color — my inbox is always open."
+  },
+  "footer": {
+    "logo": "V.",
+    "copyright": "© 2026 Victor Qixun Wu. All rights reserved."
   }
 };
   window.PORTFOLIO_DEFAULTS = window.PORTFOLIO_DATA;

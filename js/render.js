@@ -32,6 +32,12 @@
     }
   }
 
+  // ── FOOTER ─────────────────────────────────────────────────────
+  if (D.footer) {
+    if (D.footer.logo)      setText('footer-logo', D.footer.logo);
+    if (D.footer.copyright) setText('footer-copy', D.footer.copyright);
+  }
+
   // ── SHOWREEL LIGHTBOX ──────────────────────────────────────────
   function toEmbedUrl(url) {
     var m;

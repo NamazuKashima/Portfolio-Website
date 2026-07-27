@@ -410,6 +410,10 @@ var DEFAULTS = {
     facebook: "victorqixunwu",
     location: "Montreal, QC, Canada",
     message: "Whether it's a new project, a collaboration, or just a conversation about color — my inbox is always open."
+  },
+  footer: {
+    logo: "V.",
+    copyright: "© 2026 Victor Qixun Wu. All rights reserved."
   }
 };
 
@@ -603,7 +607,8 @@ function renderSidebar() {
   // Bottom nav
   var bottom = el('div', 'sidebar-section');
   [{ id:'experience', icon:'◈', label:'Experience' },
-   { id:'contact',    icon:'◇', label:'Contact' }].forEach(function(item) {
+   { id:'contact',    icon:'◇', label:'Contact' },
+   { id:'footer',     icon:'▤', label:'Footer' }].forEach(function(item) {
     bottom.appendChild(navItem(item));
   });
   sb.appendChild(bottom);
@@ -721,6 +726,7 @@ function renderPanel() {
     case 'work':       panel.appendChild(panelWork());       break;
     case 'experience': panel.appendChild(panelExperience()); break;
     case 'contact':    panel.appendChild(panelContact());    break;
+    case 'footer':     panel.appendChild(panelFooter());     break;
     default:           panel.innerHTML = '<p style="color:var(--fg3);padding:2rem">Select a section from the sidebar.</p>';
   }
 }
@@ -1223,6 +1229,20 @@ function panelContact() {
   d.appendChild(field('Instagram Handle', DATA.contact.instagram, function(v){ DATA.contact.instagram = v.replace(/^@/,''); markDirty(); }));
   d.appendChild(field('Facebook Handle',  DATA.contact.facebook,  function(v){ DATA.contact.facebook  = v; markDirty(); }));
   d.appendChild(field('Location',  DATA.contact.location,  function(v){ DATA.contact.location  = v; markDirty(); }));
+  return d;
+}
+
+/* ── FOOTER ──────────────────────────────────────────── */
+function panelFooter() {
+  if (!DATA.footer) DATA.footer = { logo: 'V.', copyright: '' };
+  var d = el('div');
+  d.appendChild(elText('div','panel-title','Footer'));
+  d.appendChild(elText('div','panel-sub','Shown at the bottom of every page'));
+  d.appendChild(divider());
+  d.appendChild(field('Logo / Monogram', DATA.footer.logo,      function(v){ DATA.footer.logo      = v; markDirty(); }));
+  d.appendChild(field('Copyright Line',  DATA.footer.copyright, function(v){ DATA.footer.copyright = v; markDirty(); }));
+  var hint = el('div','photo-hint','Tip: update the year here each January.');
+  d.appendChild(hint);
   return d;
 }
 
