@@ -1,6 +1,6 @@
 # Victor Qixun Wu — Portfolio
 
-Personal portfolio site for a colorist and editor based in Montreal, QC.
+Personal portfolio site for a colorist and editor based in Vancouver, BC.
 Static site, no build step, no dependencies — deployed on GitHub Pages at
 **[www.victorqixunwu.com](https://www.victorqixunwu.com)**.
 
