@@ -182,9 +182,15 @@ AAAA   @     →  2606:50c0:8000::153, 2606:50c0:8001::153,
 
 ## Analytics
 
-Google Analytics 4 is loaded on `index.html` and `works.html` only — not on `editor.html`, 
-since that's a private tool and its own edits shouldn't skew traffic numbers. 
-View data at [analytics.google.com](https://analytics.google.com).
+Two trackers run side by side on `index.html` and `works.html` only — not on
+`editor.html`, since that's a private tool and its own edits shouldn't skew
+traffic numbers.
+
+- **Google Analytics 4** — measurement ID `G-WLB1P3EN65`. View data at
+  [analytics.google.com](https://analytics.google.com).
+- **Cloudflare Web Analytics** — a ~1 line beacon script, no cookies, no DNS
+  change required. Simpler one-page dashboard for a quick daily glance. View
+  at [dash.cloudflare.com](https://dash.cloudflare.com) → Web Analytics.
 
 ---
 
