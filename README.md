@@ -174,6 +174,15 @@ AAAA   @     →  2606:50c0:8000::153, 2606:50c0:8001::153,
 
 ---
 
+## Analytics
+
+Google Analytics 4 (`gtag.js`, measurement ID `G-WLB1P3EN65`) is loaded on
+`index.html` and `works.html` only — not on `editor.html`, since that's a
+private tool and its own edits shouldn't skew traffic numbers. View data at
+[analytics.google.com](https://analytics.google.com).
+
+---
+
 ## Notes
 
 - No build tooling, no package manager, no framework — open the HTML files directly and they work
