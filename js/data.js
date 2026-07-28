@@ -524,7 +524,7 @@
     "fg": "#fcfaf2",
     "muted": "#e6e3c5",
     "gray": "#bcb09c",
-    "accent": "#4a593d",
+    "accent": "#405c36",
     "accentSoft": "#85916d",
     "earth": "#595045",
     "sand": "#e6e3c5",
