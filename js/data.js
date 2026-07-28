@@ -16,7 +16,7 @@
     "siteTitle": "Victor Qixun Wu — Colorist & Editor"
   },
   "hero": {
-    "label": "Colorist · Montreal, QC",
+    "label": "Colorist · Vancouver, BC",
     "line1": "victor wu",
     "line2": "Victor Qixun Wu",
     "description": "Imaging and color specialist with 7+ years of post-production experience across color grading, digital imaging pipelines, and on-set media workflows — 60+ delivered projects spanning narrative film, VFX-adjacent productions, and branded campaigns.",
@@ -510,7 +510,7 @@
     "website": "www.victorqixunwu.com",
     "instagram": "victorqixunwu",
     "facebook": "victorqixunwu",
-    "location": "Montreal, QC, Canada",
+    "location": "Vancouver, BC, Canada",
     "message": "Whether it's a new project, a collaboration, or just a conversation about color — my inbox is always open."
   },
   "footer": {
