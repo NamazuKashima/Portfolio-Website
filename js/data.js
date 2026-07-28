@@ -278,7 +278,7 @@
           "coverImage": "assets/works/commercial-v-magazine-fall-in-line-today-s-top-looks-on-the.jpg",
           "links": {
             "live": "https://www.youtube.com/watch?v=mt_eUI-zh1I",
-            "case_study": ""
+            "case_study": "https://vmagazine.com/article/fall-in-line-todays-top-looks-on-the-models-of-tomorrow/"
           }
         },
         {
@@ -360,7 +360,7 @@
           ],
           "coverImage": "assets/works/commercial-fionn-maccool-s-tradition.jpg",
           "links": {
-            "live": "",
+            "live": "https://www.youtube.com/watch?v=WijbwJHDCig",
             "case_study": ""
           }
         },
@@ -441,7 +441,6 @@
       "tags": [
         "DaVinci Resolve",
         "DCP Delivery",
-        "HDR",
         "QC"
       ]
     },
@@ -452,10 +451,9 @@
       "company": "Freelance",
       "description": "Operated ARRI, Sony, Canon, and Blackmagic camera systems on commercial and narrative productions; executed pull focus and supported lighting setups under DP direction. Managed full on-set media workflow: media ingestion, secure offload, file verification, metadata prep, and cross-platform QC; fulfilled DIT responsibilities across multiple production environments.",
       "tags": [
-        "ARRI",
-        "Sony",
+        "Camera Operation",
         "DIT",
-        "On-Set Media"
+        "Focus Pulling"
       ]
     },
     {
@@ -466,8 +464,8 @@
       "description": "Led complete pre-production for a web short drama: budget planning, shooting schedule, resource allocation, and vendor management for equipment, catering, and post-production handoff. Liaised with director, cinematographer, and production designer to align creative vision with production logistics.",
       "tags": [
         "Producing",
-        "Pre-Production",
-        "Short Drama"
+        "Short Drama",
+        "Budgeting"
       ]
     },
     {
@@ -479,8 +477,7 @@
       "tags": [
         "Editing",
         "Color Grading",
-        "YouTube",
-        "Commercial"
+        "YouTube"
       ]
     },
     {
@@ -492,7 +489,8 @@
       "tags": [
         "Camera",
         "Editing",
-        "Advertising"
+        "Advertising",
+        "E-Commerce"
       ]
     },
     {
