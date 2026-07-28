@@ -37,6 +37,9 @@ button,input,textarea,select{font-family:var(--ff);font-size:14px}
 .btn.btn-accent:hover{background:transparent;color:var(--accent)}
 .btn.btn-ghost{background:none;border-color:transparent;color:var(--fg3)}
 .btn.btn-ghost:hover{color:var(--fg);border-color:var(--border)}
+.btn.btn-connected{border-color:var(--green);color:var(--green)}
+.btn.btn-connected:hover{background:var(--green);color:#fff}
+.btn.btn-pending{border-color:#e0a53f;color:#e0a53f}
 
 .e-body{display:flex;height:calc(100vh - 52px);overflow:hidden}
 
@@ -402,6 +405,7 @@ textarea.field-input{min-height:90px;line-height:1.6}
   </div>
   <div class="e-actions">
     <button class="btn btn-ghost" id="btnPreview">⌥ Preview</button>
+    <button class="btn" id="btnConnect">🔗 Connect Folder</button>
     <button class="btn" id="btnImport">↑ Import</button>
     <button class="btn" id="btnExport">↓ Export data.js</button>
     <button class="btn btn-accent" id="btnSave">Save</button>
@@ -598,6 +602,11 @@ function init() {
   document.getElementById('btnExport').onclick  = exportData;
   document.getElementById('btnImport').onclick  = importData;
   document.getElementById('btnPreview').onclick = function() { window.open('index.html','_blank'); };
+  document.getElementById('btnConnect').onclick = function() {
+    if (pendingHandle) reconnectFolder(); else connectFolder();
+  };
+  updateConnectionUI();
+  initFolderConnection();
 
   if (source === 'file')     showToast('Loaded content from js/data.js', 'success');
   if (source === 'defaults') showToast('No saved content found — showing sample data', 'error');
@@ -650,7 +659,12 @@ function markDirty() {
   s.textContent = '● Unsaved changes';
   s.className = 'save-status dirty';
   clearTimeout(autoSaveTimer);
-  autoSaveTimer = setTimeout(save, 1500);
+  // Connected: auto-write straight to disk a beat after typing stops — no
+  // export/import round trip. Not connected: fall back to the browser draft.
+  autoSaveTimer = setTimeout(function() {
+    if (dirHandle) saveToFolder({ interactive: false });
+    else save();
+  }, 1500);
 }
 
 function save() {
@@ -675,11 +689,11 @@ function save() {
   }
 }
 
-/* Export splits the content in two:
+/* Splits the content in two:
    - any image or PDF still held as base64 is written out as a real file
    - data.js is emitted with paths pointing at those files
-   Files download individually; drop them into the folders shown in the toast. */
-function exportData() {
+   Shared by the direct-to-disk save and the manual download-based export. */
+function buildExportPayload() {
   var out = JSON.parse(JSON.stringify(DATA));
   var files = [];                       // { path, blob }
 
@@ -784,29 +798,8 @@ function exportData() {
     '  window.PORTFOLIO_DEFAULTS  = FILE_DATA;\n' +
     '})();\n';
 
-  function download(blob, filename) {
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-  }
-
-  download(new Blob([content], { type: 'text/javascript' }), 'data.js');
-
-  // Browsers throttle rapid downloads, so stagger the asset files.
-  files.forEach(function (f, i) {
-    setTimeout(function () {
-      download(f.blob, f.path.split('/').pop());
-    }, 400 + i * 250);
-  });
-
-  // Which files on disk are no longer referenced? The browser cannot delete
-  // them, so list them instead — deleted works, replaced covers and renamed
-  // uploads all leave their old file behind.
+  // Which files on disk are no longer referenced? Deleted works, replaced
+  // covers and renamed uploads all leave their old file behind.
   function assetPaths(d) {
     var out = [];
     (d.portfolio || []).forEach(function (c) {
@@ -826,7 +819,7 @@ function exportData() {
   var after   = assetPaths(out);
   var orphans = before.filter(function (p) { return after.indexOf(p) === -1; });
 
-  // A manifest so none of this has to be remembered
+  // A manifest so none of this has to be remembered (manual export path only)
   var manifest =
     'Portfolio export — ' + new Date().toLocaleString() + '\n' +
     '='.repeat(52) + '\n\n' +
@@ -840,13 +833,266 @@ function exportData() {
         orphans.map(function (p) { return '     ' + p; }).join('\n') + '\n'
       : '3. Nothing to delete — no orphaned files.\n');
 
-  download(new Blob([manifest], { type: 'text/plain' }), 'EXPORT-README.txt');
+  return { out: out, files: files, content: content, manifest: manifest, orphans: orphans };
+}
 
-  console.log(manifest);
+// Copies resolved (base64 → file path) values from a cloned payload back
+// onto the live DATA graph without replacing any object identities, so
+// fields already bound to work/about objects in the open panel keep working.
+function applyResolvedPaths(live, resolved) {
+  var byId = {};
+  (resolved.portfolio || []).forEach(function (c) {
+    (c.works || []).forEach(function (w) { byId[w.id] = w.coverImage; });
+  });
+  (live.portfolio || []).forEach(function (c) {
+    (c.works || []).forEach(function (w) {
+      if (Object.prototype.hasOwnProperty.call(byId, w.id)) w.coverImage = byId[w.id];
+    });
+  });
+  if (live.about && resolved.about) {
+    live.about.photo = resolved.about.photo;
+    live.about.cvUrl = resolved.about.cvUrl;
+  }
+}
+
+/* Manual fallback — downloads data.js + any new asset files individually.
+   Used automatically when the browser can't do direct folder access
+   (Firefox, Safari), or any time from the toolbar as a backup. */
+function exportData() {
+  var pkg = buildExportPayload();
+
+  function download(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+
+  download(new Blob([pkg.content], { type: 'text/javascript' }), 'data.js');
+
+  // Browsers throttle rapid downloads, so stagger the asset files.
+  pkg.files.forEach(function (f, i) {
+    setTimeout(function () {
+      download(f.blob, f.path.split('/').pop());
+    }, 400 + i * 250);
+  });
+
+  download(new Blob([pkg.manifest], { type: 'text/plain' }), 'EXPORT-README.txt');
+
+  console.log(pkg.manifest);
   var msg = '✓ Exported data.js';
-  if (files.length)   msg += ' + ' + files.length + ' file(s) to add';
-  if (orphans.length) msg += ' · ' + orphans.length + ' unused file(s) to delete';
+  if (pkg.files.length)   msg += ' + ' + pkg.files.length + ' file(s) to add';
+  if (pkg.orphans.length) msg += ' · ' + pkg.orphans.length + ' unused file(s) to delete';
   showToast(msg + ' — see EXPORT-README.txt', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+//  DIRECT-TO-DISK SAVING (File System Access API)
+//  Connect the project folder once; after that every edit writes
+//  js/data.js and any newly uploaded image straight to disk — no
+//  download, no manual drag-and-drop.
+// ═══════════════════════════════════════════════════════
+var dirHandle     = null;   // live, permission-granted handle
+var pendingHandle = null;   // remembered handle awaiting re-permission after reload
+
+function folderApiSupported() { return 'showDirectoryPicker' in window; }
+
+function idbOpen() {
+  return new Promise(function (resolve, reject) {
+    var req = indexedDB.open('portfolio-editor', 1);
+    req.onupgradeneeded = function () { req.result.createObjectStore('handles'); };
+    req.onsuccess = function () { resolve(req.result); };
+    req.onerror   = function () { reject(req.error); };
+  });
+}
+function idbSet(key, val) {
+  return idbOpen().then(function (db) {
+    return new Promise(function (resolve, reject) {
+      var tx = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').put(val, key);
+      tx.oncomplete = function () { resolve(); };
+      tx.onerror    = function () { reject(tx.error); };
+    });
+  });
+}
+function idbGet(key) {
+  return idbOpen().then(function (db) {
+    return new Promise(function (resolve, reject) {
+      var tx  = db.transaction('handles', 'readonly');
+      var req = tx.objectStore('handles').get(key);
+      req.onsuccess = function () { resolve(req.result || null); };
+      req.onerror   = function () { reject(req.error); };
+    });
+  });
+}
+
+function updateConnectionUI() {
+  var btn     = document.getElementById('btnConnect');
+  var saveBtn = document.getElementById('btnSave');
+  btn.classList.remove('btn-connected', 'btn-pending');
+  if (dirHandle) {
+    btn.textContent = '🔗 ' + dirHandle.name;
+    btn.title = 'Connected — saves write straight to this folder. Click to switch folders.';
+    btn.classList.add('btn-connected');
+    saveBtn.textContent = '💾 Save to Folder';
+    saveBtn.onclick = function () { saveToFolder({ interactive: true }); };
+  } else if (pendingHandle) {
+    btn.textContent = '⚠ Reconnect Folder';
+    btn.title = 'Click to re-grant access to "' + pendingHandle.name + '" (browsers ask again after a restart).';
+    btn.classList.add('btn-pending');
+    saveBtn.textContent = 'Save';
+    saveBtn.onclick = save;
+  } else {
+    btn.textContent = '🔗 Connect Folder';
+    btn.title = 'Pick your portfolio folder once — after that, Save writes data.js and images directly to disk.';
+    saveBtn.textContent = 'Save';
+    saveBtn.onclick = save;
+  }
+}
+
+async function connectFolder() {
+  if (!folderApiSupported()) {
+    showToast('✕ This browser can\'t access folders directly — use Export instead', 'error');
+    return;
+  }
+  try {
+    var handle = await window.showDirectoryPicker({ id: 'portfolio-root', mode: 'readwrite' });
+    var perm = await handle.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') { showToast('✕ Permission denied', 'error'); return; }
+
+    var looksRight = true;
+    try { await handle.getFileHandle('index.html'); }
+    catch (e) { looksRight = false; }
+    if (!looksRight && !confirm('This folder doesn\'t contain an index.html — pick it anyway?')) return;
+
+    dirHandle = handle;
+    pendingHandle = null;
+    try { await idbSet('dirHandle', handle); } catch (e) { /* persistence best-effort */ }
+    updateConnectionUI();
+    showToast('✓ Connected to "' + handle.name + '" — edits now save directly', 'success');
+  } catch (err) {
+    if (err && err.name !== 'AbortError') showToast('✕ Could not connect folder', 'error');
+  }
+}
+
+async function reconnectFolder() {
+  if (!pendingHandle) return connectFolder();
+  try {
+    var perm = await pendingHandle.requestPermission({ mode: 'readwrite' });
+    if (perm === 'granted') {
+      dirHandle = pendingHandle;
+      pendingHandle = null;
+      updateConnectionUI();
+      showToast('✓ Reconnected to "' + dirHandle.name + '"', 'success');
+    } else {
+      showToast('✕ Permission denied', 'error');
+    }
+  } catch (e) {
+    showToast('✕ Could not reconnect — pick the folder again', 'error');
+    connectFolder();
+  }
+}
+
+async function initFolderConnection() {
+  if (!folderApiSupported() || !('indexedDB' in window)) return;
+  try {
+    var handle = await idbGet('dirHandle');
+    if (!handle) return;
+    var perm = await handle.queryPermission({ mode: 'readwrite' });
+    if (perm === 'granted') dirHandle = handle;
+    else pendingHandle = handle;
+  } catch (e) { /* stale/revoked handle — ignore, stays disconnected */ }
+  updateConnectionUI();
+}
+
+async function writeFileToHandle(root, path, data) {
+  var parts = path.split('/');
+  var filename = parts.pop();
+  var dir = root;
+  for (var i = 0; i < parts.length; i++) dir = await dir.getDirectoryHandle(parts[i], { create: true });
+  var fileHandle = await dir.getFileHandle(filename, { create: true });
+  var writable = await fileHandle.createWritable();
+  await writable.write(data);
+  await writable.close();
+}
+
+async function deleteFileFromHandle(root, path) {
+  var parts = path.split('/');
+  var filename = parts.pop();
+  var dir = root;
+  for (var i = 0; i < parts.length; i++) {
+    try { dir = await dir.getDirectoryHandle(parts[i]); }
+    catch (e) { return; }
+  }
+  try { await dir.removeEntry(filename); } catch (e) { /* already gone */ }
+}
+
+async function saveToFolder(opts) {
+  opts = opts || {};
+  if (!dirHandle) return connectFolder();
+
+  var perm = await dirHandle.queryPermission({ mode: 'readwrite' });
+  if (perm !== 'granted') {
+    perm = await dirHandle.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') {
+      showToast('✕ Permission needed to save — click Connect Folder again', 'error');
+      return;
+    }
+  }
+
+  try {
+    var pkg = buildExportPayload();
+
+    await writeFileToHandle(dirHandle, 'js/data.js', new Blob([pkg.content], { type: 'text/javascript' }));
+    for (var i = 0; i < pkg.files.length; i++) {
+      await writeFileToHandle(dirHandle, pkg.files[i].path, pkg.files[i].blob);
+    }
+
+    var deleted = 0;
+    if (pkg.orphans.length && opts.interactive) {
+      var doDelete = confirm(
+        pkg.orphans.length + ' file(s) are no longer used:\n\n' +
+        pkg.orphans.join('\n') + '\n\nDelete them from the folder now?'
+      );
+      if (doDelete) {
+        for (var j = 0; j < pkg.orphans.length; j++) {
+          await deleteFileFromHandle(dirHandle, pkg.orphans[j]);
+        }
+        deleted = pkg.orphans.length;
+      }
+    }
+
+    // Now that the files are really on disk, point the live editor state at
+    // them too — same as export, but there is no download to wait on.
+    // Mutate DATA in place rather than replacing it: the currently rendered
+    // panel's fields hold closures over the existing work/about objects, and
+    // swapping in pkg.out's cloned objects would silently disconnect them
+    // from further edits.
+    applyResolvedPaths(DATA, pkg.out);
+    localStorage.setItem('portfolio_data', JSON.stringify(DATA));
+    localStorage.setItem('portfolio_data_version', DATA_VERSION);
+    dirty = false;
+    var s = document.getElementById('saveStatus');
+    s.textContent = '✓ Saved'; s.className = 'save-status clean';
+    // Refresh so image fields flip from base64 to the real file path — but
+    // never while a text field has focus, or a background autosave would
+    // yank the cursor out from under whatever the user is about to type.
+    var active = document.activeElement;
+    var isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+    if (!isTyping) renderPanel();
+
+    var msg = '✓ Saved to "' + dirHandle.name + '"';
+    if (pkg.files.length) msg += ' · ' + pkg.files.length + ' new file(s)';
+    if (deleted)           msg += ' · ' + deleted + ' unused file(s) removed';
+    showToast(msg, 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('✕ Save failed: ' + (err && err.message ? err.message : err), 'error');
+  }
 }
 
 function showToast(msg, type) {

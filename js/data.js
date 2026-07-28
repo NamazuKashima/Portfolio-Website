@@ -197,6 +197,22 @@
           }
         },
         {
+          "id": "film-1785224727258",
+          "title": "Foosball Fever",
+          "year": "2024",
+          "role": "Colorist",
+          "description": "Served as colorist on Foosball Fever (2024), a short film shot in black and white using an infrared camera and Red Komodo. Developed a grade that preserved the distinctive infrared texture and tonal contrast inherent to the camera combination.",
+          "tags": [
+            "Short",
+            "Experimental"
+          ],
+          "coverImage": "assets/works/film-foosball-fever.jpg",
+          "links": {
+            "live": "",
+            "case_study": ""
+          }
+        },
+        {
           "id": "film-1785178471540",
           "title": "Frank and Edna Take on Le Mans",
           "year": "2026",
@@ -361,6 +377,22 @@
           "coverImage": "assets/works/commercial-fionn-maccool-s-tradition.jpg",
           "links": {
             "live": "https://www.youtube.com/watch?v=WijbwJHDCig",
+            "case_study": ""
+          }
+        },
+        {
+          "id": "commercial-1785225872302",
+          "title": "La Belle & La Boeuf - L'Impasse avec Arber Xhekaj",
+          "year": "2024",
+          "role": "Colorist",
+          "description": "Served as colorist on La Belle & La Boeuf – L'Impasse, a commercial for the Montreal burger chain featuring NHL defenceman Arber Xhekaj of the Montreal Canadiens. Crafted a warm, moody grade suited to the restaurant's lively atmosphere.",
+          "tags": [
+            "Brand",
+            "Food"
+          ],
+          "coverImage": "assets/works/commercial-la-belle-la-boeuf-l-impasse-avec-arber-xhekaj.jpg",
+          "links": {
+            "live": "https://www.youtube.com/watch?v=XngB4NdcUIw",
             "case_study": ""
           }
         },

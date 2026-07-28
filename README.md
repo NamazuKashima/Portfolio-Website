@@ -50,24 +50,27 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 
 ### Using the editor (recommended)
 
-1. Open `editor.html` in a browser.
-2. Edit any section from the sidebar — General, Hero, About, Portfolio, Experience, Contact, Logo & Footer, Theme.
-3. Changes auto-save to browser storage as you type.
-4. Click **↓ Export** when done. Several files download:
-   - `data.js` — replace `js/data.js` with it
-   - any newly uploaded image or PDF, as a real file
-   - `EXPORT-README.txt` — says exactly where each file goes, and which
-     old files are no longer referenced and can be deleted
+1. Open `editor.html` in Chrome or Edge.
+2. Click **🔗 Connect Folder** once and pick your `Portfolio-Website` folder.
+   The browser remembers this permission, so you normally only do it the
+   first time (it may ask you to reconnect after a full browser restart —
+   click the same button again, no folder-picking needed).
+3. Edit any section from the sidebar — General, Hero, About, Portfolio, Experience, Contact, Logo & Footer, Theme.
+4. That's it. About 1.5 seconds after you stop typing, or right away when you
+   click **💾 Save to Folder**, the editor writes `js/data.js` straight to
+   disk — and any image you just uploaded is compressed, cropped, and saved
+   as a real file under `assets/` at the same time. No download, no manual
+   drag-and-drop into the folder.
 5. Commit and push.
 
-Images are stored as files under `assets/`, never inside `data.js`. While
-drafting they live in browser storage as base64; export converts them. A file
-is only written when its image was newly uploaded — covers already on disk keep
-their filename even if you rename the work, so nothing breaks.
+Firefox and Safari don't support direct folder access yet — the toolbar
+falls back to the old flow there: **↓ Export** downloads `data.js` plus any
+new image/PDF files individually, with an `EXPORT-README.txt` telling you
+where each one goes.
 
-Deleting a work does **not** delete its image: a web page cannot remove files
-from your disk. `EXPORT-README.txt` lists those orphans so you can delete them
-by hand.
+Deleting a work does not automatically delete its old cover image — when you
+click **💾 Save to Folder** and unused files exist, the editor lists them and
+asks before deleting anything from disk.
 
 > The editor loads content in this order: browser draft → `js/data.js` → built-in
 > defaults. If a draft is ever lost (new browser, cleared cache, moved folder),
@@ -77,7 +80,7 @@ by hand.
 
 - **Collections** — Portfolio is organized into Film and Commercial; both can be renamed, added to, or removed
 - **Works** — add, duplicate, reorder, delete; each has a title, year, role, description, tags, cover image, and links
-- **Image handling** — uploads are auto-compressed (max 2400px), then cropped to 16:9 (covers) or 4:5 (profile photo) with drag-to-pan and zoom; on export they become files in `assets/`
+- **Image handling** — uploads are auto-compressed (max 2400px), then cropped to 16:9 (covers) or 4:5 (profile photo) with drag-to-pan and zoom; once connected to your folder, they're written to `assets/` immediately
 - **Showreel** — set a Vimeo/YouTube URL under Hero to show a play button on the homepage; leave empty to hide it
 
 ### Editing by hand
