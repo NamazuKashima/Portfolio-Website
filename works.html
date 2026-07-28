@@ -4,9 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>All Work — Victor Qixun Wu</title>
+<<<<<<< Updated upstream
   <link rel="stylesheet" href="css/style.css?v=20260728022327" />
+=======
+  <meta name="description" content="Full archive of colour grading and editing work by Victor Qixun Wu — feature film, documentary, fashion and commercial projects." />
+  <link rel="canonical" href="https://www.victorqixunwu.com/works.html" />
+  <meta name="theme-color" content="#000a02" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="All Work — Victor Qixun Wu" />
+  <meta property="og:description" content="Full archive of colour grading and editing work — film and commercial." />
+  <meta property="og:url" content="https://www.victorqixunwu.com/works.html" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000a02'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='30' font-weight='700' fill='%23fcfaf2' text-anchor='middle' letter-spacing='-1'%3EVW.%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css?v=20260727225333" />
+>>>>>>> Stashed changes
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
     /* ── archive page specific ── */
     #archive {
@@ -58,7 +71,7 @@
     .modal-backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(4, 7, 5, 0.88);
+      background: rgba(0, 10, 2, 0.92);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
@@ -99,9 +112,11 @@
     .modal-title {
       font-family: var(--font-display);
       font-size: clamp(1.6rem, 4vw, 2.4rem);
-      font-weight: 700;
+      font-weight: 400;
       color: var(--fg);
-      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1.4;
     }
     .modal-year {
       font-size: 0.72rem;
@@ -136,7 +151,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
-      border: 1px solid rgba(79,169,128,0.25);
+      border: 1px solid rgba(63,119,53,0.35);
       padding: 0.18rem 0.5rem;
     }
     .modal-links { display: flex; gap: 1.5rem; }
@@ -148,7 +163,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(7,11,9,0.7);
+      background: rgba(0,10,2,0.8);
       border: 1px solid var(--border);
       color: var(--fg);
       font-size: 1.1rem;
@@ -164,7 +179,7 @@
 
   <!-- NAV -->
   <nav id="navbar" class="scrolled">
-    <a class="nav-logo" id="nav-logo" href="index.html">V.</a>
+    <a class="nav-logo" id="nav-logo" href="index.html">VW.</a>
     <ul class="nav-links">
       <li><a href="index.html#about">About</a></li>
       <li><a href="index.html#projects">Portfolio</a></li>
@@ -193,10 +208,10 @@
   <!-- FOOTER -->
   <footer>
     <div class="container footer-inner">
-      <span class="footer-logo" id="footer-logo">V.</span>
+      <span class="footer-logo" id="footer-logo">VW.</span>
       <span class="footer-copy" id="footer-copy">© 2026 Victor Qixun Wu. All rights reserved.</span>
       <div class="footer-socials">
-        <a href="https://www.victorqixunwu.com" target="_blank">Website</a>
+        <a href="https://www.victorqixunwu.com" target="_blank" rel="noopener noreferrer">Website</a>
       </div>
     </div>
   </footer>
@@ -225,6 +240,16 @@
   (function () {
     var D = window.PORTFOLIO_DATA;
     if (!D || !D.portfolio) return;
+
+    // theme (shared tokens)
+    if (D.theme) {
+      var root = document.documentElement;
+      var map = { bg:'--bg', surface:'--surface', border:'--border', fg:'--fg',
+                  muted:'--muted', gray:'--gray', accent:'--accent',
+                  accentSoft:'--accent-soft', earth:'--earth', sand:'--sand' };
+      Object.keys(map).forEach(function(k){ if (D.theme[k]) root.style.setProperty(map[k], D.theme[k]); });
+      if (D.theme.washiOpacity != null) root.style.setProperty('--washi-opacity', String(D.theme.washiOpacity));
+    }
 
     // logo + footer (shared content)
     if (D.footer) {
@@ -274,7 +299,8 @@
       if (!works.length) { gridEl.innerHTML = '<p style="color:var(--gray);padding:2rem 0">No works yet.</p>'; return; }
       gridEl.innerHTML = works.map(function(w, i) {
         var imgHTML = w.coverImage
-          ? '<img src="' + w.coverImage + '" alt="' + w.title + '" />'
+          ? '<img src="' + w.coverImage + '" alt="' + w.title + '"' +
+            (i < 4 ? '' : ' loading="lazy"') + ' decoding="async" />'
           : '<div class="work-placeholder"><span>' + w.title + '</span></div>';
         return '<div class="work-card" data-wid="' + w.id + '">'
           + '<div class="work-img">' + imgHTML
@@ -328,8 +354,8 @@
       document.getElementById('modalDesc').textContent  = w.description;
       document.getElementById('modalTags').innerHTML    = (w.tags || []).map(function(t) { return '<span>' + t + '</span>'; }).join('');
       var links = '';
-      if (w.links && w.links.live)       links += '<a href="' + w.links.live       + '" class="link-arrow" target="_blank">Watch →</a>';
-      if (w.links && w.links.case_study) links += '<a href="' + w.links.case_study + '" class="link-arrow" target="_blank">More Info →</a>';
+      if (w.links && w.links.live)       links += '<a href="' + w.links.live       + '" class="link-arrow" target="_blank" rel="noopener noreferrer">Watch →</a>';
+      if (w.links && w.links.case_study) links += '<a href="' + w.links.case_study + '" class="link-arrow" target="_blank" rel="noopener noreferrer">More Info →</a>';
       document.getElementById('modalLinks').innerHTML = links;
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';

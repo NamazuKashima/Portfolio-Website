@@ -25,17 +25,23 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 .
 ├── index.html              Homepage
 ├── works.html              Project archive
-├── editor.html             Visual content editor
+├── editor.html             Visual content editor (noindex, not linked publicly)
 ├── CNAME                   Custom domain for GitHub Pages
-├── deploy.bat              Manual deploy helper (Windows)
+├── robots.txt              Keeps the editor out of search results
+├── sitemap.xml
+├── assets/
+│   ├── works/              Project covers, one file per work
+│   ├── portrait.jpg
+│   ├── og.jpg              Social-share card (1200×630)
+│   └── doc/                CV
 ├── css/
 │   └── style.css           All styles — design tokens live in :root
 ├── js/
-│   ├── data.js             ← All site content (single source of truth)
+│   ├── data.js             ← All site content (paths only, ~24 KB)
 │   ├── render.js           Renders data into the homepage
-│   └── main.js             Cursor, nav, scroll reveals, parallax
+│   └── main.js             Cursor, wordmark split, nav, scroll reveals
 └── .github/workflows/
-    └── cache-bust.yml      Auto-versions assets on every push
+    └── cache-bust.yml      Auto-versions css/js on every push
 ```
 
 ---
@@ -45,11 +51,23 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 ### Using the editor (recommended)
 
 1. Open `editor.html` in a browser.
-2. Edit any section from the sidebar — General, Hero, About, Portfolio, Experience, Contact.
+2. Edit any section from the sidebar — General, Hero, About, Portfolio, Experience, Contact, Logo & Footer, Theme.
 3. Changes auto-save to browser storage as you type.
-4. Click **↓ Export data.js** when done.
-5. Replace `js/data.js` with the downloaded file.
-6. Commit and push.
+4. Click **↓ Export** when done. Several files download:
+   - `data.js` — replace `js/data.js` with it
+   - any newly uploaded image or PDF, as a real file
+   - `EXPORT-README.txt` — says exactly where each file goes, and which
+     old files are no longer referenced and can be deleted
+5. Commit and push.
+
+Images are stored as files under `assets/`, never inside `data.js`. While
+drafting they live in browser storage as base64; export converts them. A file
+is only written when its image was newly uploaded — covers already on disk keep
+their filename even if you rename the work, so nothing breaks.
+
+Deleting a work does **not** delete its image: a web page cannot remove files
+from your disk. `EXPORT-README.txt` lists those orphans so you can delete them
+by hand.
 
 > The editor loads content in this order: browser draft → `js/data.js` → built-in
 > defaults. If a draft is ever lost (new browser, cleared cache, moved folder),
@@ -59,7 +77,7 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 
 - **Collections** — Portfolio is organized into Film and Commercial; both can be renamed, added to, or removed
 - **Works** — add, duplicate, reorder, delete; each has a title, year, role, description, tags, cover image, and links
-- **Image handling** — uploads are auto-compressed, then cropped to 16:9 (covers) or 4:5 (profile photo) with drag-to-pan and zoom
+- **Image handling** — uploads are auto-compressed (max 2400px), then cropped to 16:9 (covers) or 4:5 (profile photo) with drag-to-pan and zoom; on export they become files in `assets/`
 - **Showreel** — set a Vimeo/YouTube URL under Hero to show a play button on the homepage; leave empty to hide it
 
 ### Editing by hand
@@ -69,13 +87,18 @@ shape intact:
 
 ```js
 {
+  theme:      { bg, surface, border, fg, muted, gray, accent, accentSoft,
+                earth, sand, washiOpacity },
   meta:       { name, siteTitle },
   hero:       { label, line1, line2, description, reelUrl, reelLabel },
-  about:      { photo, bio: [...], skills: [{ category, items: [...] }] },
+              // line1 = the large channel-split wordmark, line2 = signature
+  about:      { photo, bio: [...], skills: [{ category, items: [...] }],
+                cvUrl, cvLabel, cvFileName },
   portfolio:  [{ id, name, works: [{ id, title, year, role,
                                      description, tags, coverImage, links }] }],
   experience: [{ id, period, title, company, description, tags }],
-  contact:    { email, phone, website, instagram, facebook, location, message }
+  contact:    { email, phone, website, instagram, facebook, location, message },
+  footer:     { logo, copyright }
 }
 ```
 
@@ -89,29 +112,44 @@ A GitHub Action (`cache-bust.yml`) runs on every push and rewrites the `?v=`
 query strings on all CSS/JS links, so returning visitors always get the newest
 files instead of a cached copy — no hard refresh needed on their end.
 
-`deploy.bat` does the same version bump locally and pushes, for when you want to
-handle it manually.
+Only `css/` and `js/` are versioned this way — images under `assets/` are
+served with their own filenames and cached normally.
 
 ---
 
 ## Design
 
-Dark, editorial, cinema-leaning. All colors and fonts are CSS custom properties
-in `css/style.css` — change them in one place to restyle the whole site.
+Dark and editorial. Every colour is an authentic 日本の伝統色 (traditional
+Japanese colour) used at its documented hex — nothing is mixed or approximated.
+They live as CSS custom properties in `css/style.css` and are overridden at
+runtime by `theme` in `data.js`, so the Theme panel in the editor restyles the
+whole site without touching code.
 
 ```css
---bg:      #070b09;   /* near-black green */
---surface: #0d1310;   /* cards, inputs */
---accent:  #4fa980;   /* jade green */
---fg:      #e9efeb;   /* primary text */
+--bg:      #000a02;   /* 墨色   SUMI       ink */
+--surface: #0c0c0c;   /* 呂色   ROIRO      wet black lacquer */
+--border:  #373c38;   /* 藍墨茶 AISUMICHA  indigo-ink tea */
+--fg:      #fcfaf2;   /* 白練   SHIRONERI  glossed white silk */
+--accent:  #3f7735;   /* 松葉色 MATSUBA    pine needle */
+--muted:   #bcb09c;   /* 灰汁色 AKU        lye */
 ```
 
-**Type** — [Cormorant](https://fonts.google.com/specimen/Cormorant) for display
-headings, [Manrope](https://fonts.google.com/specimen/Manrope) for body.
+**Type** — [Inter Tight](https://fonts.google.com/specimen/Inter+Tight) for the
+wordmark and headings, [Zen Kaku Gothic New](https://fonts.google.com/specimen/Zen+Kaku+Gothic+New)
+for body. Both fall back to system Japanese faces if the CDN is unreachable.
 
-**Details** — custom dot-and-ring cursor, scroll-triggered reveals, hero
-parallax, 16:9 work cards with hover overlays. Fully responsive; the custom
-cursor is desktop-only by nature and degrades cleanly on touch.
+**The wordmark** — the name is set larger than the window that frames it, so it
+is cropped on all four sides, and drawn four times: once per R/G/B channel plus
+a white base, blended with `mix-blend-mode: screen`. The channels drift with the
+pointer, breathe when it is still, and separate further as you scroll (capped at
+1.5×). For a colorist, misregistration is the subject. Geometry is driven by
+three variables on `.hero-title`: `--over` (how far the word overruns the frame),
+`--frame` (window height) and `--lift` (vertical trim).
+
+**Details** — custom dot-and-ring cursor, a faint 和紙 paper grain over the whole
+page (`--washi-opacity`, editable), scroll-triggered reveals, 16:9 covers with
+hover overlays. Fully responsive; on touch devices the custom cursor and hover
+overlays are disabled and the wordmark stops animating.
 
 ---
 

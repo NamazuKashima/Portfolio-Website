@@ -6,17 +6,25 @@
 /* ---------- RESET & BASE ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ──────────────────────────────────────────────────────────────
+   Palette — 日本の伝統色 only.
+   Every value below is an authentic traditional Japanese color,
+   used at its documented hex. Nothing is mixed or approximated.
+   ────────────────────────────────────────────────────────────── */
 :root {
-  --bg:      #070b09;
-  --surface: #0d1310;
-  --border:  #1a241e;
-  --fg:      #e9efeb;
-  --gray:    #5f6d65;
-  --muted:   #96a69d;
-  --accent:  #05854b;
-  --accent-deep: #234737;
-  --font-sans:    'Manrope', sans-serif;
-  --font-display: 'Cormorant', serif;
+  --bg:      #000a02;   /* 墨色    SUMI          ink — near-black, faint green */
+  --surface: #0c0c0c;   /* 呂色    ROIRO         wet black lacquer — cards */
+  --border:  #373c38;   /* 藍墨茶  AISUMICHA     indigo-ink tea — hairlines */
+  --fg:      #fcfaf2;   /* 白練    SHIRONERI     glossed white silk — body text */
+  --muted:   #bcb09c;   /* 灰汁色  AKU           lye — secondary text */
+  --gray:    #85916d;   /* 青白橡  AOSHIROTSURUBAMI  dulled oak — dim text */
+  --accent:  #42602D;   /* 松葉色  MATSUBA       pine needle — fills, rules */
+  --accent-soft: #769164; /* 老竹色 OITAKE       aged bamboo — small text */
+  --earth:   #858954;   /* 青丹    AONI          blue clay pigment — meta */
+  --sand:    #e6e3c5;   /* 利休白茶 RIKYUSHIRACHA  Rikyu white tea — highlights */
+  --font-sans:    'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Yu Gothic',
+                  system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --ease:    cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --t:       0.35s var(--ease);
   --w:       980px;
@@ -30,6 +38,21 @@ body {
   color: var(--fg);
   overflow-x: hidden;
   cursor: none;
+}
+
+/* 和紙 washi paper grain — strength is editable via --washi-opacity */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--washi-opacity, 0.4);
+  background-image:
+    repeating-linear-gradient(0deg,   rgba(252,250,242,0.022) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg,  rgba(252,250,242,0.016) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(28deg,  rgba(133,137,84,0.014) 0 1px, transparent 1px 7px),
+    radial-gradient(130% 95% at 72% 0%, rgba(63,119,53,0.040), transparent 62%);
 }
 
 /* ---------- CUSTOM CURSOR ---------- */
@@ -46,7 +69,7 @@ body {
 .cursor-ring {
   position: fixed;
   width: 34px; height: 34px;
-  border: 1px solid rgba(79,169,128,0.5);
+  border: 1px solid rgba(63,119,53,0.6);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
@@ -65,22 +88,36 @@ ul { list-style: none; }
 
 .section-title {
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 6vw, 5rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.7rem, 3.4vw, 2.9rem);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.015em;
+  line-height: 1.2;
   margin-bottom: 3rem;
 }
+/* Emphasis is carried by color and weight, not italics — a grotesque
+   oblique would fight the tight, all-caps setting. */
 .section-title em {
-  font-style: italic;
+  font-style: normal;
+  font-weight: 500;
   color: var(--accent);
 }
 .section-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--gray);
   margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.section-label::before {
+  content: '';
+  width: 18px; height: 1px;
+  background: var(--earth);
+  flex-shrink: 0;
 }
 .container {
   max-width: var(--w);
@@ -101,7 +138,7 @@ ul { list-style: none; }
   border-bottom: 1px solid transparent;
 }
 #navbar.scrolled {
-  background: rgba(7,11,9,0.9);
+  background: rgba(0,10,2,0.92);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 1.1rem 3rem;
@@ -110,9 +147,9 @@ ul { list-style: none; }
 .nav-logo {
   font-family: var(--font-display);
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--fg);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 .nav-links { display: flex; gap: 2.5rem; }
 .nav-links a {
@@ -168,6 +205,7 @@ ul { list-style: none; }
   width: 100%;
   position: relative;
   z-index: 2;
+  container-type: inline-size;   /* cqw units below resolve against this box */
 }
 .hero-label {
   font-size: 0.68rem;
@@ -186,16 +224,72 @@ ul { list-style: none; }
   width: 28px; height: 1px;
   background: var(--accent);
 }
+/* ──────────────────────────────────────────────────────────────
+   Wordmark — the type is larger than the window that holds it, so the word
+   is cut on all four sides: the ends run past the left and right edges, and
+   the caps are trimmed top and bottom. The R/G/B channels sit out of
+   register — for a colorist, misregistration is the subject.
+   ────────────────────────────────────────────────────────────── */
 .hero-title {
+  --over: 1.14;                       /* word width ÷ window width */
+  --wordEm: 5.12;                     /* measured width of "VICTOR WU" in em */
+  --frame: 0.78;                      /* window height, as a share of the type */
+  --lift: -0.05em;                    /* a hair off the top, not a slice */
+  --dx: 0;                            /* pointer influence, set by main.js */
+  --dy: 0;
+  --split: 1;                         /* intensity multiplier, caps at 2 */
+  --bleed: 0em;                       /* horizontal nudge inside the window */
+  position: relative;
+  width: 100%;
+  height: calc(100cqw * var(--over) / var(--wordEm) * var(--frame));
+  margin: 0 0 0.9rem;
+  overflow: hidden;                   /* the crop happens on all four edges */
   font-family: var(--font-display);
-  font-size: clamp(5rem, 12vw, 11rem);
-  font-weight: 700;
-  line-height: 0.9;
-  letter-spacing: -0.02em;
-  margin-bottom: 2.5rem;
+  --mark: clamp(4.4rem, 14vw, 12rem); /* fallback if cqw is unsupported */
 }
-.hero-title .line  { display: block; }
-.hero-title .italic { font-style: italic; color: var(--accent); }
+.hero-title .chroma {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(calc(-50% + var(--bleed)), var(--lift));
+}
+.hero-title .ch {
+  display: block;
+  white-space: nowrap;
+  font-size: var(--mark);
+  /* the word always runs --over times wider than the window, at any size */
+  font-size: calc(100cqw * var(--over) / var(--wordEm));
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.055em;
+  will-change: transform;
+}
+
+/* The three channels sit on top of one another and add like light does.
+   Only the base layer is in flow — the rest are absolutely positioned. */
+.hero-title .ch:not(.base) {
+  position: absolute;
+  left: 0; top: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.hero-title .base { position: relative; color: var(--fg); }
+.hero-title .r { color: #e8402a; transform: translate(calc((-0.007em + var(--dx) * -0.013em) * var(--split)), calc((-0.004em + var(--dy) * -0.009em) * var(--split))); }
+.hero-title .g { color: #3fd07a; transform: translate(calc(( 0.006em + var(--dx) *  0.011em) * var(--split)), calc(( 0.004em + var(--dy) *  0.008em) * var(--split))); }
+.hero-title .b { color: #3b7bd4; transform: translate(calc(( 0.002em + var(--dx) *  0.006em) * var(--split)), calc((-0.008em + var(--dy) * -0.013em) * var(--split))); }
+.hero-title .ch { transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+/* Signature line under the mark */
+.hero-sig {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2.25rem;
+}
 
 .hero-desc {
   font-size: 0.95rem;
@@ -211,14 +305,15 @@ ul { list-style: none; }
   bottom: -5rem;
   font-family: var(--font-display);
   font-size: clamp(8rem, 20vw, 22rem);
-  font-weight: 700;
+  font-weight: 400;
   color: transparent;
-  -webkit-text-stroke: 1px #16211b;
+  -webkit-text-stroke: 1px var(--border);
   pointer-events: none;
   user-select: none;
   z-index: 1;
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.045em;
+  text-transform: lowercase;
 }
 .hero-scroll-hint {
   position: absolute;
@@ -252,11 +347,11 @@ ul { list-style: none; }
   align-items: center;
   gap: 0.5rem;
   background: var(--accent);
-  color: var(--fg);
+  color: var(--fg);              /* 白練 on 松葉 — 5.1:1 */
   font-family: var(--font-sans);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 0.9rem 1.75rem;
   border: 1px solid var(--accent);
@@ -304,7 +399,7 @@ ul { list-style: none; }
   justify-content: center;
   border-radius: 50%;
   background: var(--accent);
-  color: var(--bg);
+  color: var(--fg);
   position: relative;
   transition: var(--t);
 }
@@ -341,7 +436,7 @@ ul { list-style: none; }
 .reel-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(4, 7, 5, 0.92);
+  background: rgba(7, 6, 4, 0.93);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -355,7 +450,7 @@ ul { list-style: none; }
   position: relative;
   width: 100%;
   padding-bottom: 56.25%;
-  background: #000;
+  background: var(--bg);
   border: 1px solid var(--border);
   overflow: hidden;
 }
@@ -418,7 +513,8 @@ ul { list-style: none; }
 .avatar-placeholder {
   font-family: var(--font-display);
   font-size: 4rem;
-  font-weight: 700;
+  font-weight: 400;
+  letter-spacing: 0.06em;
   color: var(--gray);
 }
 .about-bio {
@@ -442,7 +538,7 @@ ul { list-style: none; }
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-soft);
   margin-bottom: 0.75rem;
 }
 .skill-group li {
@@ -477,7 +573,7 @@ ul { list-style: none; }
   justify-content: center;
   border-radius: 50%;
   background: var(--accent);
-  color: var(--bg);
+  color: var(--fg);
   transition: var(--t);
 }
 .cv-icon svg { width: 14px; height: 14px; }
@@ -568,8 +664,8 @@ ul { list-style: none; }
 .work-placeholder span {
   font-family: var(--font-display);
   font-size: clamp(1.2rem, 3vw, 3.5rem);
-  font-weight: 700;
-  color: #182420;
+  font-weight: 400;
+  color: var(--border);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-align: center;
@@ -579,7 +675,7 @@ ul { list-style: none; }
 .work-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0,10,2,0.78);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -593,9 +689,10 @@ ul { list-style: none; }
 .overlay-title {
   font-family: var(--font-display);
   font-size: clamp(1rem, 2.5vw, 2.2rem);
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  color: var(--fg);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   text-align: center;
   padding: 0 1.5rem;
   line-height: 1.15;
@@ -605,7 +702,7 @@ ul { list-style: none; }
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--sand);
 }
 
 .work-info {
@@ -621,7 +718,10 @@ ul { list-style: none; }
 }
 .work-title-text {
   font-size: 1rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   color: var(--fg);
   letter-spacing: -0.01em;
   line-height: 1.35;
@@ -631,7 +731,7 @@ ul { list-style: none; }
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: var(--gray);
+  color: var(--muted);
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -646,8 +746,8 @@ ul { list-style: none; }
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
-  border: 1px solid rgba(79,169,128,0.25);
+  color: var(--accent-soft);
+  border: 1px solid rgba(63,119,53,0.35);
   padding: 0.14rem 0.45rem;
 }
 .work-desc {
@@ -665,7 +765,7 @@ ul { list-style: none; }
   color: var(--muted);
   transition: color var(--t), letter-spacing var(--t);
 }
-.link-arrow:hover { color: var(--accent); letter-spacing: 0.14em; }
+.link-arrow:hover { color: var(--accent-soft); letter-spacing: 0.14em; }
 
 .view-all-row {
   display: flex;
@@ -713,12 +813,15 @@ ul { list-style: none; }
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--earth);
   margin-bottom: 0.6rem;
 }
 .timeline-content h3 {
   font-size: 1.1rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   margin-bottom: 0.2rem;
   letter-spacing: -0.01em;
 }
@@ -786,8 +889,8 @@ ul { list-style: none; }
   display: block;
 }
 .contact-link:hover .link-icon {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--accent-soft);
+  color: var(--accent-soft);
 }
 
 /* ---------- CONTACT CTA ---------- */
@@ -809,14 +912,15 @@ ul { list-style: none; }
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gray);
+  color: var(--muted);
   transition: color var(--t);
 }
-.contact-cta:hover .cta-label { color: var(--accent); }
+.contact-cta:hover .cta-label { color: var(--sand); }
 .cta-mail {
   font-family: var(--font-display);
   font-size: clamp(1.2rem, 2.6vw, 1.9rem);
-  font-weight: 700;
+  font-weight: 400;
+  letter-spacing: 0.03em;
   color: var(--fg);
   letter-spacing: -0.01em;
   word-break: break-word;
@@ -824,7 +928,7 @@ ul { list-style: none; }
 }
 .cta-arrow {
   font-size: 1.1rem;
-  color: var(--accent);
+  color: var(--earth);
   margin-top: 0.35rem;
   transition: transform var(--t);
 }
@@ -845,7 +949,8 @@ footer {
 .footer-logo {
   font-family: var(--font-display);
   font-size: 1.3rem;
-  font-weight: 700;
+  font-weight: 500;
+  letter-spacing: -0.03em;
   color: var(--fg);
 }
 .footer-copy {
@@ -937,7 +1042,8 @@ footer {
   footer      { padding: 1.5rem; }
   .footer-inner { flex-direction: column; gap: 0.75rem; text-align: center; }
 
-  .hero-title    { font-size: clamp(3.2rem, 15vw, 5rem); }
+  .hero-title      { --over: 1.10; --frame: 0.78; }
+  .hero-sig        { font-size: 0.6rem; letter-spacing: 0.26em; margin-bottom: 1.75rem; }
   .hero-desc     { font-size: 0.9rem; }
   .hero-actions  { gap: 0.75rem; }
   .btn-reel, .hero-actions .btn-primary { width: 100%; justify-content: center; }

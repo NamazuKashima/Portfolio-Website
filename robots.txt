@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /editor.html
+
+Sitemap: https://www.victorqixunwu.com/sitemap.xml

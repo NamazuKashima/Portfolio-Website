@@ -4,8 +4,29 @@
 
   // ── UTILS ──────────────────────────────────────────────────────
   function $id(id) { return document.getElementById(id); }
+
+  // Maps theme keys onto the CSS custom properties in style.css
+  function applyTheme(theme) {
+    if (!theme) return;
+    var root = document.documentElement;
+    var map = {
+      bg: '--bg', surface: '--surface', border: '--border', fg: '--fg',
+      muted: '--muted', gray: '--gray', accent: '--accent',
+      accentSoft: '--accent-soft', earth: '--earth', sand: '--sand'
+    };
+    Object.keys(map).forEach(function (k) {
+      if (theme[k]) root.style.setProperty(map[k], theme[k]);
+    });
+    if (theme.washiOpacity != null) {
+      root.style.setProperty('--washi-opacity', String(theme.washiOpacity));
+    }
+  }
+  window.applyPortfolioTheme = applyTheme;
   function setText(id, val) { var el = $id(id); if (el && val != null) el.textContent = val; }
   function setHTML(id, val) { var el = $id(id); if (el && val != null) el.innerHTML = val; }
+
+  // ── THEME ──────────────────────────────────────────────────────
+  applyTheme(D.theme);
 
   // ── META ───────────────────────────────────────────────────────
   if (D.meta) document.title = D.meta.siteTitle || 'Victor — Portfolio';
@@ -13,8 +34,15 @@
   // ── HERO ───────────────────────────────────────────────────────
   if (D.hero) {
     setText('hero-label', D.hero.label);
-    setText('hero-line1', D.hero.line1);
-    setText('hero-line2', D.hero.line2);
+    // The wordmark is one string drawn four times — once per colour channel,
+    // plus the base layer — so every copy has to carry the same text.
+    ['hero-line1', 'hero-ch-r', 'hero-ch-g', 'hero-ch-b'].forEach(function (id) {
+      setText(id, D.hero.line1);
+    });
+    var titleEl = document.querySelector('.hero-title');
+    if (titleEl) titleEl.setAttribute('aria-label', D.hero.line2 || D.hero.line1);
+
+    setText('hero-line2', D.hero.line2);   // signature line under the mark
     setText('hero-desc',  D.hero.description);
 
     // Showreel CTA — only shown when a URL is set
@@ -39,6 +67,11 @@
       setText('footer-logo', D.footer.logo);   // bottom logo
     }
     if (D.footer.copyright) setText('footer-copy', D.footer.copyright);
+    if (D.footer.logo) {
+      // Oversized outline mark behind the hero — same letters as the logo,
+      // minus any trailing punctuation, since it is set at 22rem.
+      setText('hero-bg-text', D.footer.logo.replace(/[^A-Za-z0-9]+$/, ''));
+    }
   }
 
   // ── SHOWREEL LIGHTBOX ──────────────────────────────────────────
@@ -99,7 +132,9 @@
     if (D.about.photo) {
       var avatarEl = document.querySelector('.about-avatar');
       if (avatarEl) {
-        avatarEl.innerHTML = '<img src="' + D.about.photo + '" alt="Portrait" style="width:100%;height:100%;object-fit:cover;" />';
+        avatarEl.innerHTML = '<img src="' + D.about.photo + '" alt="Portrait of ' +
+          (D.meta && D.meta.name ? D.meta.name : 'the colorist') +
+          '" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;" />';
       }
     }
     if (D.about.bio) {
@@ -225,11 +260,15 @@
       var shown = col.works.slice(0, HOME_LIMIT);
       var hiddenCount = col.works.length - shown.length;
       gridEl.innerHTML = shown.map(function(w, i) {
+        // The first two covers are above the fold, the rest load on demand.
+        var eager = i < 2;
         var imgHTML = w.coverImage
-          ? '<img src="' + w.coverImage + '" alt="' + w.title + '" />'
+          ? '<img src="' + w.coverImage + '" alt="' + w.title + '"' +
+            (eager ? ' fetchpriority="high"' : ' loading="lazy"') +
+            ' decoding="async" />'
           : '<div class="work-placeholder"><span>' + w.title + '</span></div>';
-        var liveLink   = w.links && w.links.live       ? '<a href="' + w.links.live       + '" class="link-arrow" target="_blank">Watch →</a>' : '';
-        var caseLink   = w.links && w.links.case_study ? '<a href="' + w.links.case_study + '" class="link-arrow" target="_blank">More Info →</a>' : '';
+        var liveLink   = w.links && w.links.live       ? '<a href="' + w.links.live       + '" class="link-arrow" target="_blank" rel="noopener noreferrer">Watch →</a>' : '';
+        var caseLink   = w.links && w.links.case_study ? '<a href="' + w.links.case_study + '" class="link-arrow" target="_blank" rel="noopener noreferrer">More Info →</a>' : '';
         return '<div class="work-card">'
           + '<div class="work-img">'
           + imgHTML

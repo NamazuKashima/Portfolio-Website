@@ -53,6 +53,56 @@ if (tabsEl) {
 }
 
 
+// ---------- WORDMARK: CHANNEL SPLIT ----------
+// The R/G/B layers drift with the pointer and breathe when it is still, so the
+// misregistration reads as something alive rather than a static effect.
+(function () {
+  const title = document.querySelector('.hero-title');
+  if (!title) return;
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let tx = 0, ty = 0, cx = 0, cy = 0, idle = 0, raf = null;
+
+  function onMove(e) {
+    const r = title.getBoundingClientRect();
+    // -1 … 1 relative to the mark's own box
+    tx = Math.max(-1.6, Math.min(1.6, (e.clientX - (r.left + r.width  / 2)) / (r.width  / 2)));
+    ty = Math.max(-1.6, Math.min(1.6, (e.clientY - (r.top  + r.height / 2)) / (r.height / 2)));
+    idle = 0;
+    start();
+  }
+
+  function frame(now) {
+    idle += 1;
+    // when the pointer rests, let the channels wander on their own
+    if (idle > 90 && !reduced) {
+      const t = now / 2600;
+      tx = Math.sin(t) * 0.5;
+      ty = Math.cos(t * 0.8) * 0.35;
+    }
+    cx += (tx - cx) * 0.06;
+    cy += (ty - cy) * 0.06;
+    title.style.setProperty('--dx', cx.toFixed(4));
+    title.style.setProperty('--dy', cy.toFixed(4));
+    raf = requestAnimationFrame(frame);
+  }
+
+  function start() { if (!raf) raf = requestAnimationFrame(frame); }
+
+  if (!reduced) {
+    window.addEventListener('mousemove', onMove, { passive: true });
+    start();
+  }
+
+  // Scrolling past the hero pulls the channels further apart, then settles.
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    const k = Math.min(y / (window.innerHeight * 0.9), 1);
+    title.style.setProperty('--split', (1 + k * 0.5).toFixed(3));   // caps at 1.5×
+  }, { passive: true });
+})();
+
+
 // ---------- NAVBAR SCROLL ----------
 const navbar = document.getElementById('navbar');
 if (navbar) {

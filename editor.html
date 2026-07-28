@@ -4,16 +4,17 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Portfolio Editor</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,600;0,700;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<meta name="robots" content="noindex, nofollow"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#070b09;--s1:#0c110e;--s2:#101712;--s3:#151d18;
-  --border:#1a241e;--border2:#243029;
-  --fg:#e9efeb;--fg2:#a3b1a9;--fg3:#5f6d65;
-  --accent:#4fa980;--accent-d:rgba(79,169,128,.12);
+  --bg:#000a02;--s1:#0c0c0c;--s2:#121412;--s3:#1a1d19;
+  --border:#252925;--border2:#373c38;
+  --fg:#fcfaf2;--fg2:#bcb09c;--fg3:#85916d;
+  --accent:#769164;--accent-d:rgba(118,145,100,.14);
   --green:#22c55e;--red:#ef4444;
-  --ff:'Manrope',sans-serif;--fd:'Cormorant',serif;
+  --ff:'Zen Kaku Gothic New',sans-serif;--fd:'Inter Tight',sans-serif;
   --r:4px;--t:0.2s ease;
 }
 html,body{height:100%;overflow:hidden;font-family:var(--ff);background:var(--bg);color:var(--fg);font-size:14px}
@@ -267,6 +268,73 @@ textarea.field-input{min-height:90px;line-height:1.6}
 .photo-actions{display:flex;flex-direction:column;gap:.5rem}
 .photo-hint{font-size:.72rem;color:var(--fg3);line-height:1.5;max-width:280px}
 
+/* Theme panel */
+.theme-row{
+  display:grid;grid-template-columns:26px 1fr;gap:.75rem;
+  align-items:start;padding:.85rem 0;border-bottom:1px solid var(--border);
+}
+.theme-swatch{
+  width:26px;height:26px;border-radius:3px;
+  border:1px solid var(--border2);display:block;margin-top:2px;
+}
+.theme-info{min-width:0}
+.theme-label{font-size:.82rem;font-weight:600;color:var(--fg)}
+.theme-note{font-size:.7rem;color:var(--fg3);margin-top:.1rem}
+.theme-ctrls{grid-column:2;display:flex;gap:.4rem;margin-top:.55rem;align-items:center}
+/* preset picker (custom, so swatches are actually visible) */
+.preset-wrap{position:relative;flex:1;min-width:0}
+.preset-btn{
+  width:100%;display:flex;align-items:center;gap:.5rem;
+  background:var(--s1);border:1px solid var(--border2);color:var(--fg2);
+  padding:.4rem .55rem;border-radius:var(--r);font-size:.75rem;
+  cursor:pointer;text-align:left;transition:border-color var(--t);
+}
+.preset-btn:hover{border-color:var(--fg3)}
+.preset-btn .pb-sw{
+  width:14px;height:14px;border-radius:2px;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.18);
+}
+.preset-btn .pb-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preset-btn .pb-caret{font-size:.6rem;opacity:.5;flex-shrink:0}
+
+.preset-pop{
+  display:none;position:absolute;z-index:50;top:calc(100% + 4px);left:0;
+  width:min(420px,78vw);max-height:300px;overflow-y:auto;
+  background:var(--s2);border:1px solid var(--border2);border-radius:var(--r);
+  padding:.4rem;box-shadow:0 10px 30px rgba(0,0,0,.6);
+}
+.preset-pop.open{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.preset-item{
+  display:flex;align-items:center;gap:.5rem;padding:.35rem .45rem;
+  border-radius:2px;cursor:pointer;font-size:.72rem;color:var(--fg2);
+  background:none;border:none;text-align:left;width:100%;
+  transition:background var(--t);
+}
+.preset-item:hover{background:var(--s3);color:var(--fg)}
+.preset-item.active{background:var(--s3);color:var(--accent)}
+.preset-sw{
+  width:20px;height:20px;border-radius:2px;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.18);
+}
+.preset-nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preset-hx{font-size:.62rem;color:var(--fg3);font-family:ui-monospace,monospace;flex-shrink:0}
+.theme-hex{
+  width:88px;flex-shrink:0;background:var(--s1);border:1px solid var(--border2);
+  color:var(--fg);padding:.4rem .5rem;border-radius:var(--r);
+  font-size:.75rem;font-family:ui-monospace,monospace;outline:none;
+}
+.theme-hex:focus{border-color:var(--accent)}
+.theme-pick{
+  width:34px;height:31px;flex-shrink:0;padding:0;border:1px solid var(--border2);
+  border-radius:var(--r);background:var(--s1);cursor:pointer;
+}
+
+/* Washi slider */
+.washi-row{display:flex;align-items:center;gap:.7rem}
+.washi-range{flex:1;accent-color:var(--accent);cursor:pointer}
+.washi-cap{font-size:.66rem;color:var(--fg3);letter-spacing:.1em;text-transform:uppercase;flex-shrink:0}
+.washi-val{font-size:.75rem;color:var(--accent);font-weight:700;width:42px;text-align:right;flex-shrink:0}
+
 /* CV block */
 .cv-status{
   font-size:.75rem;padding:.65rem .8rem;border-radius:var(--r);
@@ -274,7 +342,7 @@ textarea.field-input{min-height:90px;line-height:1.6}
   word-break:break-all;line-height:1.5;
 }
 .cv-status.empty{color:var(--fg3)}
-.cv-status.ok{color:var(--accent);border-color:rgba(79,169,128,.3)}
+.cv-status.ok{color:var(--accent);border-color:rgba(118,145,100,.35)}
 .cv-btn-row{display:flex;gap:.5rem}
 
 .crop-modal{
@@ -282,7 +350,7 @@ textarea.field-input{min-height:90px;line-height:1.6}
   align-items:center;justify-content:center;
 }
 .crop-modal.open{display:flex}
-.crop-backdrop{position:absolute;inset:0;background:rgba(4,7,5,.85);backdrop-filter:blur(6px)}
+.crop-backdrop{position:absolute;inset:0;background:rgba(0,10,2,.9);backdrop-filter:blur(6px)}
 .crop-card{
   position:relative;z-index:2;background:var(--s1);border:1px solid var(--border2);
   border-radius:var(--r);padding:1.5rem;max-width:92vw;
@@ -367,12 +435,13 @@ var DEFAULTS = {
   meta: { name: "Victor Qixun Wu", siteTitle: "Victor Qixun Wu — Colorist & Editor" },
   hero: {
     label: "Colorist · Montreal, QC",
-    line1: "Victor", line2: "Qixun Wu",
+    line1: "victor wu", line2: "Victor Qixun Wu",
     reelUrl: "", reelLabel: "Watch Showreel",
     description: "Imaging and color specialist with 7+ years of post-production experience across color grading, digital imaging pipelines, and on-set media workflows — 60+ delivered projects spanning narrative film, VFX-adjacent productions, and branded campaigns."
   },
   about: {
     photo: "",
+    cvUrl: "", cvLabel: "Download CV", cvFileName: "Victor_Qixun_Wu_CV.pdf",
     bio: [
       "<strong>Victor Qixun Wu</strong> is an imaging and color specialist with 7+ years of post-production experience across color grading, digital imaging pipelines, and on-set media workflows. Expert in DaVinci Resolve across Rec.709, Log, and HDR color pipelines including full DCP delivery for cinema.",
       "Deep hands-on experience in the complete imaging workflow: media ingestion, secure offload, QC, metadata organization, color space management, and multi-format delivery. Background as on-set DIT bridges creative and technical environments — detail-oriented, collaborative, and built for world-class post production pipelines."
@@ -422,10 +491,63 @@ var DEFAULTS = {
     message: "Whether it's a new project, a collaboration, or just a conversation about color — my inbox is always open."
   },
   footer: {
-    logo: "V.",
+    logo: "VW.",
     copyright: "© 2026 Victor Qixun Wu. All rights reserved."
+  },
+  theme: {
+    bg: "#000a02", surface: "#0c0c0c", border: "#373c38", fg: "#fcfaf2",
+    muted: "#bcb09c", gray: "#85916d", accent: "#3f7735",
+    accentSoft: "#769164", earth: "#858954", sand: "#e6e3c5",
+    washiOpacity: 0.4
   }
 };
+
+/* 日本の伝統色 — authentic presets offered in the Theme panel */
+var NIPPON_COLORS = [
+  { n: '墨色 SUMI',                h: '#000a02' },
+  { n: '濡羽色 NUREBA',            h: '#000b00' },
+  { n: '漆黒 SHIKKOKU',            h: '#080000' },
+  { n: '呂色 ROIRO',               h: '#0c0c0c' },
+  { n: '黒橡 KUROTSURUBAMI',       h: '#322c28' },
+  { n: '藍墨茶 AISUMICHA',          h: '#373c38' },
+  { n: '涅色 KURI',                h: '#433634' },
+  { n: '檳榔子染 BINROJIZOME',      h: '#433d3c' },
+  { n: '千歳茶 SENZAICHA',          h: '#48493f' },
+  { n: '柳煤竹 YANAGISUSUTAKE',     h: '#4a593d' },
+  { n: '消炭色 KESHIZUMI',          h: '#595045' },
+  { n: '海松色 MIRU',              h: '#596327' },
+  { n: '千歳緑 CHITOSEMIDORI',      h: '#335719' },
+  { n: '老緑 OIMIDORI',            h: '#405c36' },
+  { n: '松葉色 MATSUBA',            h: '#3f7735' },
+  { n: '苔色 KOKE',                h: '#78882d' },
+  { n: '麹塵 KIKUJIN',             h: '#6e7955' },
+  { n: '岩井茶 IWAICHA',            h: '#6f6f43' },
+  { n: '老竹色 OITAKE',             h: '#769164' },
+  { n: '山鳩色 YAMABATO',           h: '#767c6b' },
+  { n: '草色 KUSA',                h: '#7b8d42' },
+  { n: '青白橡 AOSHIROTSURUBAMI',   h: '#85916d' },
+  { n: '青丹 AONI',                h: '#858954' },
+  { n: '柳染 YANAGISOME',           h: '#93b881' },
+  { n: '柳鼠 YANAGINEZUMI',         h: '#c8d5bb' },
+  { n: '灰汁色 AKU',               h: '#bcb09c' },
+  { n: '利休白茶 RIKYUSHIRACHA',     h: '#e6e3c5' },
+  { n: '白緑 BYAKUROKU',           h: '#daead0' },
+  { n: '生成色 KINARI',             h: '#f7efe3' },
+  { n: '白練 SHIRONERI',            h: '#fcfaf2' }
+];
+
+var THEME_TOKENS = [
+  { k: 'bg',         label: 'Background',      note: 'Page background' },
+  { k: 'surface',    label: 'Surface',         note: 'Cards, inputs, modals' },
+  { k: 'border',     label: 'Border',          note: 'Hairlines and dividers' },
+  { k: 'fg',         label: 'Text',            note: 'Body copy, headings' },
+  { k: 'muted',      label: 'Text — secondary', note: 'Descriptions' },
+  { k: 'gray',       label: 'Text — dim',      note: 'Labels, captions' },
+  { k: 'accent',     label: 'Accent',          note: 'Buttons, rules, large titles' },
+  { k: 'accentSoft', label: 'Accent — soft',   note: 'Small text that must stay legible' },
+  { k: 'earth',      label: 'Earth',           note: 'Dates, section ticks' },
+  { k: 'sand',       label: 'Highlight',       note: 'Overlay text on images' }
+];
 
 // ═══════════════════════════════════════════════════════
 //  INIT
@@ -434,7 +556,8 @@ function init() {
   // Priority: 1) saved draft in this browser  2) published js/data.js  3) built-in defaults
   var saved        = localStorage.getItem('portfolio_data');
   var savedVersion = localStorage.getItem('portfolio_data_version');
-  var published    = window.PORTFOLIO_DATA;   // from js/data.js
+  // the published copy, ignoring any draft data.js may have merged in
+  var published    = window.PORTFOLIO_FILE_DATA || window.PORTFOLIO_DATA;
   var source       = 'defaults';
 
   try {
@@ -463,6 +586,14 @@ function init() {
   renderSidebar();
   navigate('general');
 
+  // close any open colour popup when clicking elsewhere
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.preset-pop.open').forEach(function(p){ p.classList.remove('open'); });
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') document.querySelectorAll('.preset-pop.open').forEach(function(p){ p.classList.remove('open'); });
+  });
+
   document.getElementById('btnSave').onclick    = save;
   document.getElementById('btnExport').onclick  = exportData;
   document.getElementById('btnImport').onclick  = importData;
@@ -490,8 +621,9 @@ function importData() {
         // plain JSON
         obj = JSON.parse(text);
       } catch (err) {
-        // data.js wrapper — pull out the object literal
-        var m = text.match(/window\.PORTFOLIO_DATA\s*=\s*(\{[\s\S]*?\});\s*\n?\s*window\.PORTFOLIO_DEFAULTS/);
+        // data.js wrapper — pull out the object literal (current or legacy format)
+        var m = text.match(/var\s+FILE_DATA\s*=\s*(\{[\s\S]*?\});\s*\n\s*var\s+data/);
+        if (!m) m = text.match(/window\.PORTFOLIO_DATA\s*=\s*(\{[\s\S]*?\});\s*\n?\s*window\.PORTFOLIO_DEFAULTS/);
         if (!m) m = text.match(/window\.PORTFOLIO_DATA\s*=\s*(\{[\s\S]*\})\s*;/);
         if (m) { try { obj = JSON.parse(m[1]); } catch (e2) { obj = null; } }
       }
@@ -543,16 +675,178 @@ function save() {
   }
 }
 
+/* Export splits the content in two:
+   - any image or PDF still held as base64 is written out as a real file
+   - data.js is emitted with paths pointing at those files
+   Files download individually; drop them into the folders shown in the toast. */
 function exportData() {
-  var content = '// Portfolio Content Data\n// Generated by Portfolio Editor — ' + new Date().toLocaleDateString() + '\n// Save this file as js/data.js in your portfolio folder\n\n(function () {\n  window.PORTFOLIO_DATA = ' + JSON.stringify(DATA, null, 2) + ';\n  window.PORTFOLIO_DEFAULTS = window.PORTFOLIO_DATA;\n})();\n';
-  var blob = new Blob([content], { type: 'text/javascript' });
-  var url  = URL.createObjectURL(blob);
-  var a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'data.js';
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Exported data.js', 'success');
+  var out = JSON.parse(JSON.stringify(DATA));
+  var files = [];                       // { path, blob }
+
+  var EXT = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp',
+              'image/gif':'gif', 'application/pdf':'pdf' };
+
+  function slug(s) {
+    return String(s || '').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+      .replace(/-+/g, '-').slice(0, 48) || 'untitled';
+  }
+
+  // Names already spoken for — both files being written now and paths that
+  // are already on disk — so a truncated title can never overwrite another.
+  var taken = {};
+  function uniqueName(folder, base, ext) {
+    var name = base, n = 2;
+    while (taken[folder + '/' + name + '.' + ext]) name = base + '-' + (n++);
+    taken[folder + '/' + name + '.' + ext] = true;
+    return name;
+  }
+
+  function toFile(dataUrl, folder, name) {
+    var m = /^data:([^;]+);base64,(.*)$/.exec(dataUrl || '');
+    if (!m) {                            // already a path — reserve it, keep it
+      if (dataUrl) taken[dataUrl] = true;
+      return dataUrl;
+    }
+    var mime = m[1], b64 = m[2];
+    var bin  = atob(b64);
+    var buf  = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    var ext  = EXT[mime] || 'bin';
+    var path = folder + '/' + uniqueName(folder, name, ext) + '.' + ext;
+    files.push({ path: path, blob: new Blob([buf], { type: mime }) });
+    return path;
+  }
+
+  // First pass: reserve every path that already exists on disk.
+  out.portfolio.forEach(function (coll) {
+    coll.works.forEach(function (w) {
+      if (w.coverImage && w.coverImage.indexOf('data:') !== 0) taken[w.coverImage] = true;
+    });
+  });
+  if (out.about) {
+    if (out.about.photo && out.about.photo.indexOf('data:') !== 0) taken[out.about.photo] = true;
+    if (out.about.cvUrl && out.about.cvUrl.indexOf('data:') !== 0) taken[out.about.cvUrl] = true;
+  }
+
+  // Second pass: write out anything still held as base64.
+  out.portfolio.forEach(function (coll) {
+    coll.works.forEach(function (w) {
+      w.coverImage = toFile(w.coverImage, 'assets/works', coll.id + '-' + slug(w.title));
+    });
+  });
+  if (out.about) {
+    out.about.photo = toFile(out.about.photo, 'assets', 'portrait');
+    out.about.cvUrl = toFile(out.about.cvUrl, 'assets/doc',
+                             slug((out.about.cvFileName || 'cv').replace(/\.[^.]+$/, '')));
+  }
+
+  var content =
+    '// Portfolio Content Data\n' +
+    '// Generated by Portfolio Editor — ' + new Date().toLocaleDateString() + '\n' +
+    '// Save this file as js/data.js in your portfolio folder.\n' +
+    '//\n' +
+    '// Images and the CV live as real files under assets/ — this file only holds\n' +
+    '// their paths, so the browser can fetch them in parallel and cache them.\n' +
+    '//\n' +
+    '// Live preview: if an unsaved draft exists in this browser (created by the\n' +
+    '// editor), it takes priority so index.html reflects edits immediately.\n' +
+    '// Visitors have no draft, so they always see the published content below.\n\n' +
+    '(function () {\n' +
+    '  var FILE_DATA = ' + JSON.stringify(out, null, 2) + ';\n\n' +
+    '  var data = FILE_DATA;\n' +
+    '  try {\n' +
+    "    var draft = localStorage.getItem('portfolio_data');\n" +
+    '    if (draft) {\n' +
+    '      var parsed = JSON.parse(draft);\n' +
+    '      if (parsed && parsed.portfolio) data = parsed;\n' +
+    '    }\n' +
+    '  } catch (e) { /* ignore unreadable draft */ }\n\n' +
+    '  // A draft may still hold base64 blobs — fall back to the published paths\n' +
+    '  // so the site never shows a broken image.\n' +
+    '  try {\n' +
+    '    if (data !== FILE_DATA) {\n' +
+    '      var byId = {};\n' +
+    '      FILE_DATA.portfolio.forEach(function (c) {\n' +
+    '        c.works.forEach(function (w) { byId[w.id] = w.coverImage; });\n' +
+    '      });\n' +
+    '      (data.portfolio || []).forEach(function (c) {\n' +
+    '        (c.works || []).forEach(function (w) {\n' +
+    "          if ((w.coverImage || '').indexOf('data:') === 0 && byId[w.id]) w.coverImage = byId[w.id];\n" +
+    '        });\n' +
+    '      });\n' +
+    "      if ((data.about.photo || '').indexOf('data:') === 0) data.about.photo = FILE_DATA.about.photo;\n" +
+    "      if ((data.about.cvUrl || '').indexOf('data:') === 0) data.about.cvUrl = FILE_DATA.about.cvUrl;\n" +
+    '    }\n' +
+    '  } catch (e) { /* best-effort */ }\n\n' +
+    '  window.PORTFOLIO_DATA      = data;\n' +
+    '  window.PORTFOLIO_FILE_DATA = FILE_DATA;\n' +
+    '  window.PORTFOLIO_DEFAULTS  = FILE_DATA;\n' +
+    '})();\n';
+
+  function download(blob, filename) {
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+
+  download(new Blob([content], { type: 'text/javascript' }), 'data.js');
+
+  // Browsers throttle rapid downloads, so stagger the asset files.
+  files.forEach(function (f, i) {
+    setTimeout(function () {
+      download(f.blob, f.path.split('/').pop());
+    }, 400 + i * 250);
+  });
+
+  // Which files on disk are no longer referenced? The browser cannot delete
+  // them, so list them instead — deleted works, replaced covers and renamed
+  // uploads all leave their old file behind.
+  function assetPaths(d) {
+    var out = [];
+    (d.portfolio || []).forEach(function (c) {
+      (c.works || []).forEach(function (w) {
+        if (w.coverImage && w.coverImage.indexOf('data:') !== 0) out.push(w.coverImage);
+      });
+    });
+    if (d.about) {
+      if (d.about.photo && d.about.photo.indexOf('data:') !== 0) out.push(d.about.photo);
+      if (d.about.cvUrl && d.about.cvUrl.indexOf('data:') !== 0) out.push(d.about.cvUrl);
+    }
+    return out;
+  }
+
+  var published = window.PORTFOLIO_FILE_DATA || {};
+  var before  = assetPaths(published);
+  var after   = assetPaths(out);
+  var orphans = before.filter(function (p) { return after.indexOf(p) === -1; });
+
+  // A manifest so none of this has to be remembered
+  var manifest =
+    'Portfolio export — ' + new Date().toLocaleString() + '\n' +
+    '='.repeat(52) + '\n\n' +
+    '1. Replace js/data.js with the downloaded data.js\n\n' +
+    (files.length
+      ? '2. Add these ' + files.length + ' file(s):\n' +
+        files.map(function (f) { return '     ' + f.path; }).join('\n') + '\n\n'
+      : '2. No new files — every asset was already on disk.\n\n') +
+    (orphans.length
+      ? '3. These ' + orphans.length + ' file(s) are no longer used and can be deleted:\n' +
+        orphans.map(function (p) { return '     ' + p; }).join('\n') + '\n'
+      : '3. Nothing to delete — no orphaned files.\n');
+
+  download(new Blob([manifest], { type: 'text/plain' }), 'EXPORT-README.txt');
+
+  console.log(manifest);
+  var msg = '✓ Exported data.js';
+  if (files.length)   msg += ' + ' + files.length + ' file(s) to add';
+  if (orphans.length) msg += ' · ' + orphans.length + ' unused file(s) to delete';
+  showToast(msg + ' — see EXPORT-README.txt', 'success');
 }
 
 function showToast(msg, type) {
@@ -618,7 +912,8 @@ function renderSidebar() {
   var bottom = el('div', 'sidebar-section');
   [{ id:'experience', icon:'◈', label:'Experience' },
    { id:'contact',    icon:'◇', label:'Contact' },
-   { id:'footer',     icon:'▤', label:'Logo & Footer' }].forEach(function(item) {
+   { id:'footer',     icon:'▤', label:'Logo & Footer' },
+   { id:'theme',      icon:'◐', label:'Theme & Colors' }].forEach(function(item) {
     bottom.appendChild(navItem(item));
   });
   sb.appendChild(bottom);
@@ -737,6 +1032,7 @@ function renderPanel() {
     case 'experience': panel.appendChild(panelExperience()); break;
     case 'contact':    panel.appendChild(panelContact());    break;
     case 'footer':     panel.appendChild(panelFooter());     break;
+    case 'theme':      panel.appendChild(panelTheme());      break;
     default:           panel.innerHTML = '<p style="color:var(--fg3);padding:2rem">Select a section from the sidebar.</p>';
   }
 }
@@ -759,8 +1055,8 @@ function panelHero() {
   d.appendChild(elText('div','panel-sub','The first thing visitors see'));
   d.appendChild(divider());
   d.appendChild(field('Badge Label',          DATA.hero.label,       function(v){ DATA.hero.label       = v; markDirty(); }));
-  d.appendChild(field('Title — Line 1',       DATA.hero.line1,       function(v){ DATA.hero.line1       = v; markDirty(); }));
-  d.appendChild(field('Title — Line 2 (italic)', DATA.hero.line2,    function(v){ DATA.hero.line2       = v; markDirty(); }));
+  d.appendChild(field('Wordmark (large, channel-split)', DATA.hero.line1, function(v){ DATA.hero.line1 = v; markDirty(); }));
+  d.appendChild(field('Signature line (below)', DATA.hero.line2,     function(v){ DATA.hero.line2       = v; markDirty(); }));
   d.appendChild(field('Description',          DATA.hero.description, function(v){ DATA.hero.description = v; markDirty(); }, 'textarea'));
 
   d.appendChild(divider());
@@ -1347,6 +1643,149 @@ function panelFooter() {
   var hint = el('div','photo-hint','The logo appears in the navigation bar and at the bottom of every page. Tip: update the copyright year each January.');
   d.appendChild(hint);
   return d;
+}
+
+/* ── THEME & COLORS ──────────────────────────────────── */
+function panelTheme() {
+  if (!DATA.theme) DATA.theme = JSON.parse(JSON.stringify(DEFAULTS.theme));
+  var T = DATA.theme;
+
+  var d = el('div');
+  d.appendChild(elText('div','panel-title','Theme & Colors'));
+  d.appendChild(elText('div','panel-sub','Every preset is an authentic 日本の伝統色'));
+  d.appendChild(divider());
+
+  THEME_TOKENS.forEach(function(tok) {
+    var row = el('div','theme-row');
+
+    var sw = el('span','theme-swatch');
+    sw.style.background = T[tok.k] || '#000';
+
+    var info = el('div','theme-info');
+    info.appendChild(elText('div','theme-label', tok.label));
+    info.appendChild(elText('div','theme-note',  tok.note));
+
+    // preset picker — custom popup so every swatch is visible
+    var wrap = el('div','preset-wrap');
+    var btn  = el('button','preset-btn');
+    var bSw  = el('span','pb-sw');
+    var bNm  = el('span','pb-name');
+    var bCr  = elText('span','pb-caret','▼');
+    btn.appendChild(bSw); btn.appendChild(bNm); btn.appendChild(bCr);
+
+    var pop = el('div','preset-pop');
+    NIPPON_COLORS.forEach(function(c) {
+      var it = el('button','preset-item');
+      var sw = el('span','preset-sw'); sw.style.background = c.h;
+      it.appendChild(sw);
+      it.appendChild(elText('span','preset-nm', c.n));
+      it.appendChild(elText('span','preset-hx', c.h));
+      it.dataset.hex = c.h;
+      it.onclick = function(e) {
+        e.stopPropagation();
+        set(c.h, 'sel');
+        pop.classList.remove('open');
+      };
+      pop.appendChild(it);
+    });
+
+    function syncBtn(v) {
+      var m = NIPPON_COLORS.find(function(c){ return c.h.toLowerCase() === (v||'').toLowerCase(); });
+      bSw.style.background = v || '#000';
+      bNm.textContent = m ? m.n : 'custom';
+      pop.querySelectorAll('.preset-item').forEach(function(it) {
+        it.classList.toggle('active', it.dataset.hex.toLowerCase() === (v||'').toLowerCase());
+      });
+    }
+
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      var wasOpen = pop.classList.contains('open');
+      document.querySelectorAll('.preset-pop.open').forEach(function(p){ p.classList.remove('open'); });
+      if (!wasOpen) pop.classList.add('open');
+    };
+
+    wrap.appendChild(btn);
+    wrap.appendChild(pop);
+
+    var hex = el('input','theme-hex');
+    hex.type = 'text';
+    hex.value = T[tok.k] || '';
+    hex.spellcheck = false;
+
+    var pick = el('input','theme-pick');
+    pick.type = 'color';
+    pick.value = /^#[0-9a-f]{6}$/i.test(T[tok.k]||'') ? T[tok.k] : '#000000';
+
+    function set(v, from) {
+      if (!/^#[0-9a-f]{6}$/i.test(v)) return;
+      T[tok.k] = v.toLowerCase();
+      sw.style.background = v;
+      if (from !== 'hex')  hex.value  = v.toLowerCase();
+      if (from !== 'pick') pick.value = v;
+      syncBtn(v);
+      applyLivePreview();
+      markDirty();
+    }
+    hex.addEventListener('input',  function(){ set(hex.value.trim(),'hex'); });
+    pick.addEventListener('input', function(){ set(pick.value,'pick'); });
+    syncBtn(T[tok.k]);
+
+    var ctrls = el('div','theme-ctrls');
+    ctrls.appendChild(wrap);
+    ctrls.appendChild(hex);
+    ctrls.appendChild(pick);
+
+    row.appendChild(sw);
+    row.appendChild(info);
+    row.appendChild(ctrls);
+    d.appendChild(row);
+  });
+
+  // ── washi texture
+  d.appendChild(divider());
+  d.appendChild(elText('div','panel-section-title','和紙 Washi Texture'));
+
+  var wRow  = el('div','washi-row');
+  var wVal  = elText('span','washi-val', Math.round((T.washiOpacity ?? 0.4) * 100) + '%');
+  var wIn   = el('input','washi-range');
+  wIn.type = 'range'; wIn.min = '0'; wIn.max = '100'; wIn.step = '5';
+  wIn.value = String(Math.round((T.washiOpacity ?? 0.4) * 100));
+  wIn.addEventListener('input', function() {
+    T.washiOpacity = Number(wIn.value) / 100;
+    wVal.textContent = wIn.value + '%';
+    applyLivePreview();
+    markDirty();
+  });
+  wRow.appendChild(elText('span','washi-cap','Off'));
+  wRow.appendChild(wIn);
+  wRow.appendChild(elText('span','washi-cap','Strong'));
+  wRow.appendChild(wVal);
+  d.appendChild(wRow);
+  d.appendChild(el('div','photo-hint','Paper grain over the whole page. Around 40% is subtle; above 70% it starts to read as visible texture.'));
+
+  // ── reset
+  d.appendChild(divider());
+  var resetBtn = el('button','btn','↺ Reset to default palette');
+  resetBtn.onclick = function() {
+    if (!confirm('Reset all colors and texture to the default 伝統色 palette?')) return;
+    DATA.theme = JSON.parse(JSON.stringify(DEFAULTS.theme));
+    applyLivePreview();
+    markDirty();
+    renderPanel();
+    showToast('✓ Palette reset', 'success');
+  };
+  d.appendChild(resetBtn);
+
+  return d;
+}
+
+/* Live-preview the palette inside the editor chrome itself */
+function applyLivePreview() {
+  var T = DATA.theme; if (!T) return;
+  var r = document.documentElement;
+  r.style.setProperty('--accent', T.accent || '#3f7735');
+  r.style.setProperty('--fg',     T.fg     || '#fcfaf2');
 }
 
 // ═══════════════════════════════════════════════════════
