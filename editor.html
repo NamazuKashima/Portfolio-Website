@@ -557,24 +557,31 @@ var THEME_TOKENS = [
 //  INIT
 // ═══════════════════════════════════════════════════════
 function init() {
-  // Priority: 1) saved draft in this browser  2) published js/data.js  3) built-in defaults
-  var saved        = localStorage.getItem('portfolio_data');
-  var savedVersion = localStorage.getItem('portfolio_data_version');
-  // the published copy, ignoring any draft data.js may have merged in
-  var published    = window.PORTFOLIO_FILE_DATA || window.PORTFOLIO_DATA;
-  var source       = 'defaults';
+  // Priority: 1) published js/data.js — whatever is actually in this folder
+  // right now  2) saved browser draft, only if there is no file to read at
+  // all  3) built-in defaults.
+  // The draft used to come first, which meant a stale leftover from a past
+  // session (or a different project) could silently shadow real content on
+  // disk. Disk always wins now; the draft is only a last-resort fallback,
+  // and gets fully synced (or cleared) below once a real source is found.
+  var published = window.PORTFOLIO_FILE_DATA || window.PORTFOLIO_DATA;
+  var source     = 'defaults';
 
   try {
-    if (saved && savedVersion === DATA_VERSION) {
-      DATA = JSON.parse(saved);
-      source = 'draft';
-    } else if (published && published.portfolio) {
+    if (published && published.portfolio) {
       DATA = JSON.parse(JSON.stringify(published));
       source = 'file';
     } else {
-      DATA = JSON.parse(JSON.stringify(DEFAULTS));
-      localStorage.removeItem('portfolio_data');
-      localStorage.setItem('portfolio_data_version', DATA_VERSION);
+      var saved        = localStorage.getItem('portfolio_data');
+      var savedVersion = localStorage.getItem('portfolio_data_version');
+      if (saved && savedVersion === DATA_VERSION) {
+        DATA = JSON.parse(saved);
+        source = 'draft';
+      } else {
+        DATA = JSON.parse(JSON.stringify(DEFAULTS));
+        localStorage.removeItem('portfolio_data');
+        localStorage.setItem('portfolio_data_version', DATA_VERSION);
+      }
     }
   }
   catch(e) {
@@ -582,6 +589,15 @@ function init() {
       ? JSON.parse(JSON.stringify(published))
       : JSON.parse(JSON.stringify(DEFAULTS));
     source = published ? 'file' : 'defaults';
+  }
+
+  // Keep the draft mirrored to whatever we just loaded, so it can never
+  // resurface and override a fresher file on the next reload.
+  if (source !== 'draft') {
+    try {
+      localStorage.setItem('portfolio_data', JSON.stringify(DATA));
+      localStorage.setItem('portfolio_data_version', DATA_VERSION);
+    } catch (e) { /* best-effort */ }
   }
 
   // expand all collections by default
@@ -612,6 +628,61 @@ function init() {
   if (source === 'defaults') showToast('No saved content found — showing sample data', 'error');
 }
 
+// Pulls the content object out of a data.js file's text, whatever wrapper
+// format it's in (current FILE_DATA form, legacy PORTFOLIO_DATA form, or
+// plain JSON). Shared by manual Import and the direct-from-folder read.
+function parseDataJsText(text) {
+  var obj = null;
+  try {
+    obj = JSON.parse(text);
+  } catch (err) {
+    var m = text.match(/var\s+FILE_DATA\s*=\s*(\{[\s\S]*?\});\s*\n\s*var\s+data/);
+    if (!m) m = text.match(/window\.PORTFOLIO_DATA\s*=\s*(\{[\s\S]*?\});\s*\n?\s*window\.PORTFOLIO_DEFAULTS/);
+    if (!m) m = text.match(/window\.PORTFOLIO_DATA\s*=\s*(\{[\s\S]*\})\s*;/);
+    if (m) { try { obj = JSON.parse(m[1]); } catch (e2) { obj = null; } }
+  }
+  return (obj && obj.portfolio) ? obj : null;
+}
+
+// Reads js/data.js straight off disk through the connected folder handle —
+// bypasses the page's own <script src> entirely, so it can never show a
+// version cached from an earlier page load.
+async function readDataJsFromFolder(handle) {
+  try {
+    var jsDir      = await handle.getDirectoryHandle('js');
+    var fileHandle = await jsDir.getFileHandle('data.js');
+    var file        = await fileHandle.getFile();
+    var text        = await file.text();
+    return parseDataJsText(text);
+  } catch (e) { return null; }
+}
+
+// Re-reads data.js from the connected folder and swaps it in as the live
+// DATA. Called right after connecting/reconnecting, and silently again on
+// every page load once a folder is already connected, so what you see in
+// the editor always matches what is actually on disk.
+async function loadFromDiskAndApply(opts) {
+  opts = opts || {};
+  if (!dirHandle) return;
+  var obj = await readDataJsFromFolder(dirHandle);
+  if (!obj) {
+    if (!opts.silent) showToast('⚠ Connected, but could not read js/data.js from that folder', 'error');
+    return;
+  }
+  DATA = obj;
+  expandedColls = {};
+  DATA.portfolio.forEach(function (c) { expandedColls[c.id] = true; });
+  try {
+    localStorage.setItem('portfolio_data', JSON.stringify(DATA));
+    localStorage.setItem('portfolio_data_version', DATA_VERSION);
+  } catch (e) { /* best-effort */ }
+  dirty = false;
+  var s = document.getElementById('saveStatus');
+  if (s) { s.textContent = '✓ Saved'; s.className = 'save-status clean'; }
+  navigate(VIEW.section || 'general', VIEW.collId, VIEW.workId);
+  if (!opts.silent) showToast('✓ Loaded latest data.js from "' + dirHandle.name + '"', 'success');
+}
+
 // ═══════════════════════════════════════════════════════
 //  IMPORT (load a data.js / .json file manually)
 // ═══════════════════════════════════════════════════════
@@ -625,17 +696,7 @@ function importData() {
     var reader = new FileReader();
     reader.onload = function(e) {
       var text = e.target.result;
-      var obj = null;
-      try {
-        // plain JSON
-        obj = JSON.parse(text);
-      } catch (err) {
-        // data.js wrapper — pull out the object literal (current or legacy format)
-        var m = text.match(/var\s+FILE_DATA\s*=\s*(\{[\s\S]*?\});\s*\n\s*var\s+data/);
-        if (!m) m = text.match(/window\.PORTFOLIO_DATA\s*=\s*(\{[\s\S]*?\});\s*\n?\s*window\.PORTFOLIO_DEFAULTS/);
-        if (!m) m = text.match(/window\.PORTFOLIO_DATA\s*=\s*(\{[\s\S]*\})\s*;/);
-        if (m) { try { obj = JSON.parse(m[1]); } catch (e2) { obj = null; } }
-      }
+      var obj = parseDataJsText(text);
       if (!obj || !obj.portfolio) { showToast('✕ Could not read that file', 'error'); return; }
       DATA = obj;
       expandedColls = {};
@@ -974,6 +1035,7 @@ async function connectFolder() {
     try { await idbSet('dirHandle', handle); } catch (e) { /* persistence best-effort */ }
     updateConnectionUI();
     showToast('✓ Connected to "' + handle.name + '" — edits now save directly', 'success');
+    await loadFromDiskAndApply({ silent: true }); // pull its real data.js in immediately
   } catch (err) {
     if (err && err.name !== 'AbortError') showToast('✕ Could not connect folder', 'error');
   }
@@ -988,6 +1050,7 @@ async function reconnectFolder() {
       pendingHandle = null;
       updateConnectionUI();
       showToast('✓ Reconnected to "' + dirHandle.name + '"', 'success');
+      await loadFromDiskAndApply({ silent: true }); // in case the file changed since last session
     } else {
       showToast('✕ Permission denied', 'error');
     }
@@ -1003,8 +1066,17 @@ async function initFolderConnection() {
     var handle = await idbGet('dirHandle');
     if (!handle) return;
     var perm = await handle.queryPermission({ mode: 'readwrite' });
-    if (perm === 'granted') dirHandle = handle;
-    else pendingHandle = handle;
+    if (perm === 'granted') {
+      dirHandle = handle;
+      updateConnectionUI();
+      // Already connected from a past session — quietly re-sync against
+      // whatever is on disk right now instead of trusting the page's own
+      // script-tag load, which could be an older cached copy.
+      await loadFromDiskAndApply({ silent: true });
+      return;
+    } else {
+      pendingHandle = handle;
+    }
   } catch (e) { /* stale/revoked handle — ignore, stays disconnected */ }
   updateConnectionUI();
 }

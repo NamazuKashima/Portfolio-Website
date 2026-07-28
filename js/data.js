@@ -349,22 +349,6 @@
           }
         },
         {
-          "id": "commercial-1785175270437",
-          "title": "GXG New Urban - Lift",
-          "year": "2024",
-          "role": "Colorist",
-          "description": "Color graded a series of e-commerce videos for GXG's New Urban collection, building a clean, contemporary look that reinforces the brand's urban menswear identity.",
-          "tags": [
-            "E-Commerce",
-            "Brand"
-          ],
-          "coverImage": "assets/works/commercial-gxg-new-urban-lift.jpg",
-          "links": {
-            "live": "",
-            "case_study": ""
-          }
-        },
-        {
           "id": "commercial-1785183336402",
           "title": "Fionn MacCool's - Tradition",
           "year": "2024",
@@ -393,6 +377,22 @@
           "coverImage": "assets/works/commercial-la-belle-la-boeuf-l-impasse-avec-arber-xhekaj.jpg",
           "links": {
             "live": "https://www.youtube.com/watch?v=XngB4NdcUIw",
+            "case_study": ""
+          }
+        },
+        {
+          "id": "commercial-1785175270437",
+          "title": "GXG New Urban - Lift",
+          "year": "2024",
+          "role": "Colorist",
+          "description": "Color graded a series of e-commerce videos for GXG's New Urban collection, building a clean, contemporary look that reinforces the brand's urban menswear identity.",
+          "tags": [
+            "E-Commerce",
+            "Brand"
+          ],
+          "coverImage": "assets/works/commercial-gxg-new-urban-lift.jpg",
+          "links": {
+            "live": "",
             "case_study": ""
           }
         },

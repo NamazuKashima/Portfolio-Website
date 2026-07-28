@@ -72,9 +72,12 @@ Deleting a work does not automatically delete its old cover image — when you
 click **💾 Save to Folder** and unused files exist, the editor lists them and
 asks before deleting anything from disk.
 
-> The editor loads content in this order: browser draft → `js/data.js` → built-in
-> defaults. If a draft is ever lost (new browser, cleared cache, moved folder),
-> use **↑ Import** to load a `data.js` file back in.
+> The editor loads content in this order: `js/data.js` on disk → browser draft
+> (only if there's no file to read at all) → built-in defaults. Disk always
+> wins, so a leftover draft from a previous session can never shadow real
+> content — and once a folder is connected, the editor re-reads `js/data.js`
+> straight from that folder on every open, bypassing the browser entirely. If
+> you ever need to load a `data.js` file manually, use **↑ Import**.
 
 ### Editor features
 
