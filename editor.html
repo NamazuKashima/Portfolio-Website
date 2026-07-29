@@ -451,10 +451,17 @@ var DEFAULTS = {
       "Deep hands-on experience in the complete imaging workflow: media ingestion, secure offload, QC, metadata organization, color space management, and multi-format delivery. Background as on-set DIT bridges creative and technical environments — detail-oriented, collaborative, and built for world-class post production pipelines."
     ],
     skills: [
-      { category: "Color Grading",   items: ["DaVinci Resolve", "Premiere Pro", "Rec.709 / Log / HDR", "LUT Management", "DCP Delivery", "Color Space Conversions"] },
-      { category: "Camera & On-Set",  items: ["ARRI / Sony / Canon / Blackmagic", "Camera Operation", "Pull Focus", "DIT", "Media Ingestion & Offload", "Cross-Platform QC"] },
-      { category: "Formats & Codecs", items: ["ProRes, DNxHD, H.264/H.265", "RAW Formats", "DCP", "Digital Cinema Resolutions", "Multi-Format Export & Compliance"] },
-      { category: "Post & Tools",     items: ["After Effects", "Photoshop", "Shotput Pro", "Frame.io", "Multicam Editing", "Sound Clean-up"] }
+      { category: "Editing & Post-Production", items: ["DaVinci Resolve", "Premiere Pro", "Rec.709 / Log / HDR", "Color Space Conversions & LUT Management", "DCP Delivery — Festival & Commercial", "Multicam Editing", "Sound Clean-Up"] },
+      { category: "Motion Graphics & Design",   items: ["After Effects — Motion Graphics & Titles", "Photoshop — Stills, Overlays, Compositing", "Illustrator — Graphic Assets & Templates"] },
+      { category: "Audio",                      items: ["Adobe Audition", "Dialogue Clean-Up & Sweetening"] },
+      { category: "Camera & On-Set",            items: ["ARRI / Sony / Canon / Blackmagic", "Camera Operation & Focus Pulling", "DIT — Media Ingestion & Offload", "Cross-Platform QC"] },
+      { category: "Formats, Codecs & Delivery", items: ["ProRes, DNxHD, H.264/H.265, RAW, DCP", "Digital Cinema Resolutions", "Multi-Format Export & Compliance"] },
+      { category: "Platform & Social",          items: ["Instagram, YouTube, TikTok, Reels, Shorts", "Platform-Specific Format & Delivery"] },
+      { category: "Production Workflow & Tools", items: ["Shotput Pro", "Frame.io", "Project Management — Concurrent Productions"] }
+    ],
+    languages: [
+      { name: "English", level: "Professional fluency" },
+      { name: "Mandarin", level: "Native" }
     ]
   },
   portfolio: [
@@ -1644,6 +1651,48 @@ function panelAbout() {
   }
   rebuildSkills();
   d.appendChild(skillsWrap);
+
+  d.appendChild(divider());
+  d.appendChild(elText('div','panel-section-title','Languages'));
+
+  if (!DATA.about.languages) DATA.about.languages = [];
+  var langWrap = el('div','skills-editor');
+  langWrap.id = 'languagesEditor';
+
+  function rebuildLanguages() {
+    langWrap.innerHTML = '';
+    DATA.about.languages.forEach(function(lang, li) {
+      var row = el('div','skill-item-row');
+      var nameInp = el('input','skill-item-input');
+      nameInp.value = lang.name || '';
+      nameInp.placeholder = 'Language (e.g. English)';
+      nameInp.addEventListener('input', function() { DATA.about.languages[li].name = nameInp.value; markDirty(); });
+      var levelInp = el('input','skill-item-input');
+      levelInp.value = lang.level || '';
+      levelInp.placeholder = 'Level (e.g. Native, Professional fluency)';
+      levelInp.addEventListener('input', function() { DATA.about.languages[li].level = levelInp.value; markDirty(); });
+      var del = el('button','skill-item-del','×');
+      del.onclick = function() {
+        DATA.about.languages.splice(li,1);
+        markDirty();
+        rebuildLanguages();
+      };
+      row.appendChild(nameInp);
+      row.appendChild(levelInp);
+      row.appendChild(del);
+      langWrap.appendChild(row);
+    });
+    var addLang = el('button','skill-add-item','+ Add language');
+    addLang.onclick = function() {
+      DATA.about.languages.push({ name: '', level: '' });
+      markDirty();
+      rebuildLanguages();
+    };
+    langWrap.appendChild(addLang);
+  }
+  rebuildLanguages();
+  d.appendChild(langWrap);
+
   return d;
 }
 

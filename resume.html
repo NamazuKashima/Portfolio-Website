@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Cloudflare Web Analytics -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4e25d59b201446058587263a5480ddc1"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+
+  <title>Victor Qixun Wu — Resume</title>
+  <meta name="description" content="Résumé for Victor Qixun Wu, colorist and editor based in Vancouver, BC. Generated live from his portfolio — save as PDF to share." />
+  <link rel="canonical" href="https://www.victorqixunwu.com/resume.html" />
+  <meta name="theme-color" content="#000a02" />
+  <!-- A generated view of content that already lives on the homepage —
+       kept out of search results so it doesn't compete with index.html. -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000a02'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='30' font-weight='700' fill='%23fcfaf2' text-anchor='middle' letter-spacing='-1'%3EVW.%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css?v=20260728202321" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── resume page — reuses css/style.css tokens, adds its own layout ── */
+    :root {
+      --resume-lh: 1.35;   /* body text line-height — dragged live from the Customize panel */
+      --resume-scale: 1;   /* density multiplier — rescales every rem measurement via html{font-size} below */
+    }
+    html { font-size: calc(16px * var(--resume-scale)); }
+    body { cursor: default; } /* main.js (custom cursor) isn't loaded here */
+    /* Zen Kaku Gothic New (the site's body font) is drawn for Japanese kana
+       and kanji shapes — its Latin glyphs read as unusual at resume body
+       sizes. Inter Tight, already loaded for headings, reads cleanly at any
+       size, so the whole document uses it instead of the site's default. */
+    body, input, textarea { font-family: var(--font-display); }
+
+    .resume-nav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; flex-wrap: wrap;
+      padding: 1.1rem 2.5rem;
+      background: rgba(0,10,2,0.88);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .resume-nav .nav-logo { font-size: 1.05rem; }
+    .resume-nav-actions { display: flex; align-items: center; gap: 1rem; }
+    .resume-back {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--gray); transition: var(--t);
+      margin-right: 0.5rem;
+    }
+    .resume-back:hover { color: var(--accent); }
+    .btn-print, .customize-toggle {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.65rem 1.25rem;
+      border: 1px solid var(--border);
+      color: var(--fg);
+      font-family: var(--font-display);
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: none; cursor: pointer; transition: var(--t);
+    }
+    .btn-print:hover, .customize-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-print svg, .customize-toggle svg { width: 14px; height: 14px; }
+
+    .resume-page { padding: 3.5rem 0 5rem; }
+    .resume-sheet { max-width: var(--w); margin: 0 auto; padding: 0 2.5rem; }
+
+    /* header: photo + name/title/contact */
+    .resume-header {
+      display: flex; align-items: flex-start; gap: 1.75rem;
+      padding-bottom: 2rem; margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    /* Portrait crop, not a forced square — the source photo (portrait.jpg)
+       is a 4:5 headshot, so the box matches that ratio. object-fit: cover
+       still fills the box edge-to-edge, but with no mismatch to reconcile
+       there's nothing left to crop away. */
+    .resume-photo {
+      width: 4.4rem; aspect-ratio: 4 / 5; flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      object-fit: cover;
+    }
+    .resume-photo-placeholder {
+      width: 4.4rem; aspect-ratio: 4 / 5; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface); border: 1px solid var(--border);
+      font-family: var(--font-display); font-size: 2rem; color: var(--gray);
+    }
+    /* A same-specificity class rule with `display` beats the UA [hidden]
+       rule in source order, so toggling .hidden alone silently fails —
+       state it explicitly for both possible photo states. */
+    .resume-photo[hidden], .resume-photo-placeholder[hidden] { display: none; }
+    .resume-name {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      line-height: 1.1;
+      margin-bottom: 0.4rem;
+    }
+    .resume-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--accent-soft);
+      margin-bottom: 0.85rem;
+    }
+    .resume-contact {
+      font-size: 0.8rem; color: var(--muted);
+      display: flex; flex-wrap: wrap; gap: 0 0.65rem;
+    }
+    .resume-contact span:not(:last-child)::after { content: '·'; margin-left: 0.65rem; color: var(--earth); }
+    .resume-contact a { color: var(--muted); transition: var(--t); }
+    .resume-contact a:hover { color: var(--accent); }
+
+    /* summary — reads a touch tighter than the body text below it (0.9×
+       --resume-lh), since a short intro paragraph doesn't need as much
+       breathing room as a scanning list of bullets does. */
+    .resume-summary {
+      font-size: 0.82rem; color: var(--muted); line-height: calc(var(--resume-lh) * 0.9);
+      max-width: 760px; margin-bottom: 2.75rem;
+    }
+    .resume-summary p { margin-bottom: 0.9rem; }
+    .resume-summary p:last-child { margin-bottom: 0; }
+    .resume-summary strong { color: var(--fg); font-weight: 600; }
+
+    /* stacked, full-width sections — Experience carries a full bullet list
+       per role, which needs more width than a sidebar-and-content grid
+       could give it. Order + visibility are driven by CONFIG at render
+       time — see the Customize panel. */
+    .resume-section { margin-bottom: 2.75rem; }
+    .resume-section:last-of-type { margin-bottom: 0; }
+    .resume-block-label {
+      font-size: 0.64rem; font-weight: 700; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--gray);
+      display: flex; align-items: center; gap: 0.7rem;
+      margin-bottom: 1.4rem;
+    }
+    .resume-block-label::before { content: ''; width: 14px; height: 1px; background: var(--earth); flex-shrink: 0; }
+
+    /* one full-width row per skill category — label left, items flowing
+       right. Replaces an earlier 3-column card layout that read as
+       cluttered. */
+    .skills-list { display: flex; flex-direction: column; }
+    .skill-row {
+      display: flex; align-items: baseline; gap: 1.75rem;
+      padding: 0.65rem 0; border-bottom: 1px solid var(--border);
+    }
+    .skill-row:first-child { padding-top: 0; }
+    .skill-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .skill-row h4 {
+      flex: 0 0 190px;
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent-soft);
+    }
+    .skill-row p { flex: 1; font-size: 0.78rem; color: var(--gray); line-height: var(--resume-lh); }
+
+    .exp-row { break-inside: avoid; padding-bottom: 1.1rem; margin-bottom: 1.1rem; border-bottom: 1px solid var(--border); }
+    .exp-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .exp-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.2rem; }
+    .exp-title { font-family: var(--font-display); font-size: 0.98rem; font-weight: 500; color: var(--fg); text-transform: uppercase; letter-spacing: 0.01em; }
+    .exp-period { font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; color: var(--fg); white-space: nowrap; }
+    .exp-company { font-size: 0.76rem; color: var(--gray); margin-bottom: 0.35rem; }
+    .exp-desc { font-size: 0.82rem; color: var(--muted); line-height: var(--resume-lh); }
+    .exp-bullets { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+    .exp-bullets li {
+      position: relative; padding-left: 1rem;
+      font-size: 0.82rem; color: var(--muted); line-height: var(--resume-lh);
+      margin-bottom: 0.35rem;
+    }
+    .exp-bullets li:last-child { margin-bottom: 0; }
+    .exp-bullets li::before { content: '–'; position: absolute; left: 0; color: var(--earth); }
+
+    .resume-languages { font-size: 0.82rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0 0.65rem; }
+    .resume-languages span:not(:last-child)::after { content: '·'; margin-left: 0.65rem; color: var(--earth); }
+
+    /* selected work strip — column count follows how many thumbnails are
+       actually picked (set as --work-cols on the container), so 3 items
+       aren't stretched across 6 empty-feeling slots. */
+    .resume-work-strip {
+      display: grid;
+      grid-template-columns: repeat(var(--work-cols, 6), 1fr);
+      gap: 0.6rem;
+    }
+    .resume-work-item { break-inside: avoid; }
+    .resume-work-thumb {
+      width: 100%; aspect-ratio: 16/9;
+      background: var(--surface); border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .resume-work-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .resume-work-title { font-size: 0.62rem; color: var(--gray); margin-top: 0.4rem; line-height: 1.4; }
+    .resume-work-title strong { display: block; color: var(--muted); font-weight: 500; }
+    .resume-work-role { display: block; color: var(--accent-soft); }
+
+    .resume-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.75rem;
+      margin-top: 3.5rem; padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.68rem; color: var(--gray);
+    }
+    .resume-footer .footer-logo { font-family: var(--font-display); font-weight: 700; color: var(--fg); }
+
+    /* ── Customize panel — screen only, a right-side drawer ── */
+    .customize-backdrop {
+      position: fixed; inset: 0; z-index: 29;
+      background: rgba(0,0,0,0.5);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .customize-backdrop.is-open { opacity: 1; pointer-events: auto; }
+    .customize-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 30;
+      width: min(370px, 100vw);
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .customize-panel.is-open { transform: translateX(0); }
+    .customize-panel-inner { padding: 1.75rem; }
+    .customize-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.6rem; }
+    .customize-head h3 {
+      font-family: var(--font-display); font-size: 0.85rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg);
+    }
+    .customize-close {
+      background: none; border: none; color: var(--gray);
+      font-size: 1.4rem; line-height: 1; cursor: pointer; padding: 0;
+    }
+    .customize-close:hover { color: var(--fg); }
+
+    .customize-group { margin-bottom: 1.6rem; padding-bottom: 1.6rem; border-bottom: 1px solid var(--border); }
+    .customize-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .customize-group h4 {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--gray); margin-bottom: 0.85rem;
+    }
+    .customize-hint { font-size: 0.7rem; color: var(--earth); line-height: 1.5; margin-top: 0.6rem; }
+
+    .section-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0; }
+    .section-toggle-row label { display: flex; align-items: center; gap: 0.6rem; font-size: 0.8rem; color: var(--muted); cursor: pointer; }
+    .reorder-btns { display: flex; gap: 0.3rem; }
+    .reorder-btns button {
+      width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+      background: none; border: 1px solid var(--border); color: var(--gray);
+      cursor: pointer; font-size: 0.68rem; border-radius: 2px; transition: var(--t);
+    }
+    .reorder-btns button:hover:not(:disabled) { border-color: var(--accent-soft); color: var(--fg); }
+    .reorder-btns button:disabled { opacity: 0.25; cursor: default; }
+
+    .customize-check { display: flex; align-items: center; gap: 0.6rem; font-size: 0.8rem; color: var(--muted); cursor: pointer; padding: 0.2rem 0; }
+    input[type="checkbox"] { accent-color: var(--accent-soft); width: 15px; height: 15px; flex-shrink: 0; }
+
+    .swatches { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+    .swatch {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 2px solid var(--border); cursor: pointer; padding: 0; transition: var(--t);
+    }
+    .swatch.is-active { border-color: var(--fg); }
+    .swatch-custom {
+      width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border);
+      padding: 0; cursor: pointer; background: none; overflow: hidden;
+    }
+    .swatch-custom::-webkit-color-swatch-wrapper { padding: 0; }
+    .swatch-custom::-webkit-color-swatch { border: none; border-radius: 50%; }
+    .swatch-custom::-moz-color-swatch { border: none; border-radius: 50%; }
+
+    .slider-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.7rem; }
+    .slider-head h4 { margin-bottom: 0; }
+    .value-badge { font-size: 0.7rem; color: var(--fg); font-variant-numeric: tabular-nums; }
+    input[type="range"] { width: 100%; accent-color: var(--accent-soft); }
+
+    .segmented { display: flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .segmented button {
+      flex: 1; padding: 0.5rem 0.3rem; background: none; border: none;
+      border-right: 1px solid var(--border);
+      color: var(--gray); font-size: 0.64rem; font-weight: 700; letter-spacing: 0.03em;
+      text-transform: uppercase; cursor: pointer; transition: var(--t);
+      font-family: var(--font-display);
+    }
+    .segmented button:last-child { border-right: none; }
+    .segmented button.is-active { background: var(--accent-soft); color: var(--bg); }
+    .segmented button:hover:not(.is-active) { color: var(--fg); }
+
+    .btn-reset {
+      width: 100%; padding: 0.7rem; background: none;
+      border: 1px solid var(--border); color: var(--gray);
+      font-family: var(--font-display); font-size: 0.66rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: var(--t);
+    }
+    .btn-reset:hover { border-color: var(--earth); color: var(--fg); }
+
+    @media (max-width: 780px) {
+      .resume-work-strip { grid-template-columns: repeat(3, 1fr) !important; }
+      .resume-header { flex-wrap: wrap; }
+      .exp-row-top { flex-wrap: wrap; }
+      .skill-row { flex-direction: column; gap: 0.3rem; }
+      .skill-row h4 { flex: none; }
+      .customize-panel { width: 100vw; }
+    }
+    @media (max-width: 480px) {
+      .resume-work-strip { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+
+    /* ── print / save-as-PDF ──
+       Dark backgrounds are stripped by default when printing (browsers save
+       ink), which would leave light text on white and make this unreadable.
+       print-color-adjust forces the real colours through instead.
+
+       @page margin renders as a blank white strip no matter what colour the
+       document sets — the margin box sits outside the page's content flow
+       entirely, so nothing can paint into it, not even a fixed-position
+       layer (tried that — Chromium clips it to the content box too). So
+       @page stays at 0 and .resume-page supplies the inset as padding
+       instead, which does reach every physical edge.
+
+       Padding on a box that gets split across pages normally only applies
+       at the very start and very end of the whole box — page 2 of a 2-page
+       resume would start flush against the top edge otherwise. box-
+       decoration-break: clone is the CSS-spec fix: it reapplies the padding
+       at every fragment, so each printed page gets a full, even margin. */
+    @media print {
+      @page { margin: 0; }
+      html, body {
+        background: var(--bg) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body::after { display: none; } /* washi grain — costs ink, adds nothing on paper */
+      .resume-nav, .customize-panel, .customize-backdrop { display: none; } /* chrome only; not part of the document */
+      .no-print { display: none !important; }
+      .resume-page {
+        padding: 9mm 14mm;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+      }
+      a[href]:after { content: ''; } /* don't let browsers append raw URLs */
+      .exp-row, .skill-row, .resume-work-item, .resume-header { break-inside: avoid; }
+      /* Screen spacing is generous enough on its own to spill a small
+         trailing section onto an otherwise-blank extra page. Tightening
+         the gaps — and, modestly, the font sizes — reclaims enough height
+         to keep everything on as few pages as the content reasonably
+         allows, without cramming anything. */
+      .resume-section { margin-bottom: 1.1rem; }
+      .resume-summary { margin-bottom: 1.1rem; font-size: 0.78rem; }
+      .resume-header { padding-bottom: 0.85rem; margin-bottom: 0.85rem; }
+      .resume-photo, .resume-photo-placeholder { width: 3.2rem; aspect-ratio: 4 / 5; }
+      .resume-name { margin-bottom: 0.25rem; }
+      .resume-label { margin-bottom: 0.55rem; }
+      .resume-block-label { margin-bottom: 0.6rem; }
+      .exp-row { padding-bottom: 0.55rem; margin-bottom: 0.55rem; }
+      .exp-company { margin-bottom: 0.2rem; }
+      .exp-bullets li { font-size: 0.79rem; margin-bottom: 0.2rem; }
+      .skill-row { padding: 0.4rem 0; }
+      .skill-row p { font-size: 0.76rem; }
+      .resume-work-strip { gap: 0.45rem; }
+      .resume-work-thumb { aspect-ratio: 16/10; }
+      .resume-work-title { margin-top: 0.3rem; }
+      .resume-footer { margin-top: 0.6rem; padding-top: 0.55rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="resume-nav no-print">
+    <a class="nav-logo" id="nav-logo" href="index.html">VW.</a>
+    <div class="resume-nav-actions">
+      <a class="resume-back" href="index.html">← Back to site</a>
+      <button class="customize-toggle" id="btnCustomize">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="currentColor" stroke="none"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+        Customize
+      </button>
+      <button class="btn-print" id="btnPrint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Save as PDF
+      </button>
+    </div>
+  </nav>
+
+  <!-- CUSTOMIZE PANEL -->
+  <div class="customize-backdrop no-print" id="customizeBackdrop"></div>
+  <aside class="customize-panel no-print" id="customizePanel" aria-label="Customize résumé">
+    <div class="customize-panel-inner">
+      <div class="customize-head">
+        <h3>Customize</h3>
+        <button class="customize-close" id="btnCloseCustomize" aria-label="Close">×</button>
+      </div>
+
+      <div class="customize-group">
+        <h4>Sections</h4>
+        <div class="section-toggle-row">
+          <label><input type="checkbox" id="toggleSummary" /> Summary</label>
+        </div>
+        <div id="sectionToggleList"></div>
+        <p class="customize-hint">Show or hide a section, and reorder it with the arrows.</p>
+      </div>
+
+      <div class="customize-group">
+        <h4>Header photo</h4>
+        <label class="customize-check"><input type="checkbox" id="togglePhoto" /> Show photo</label>
+      </div>
+
+      <div class="customize-group">
+        <h4>Accent color</h4>
+        <div class="swatches" id="accentSwatches">
+          <input type="color" class="swatch-custom" id="accentCustom" title="Custom color" />
+        </div>
+      </div>
+
+      <div class="customize-group">
+        <div class="slider-head"><h4>Line spacing</h4><span class="value-badge" id="lineSpacingValue">1.35</span></div>
+        <input type="range" id="lineSpacingSlider" min="1.1" max="1.9" step="0.05" />
+      </div>
+
+      <div class="customize-group">
+        <div class="slider-head"><h4>Density</h4><span class="value-badge" id="densityValueLabel">100%</span></div>
+        <input type="range" id="densitySlider" min="85" max="115" step="1" />
+        <p class="customize-hint">Scales the whole page, front to back — text, spacing and gaps together.</p>
+      </div>
+
+      <div class="customize-group">
+        <h4>Selected work</h4>
+        <div class="segmented" id="workCountSeg">
+          <button type="button" data-val="0">Off</button>
+          <button type="button" data-val="3">3</button>
+          <button type="button" data-val="6">6</button>
+          <button type="button" data-val="9">9</button>
+          <button type="button" data-val="12">12</button>
+        </div>
+        <label class="customize-check" style="margin-top:0.7rem;"><input type="checkbox" id="toggleRoles" /> Show role under thumbnails</label>
+      </div>
+
+      <div class="customize-group">
+        <h4>Skill categories</h4>
+        <div id="skillToggleList"></div>
+      </div>
+
+      <div class="customize-group">
+        <button class="btn-reset" id="btnResetCustomize" type="button">Reset to defaults</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RESUME -->
+  <main class="resume-page">
+    <div class="resume-sheet">
+
+      <!-- Header: photo, name, title, contact -->
+      <div class="resume-header">
+        <img class="resume-photo" id="resume-photo" alt="" hidden />
+        <div class="resume-photo-placeholder" id="resume-photo-placeholder">V</div>
+        <div>
+          <h1 class="resume-name" id="resume-name">Victor Qixun Wu</h1>
+          <p class="resume-label" id="resume-label">Colorist · Vancouver, BC</p>
+          <p class="resume-contact" id="resume-contact"></p>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="resume-summary" id="resume-summary"></div>
+
+      <!-- Reorderable, toggleable sections — built by renderSections() -->
+      <div id="resumeSectionsContainer"></div>
+
+      <!-- Footer -->
+      <div class="resume-footer">
+        <span class="footer-logo" id="resume-footer-logo">VW.</span>
+        <span id="resume-footer-site">victorqixunwu.com</span>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/data.js?v=20260728202321"></script>
+  <script>
+  (function () {
+    var D = window.PORTFOLIO_DATA;
+    if (!D || !D.portfolio) return;
+
+    function $(id) { return document.getElementById(id); }
+    function setText(id, v) { var el = $(id); if (el && v != null) el.textContent = v; }
+
+    // Skills and Languages now live in js/data.js (D.about.skills /
+    // D.about.languages) — editor.html's Skills panel already supported
+    // any number of categories, and now has a matching Languages panel, so
+    // both are fully editable there and this page just reads them, the
+    // same as everything else on it.
+
+    var SECTION_META = {
+      experience: { label: 'Experience' },
+      education:  { label: 'Education' },
+      work:       { label: 'Selected Work' },
+      skills:     { label: 'Skills' },
+      languages:  { label: 'Languages' }
+    };
+
+    var ACCENT_PRESETS = [
+      { name: 'Theme default', value: null },
+      { name: 'Amber',  value: '#cf9d4f' },
+      { name: 'Rust',   value: '#c07f5c' },
+      { name: 'Indigo', value: '#7c93b8' },
+      { name: 'Plum',   value: '#a97ea3' },
+      { name: 'Rose',   value: '#c07c82' }
+    ];
+
+    // ── customization state ──
+    // Everything a visitor changes in the Customize panel lives here and
+    // is persisted to localStorage, same pattern as the editor's draft
+    // mechanism in data.js — this is Victor's own browser, not a shared
+    // Claude.ai surface, so remembering choices across visits is exactly
+    // what a returning user would want.
+    var STORAGE_KEY = 'resume_customize_v1';
+    var DEFAULT_CONFIG = {
+      order: ['experience', 'education', 'work', 'skills', 'languages'],
+      visible: { summary: true, experience: true, education: true, work: true, skills: true, languages: true },
+      photo: true,
+      showRoles: true,
+      workCount: 6,
+      skillCategories: null, // null = all categories visible
+      accent: null,          // null = follow the theme's --accent-soft
+      lineSpacing: 1.35,
+      density: 100
+    };
+
+    function cloneDefault() { return JSON.parse(JSON.stringify(DEFAULT_CONFIG)); }
+
+    function loadConfig() {
+      var cfg = cloneDefault();
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          var saved = JSON.parse(raw);
+          if (saved && typeof saved === 'object') {
+            Object.keys(cfg).forEach(function (k) { if (saved[k] !== undefined) cfg[k] = saved[k]; });
+            // guard against a stale order array if SECTION_META ever changes
+            cfg.order = cfg.order.filter(function (k) { return SECTION_META[k]; });
+            Object.keys(SECTION_META).forEach(function (k) { if (cfg.order.indexOf(k) === -1) cfg.order.push(k); });
+          }
+        }
+      } catch (e) { /* ignore unreadable/blocked storage */ }
+      return cfg;
+    }
+    function saveConfig() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(CONFIG)); } catch (e) { /* ignore */ }
+    }
+
+    var CONFIG = loadConfig();
+
+    // ── theme (identical mapping to index.html/works.html, so the Theme
+    // panel in the editor restyles this page too, with no extra wiring) ──
+    if (D.theme) {
+      var root = document.documentElement;
+      var map = { bg:'--bg', surface:'--surface', border:'--border', fg:'--fg',
+                  muted:'--muted', gray:'--gray', accent:'--accent',
+                  accentSoft:'--accent-soft', earth:'--earth', sand:'--sand' };
+      Object.keys(map).forEach(function (k) { if (D.theme[k]) root.style.setProperty(map[k], D.theme[k]); });
+      if (D.theme.washiOpacity != null) root.style.setProperty('--washi-opacity', String(D.theme.washiOpacity));
+    }
+
+    // ── logo / footer ──
+    if (D.footer && D.footer.logo) {
+      setText('nav-logo', D.footer.logo);
+      setText('resume-footer-logo', D.footer.logo);
+    }
+
+    // ── header ──
+    var name = (D.meta && D.meta.name) || (D.hero && D.hero.line2) || 'Victor Qixun Wu';
+    setText('resume-name', name);
+    if (D.hero) setText('resume-label', D.hero.label);
+
+    var hasRealPhoto = !!(D.about && D.about.photo);
+    if (hasRealPhoto) {
+      var img = $('resume-photo');
+      img.src = D.about.photo;
+      img.alt = 'Portrait of ' + name;
+    } else {
+      $('resume-photo-placeholder').textContent = name.charAt(0).toUpperCase();
+    }
+
+    if (D.contact) {
+      var bits = [];
+      if (D.contact.email)    bits.push('<span><a href="mailto:' + D.contact.email + '">' + D.contact.email + '</a></span>');
+      if (D.contact.phone)    bits.push('<span><a href="tel:' + D.contact.phone.replace(/[^+\d]/g,'') + '">' + D.contact.phone + '</a></span>');
+      if (D.contact.location) bits.push('<span>' + D.contact.location + '</span>');
+      if (D.contact.website)  bits.push('<span><a href="https://' + D.contact.website.replace(/^https?:\/\//,'') + '" target="_blank" rel="noopener noreferrer">' + D.contact.website + '</a></span>');
+      $('resume-contact').innerHTML = bits.join('');
+      if (D.contact.website) setText('resume-footer-site', D.contact.website);
+    }
+
+    // ── summary content ── about.bio carries the full two-paragraph
+    // version (the one that belongs on an actual résumé); hero.description
+    // is only the short homepage tagline.
+    if (D.about && D.about.bio && D.about.bio.length) {
+      $('resume-summary').innerHTML = D.about.bio.map(function (p) { return '<p>' + p + '</p>'; }).join('');
+    } else if (D.hero && D.hero.description) {
+      $('resume-summary').textContent = D.hero.description;
+    }
+
+    // ── experience/education split ──
+    // Splits a description into a bullet list on ". " but only before a
+    // capital letter or end-of-string, so "U.S." etc. don't get cut
+    // mid-word.
+    function splitSentences(desc) {
+      var text = (desc || '').trim();
+      if (!text) return [];
+      var out = [], cur = '';
+      for (var i = 0; i < text.length; i++) {
+        cur += text[i];
+        if (text[i] === '.' && text[i + 1] === ' ') {
+          var rest = text.slice(i + 1).trim();
+          if (!rest || /^[A-Z(]/.test(rest)) { out.push(cur.trim()); cur = ''; }
+        }
+      }
+      if (cur.trim()) out.push(cur.trim());
+      return out;
+    }
+    // The BFA entry lives inside D.experience alongside the paid roles
+    // (that's how the editor models it) — split it into its own Education
+    // section instead of listing a degree next to job titles.
+    function isEducation(exp) {
+      return /university|college|school|cinema/i.test(exp.company || '')
+        || /^(BFA|BA|BS|BSc|MFA|MA|MS|MSc)\b/i.test(exp.title || '');
+    }
+
+    // ── content builders — each returns an HTML string for one section's
+    // body, respecting the current CONFIG. Called fresh on every render so
+    // panel changes show up immediately. ──
+    function buildExperienceHTML() {
+      if (!D.experience) return '';
+      var jobs = D.experience.filter(function (e) { return !isEducation(e); });
+      if (!jobs.length) return '';
+      return jobs.map(function (exp) {
+        var bullets = splitSentences(exp.description);
+        var bulletsHTML = '<ul class="exp-bullets">' + bullets.map(function (b) { return '<li>' + b + '</li>'; }).join('') + '</ul>';
+        return '<div class="exp-row">'
+          + '<div class="exp-row-top"><span class="exp-title">' + exp.title + '</span><span class="exp-period">' + exp.period + '</span></div>'
+          + '<div class="exp-company">' + exp.company + '</div>'
+          + bulletsHTML
+          + '</div>';
+      }).join('');
+    }
+
+    function buildEducationHTML() {
+      if (!D.experience) return '';
+      var edu = D.experience.filter(isEducation);
+      if (!edu.length) return '';
+      return edu.map(function (exp) {
+        return '<div class="exp-row">'
+          + '<div class="exp-row-top"><span class="exp-title">' + exp.title + '</span><span class="exp-period">' + exp.period + '</span></div>'
+          + '<div class="exp-company">' + exp.company + '</div>'
+          + '<div class="exp-desc">' + (exp.description || '') + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
+    function buildSkillsHTML() {
+      var all = (D.about && D.about.skills) || [];
+      var list = CONFIG.skillCategories
+        ? all.filter(function (s) { return CONFIG.skillCategories.indexOf(s.category) !== -1; })
+        : all;
+      if (!list.length) return '';
+      return list.map(function (s) {
+        return '<div class="skill-row"><h4>' + s.category + '</h4><p>' + (s.items || []).join(' · ') + '</p></div>';
+      }).join('');
+    }
+
+    function buildLanguagesHTML() {
+      var langs = (D.about && D.about.languages) || [];
+      if (!langs.length) return '';
+      return langs.map(function (l) { return '<span>' + l.name + ' — ' + l.level + '</span>'; }).join('');
+    }
+
+    // First N from each collection (commercial, then film — matches the
+    // homepage's display order), N derived from CONFIG.workCount.
+    function pickWork() {
+      if (!D.portfolio || !D.portfolio.length || !CONFIG.workCount) return [];
+      var ORDER = ['commercial', 'film'];
+      var collections = D.portfolio.slice().sort(function (a, b) {
+        var ia = ORDER.indexOf(a.id), ib = ORDER.indexOf(b.id);
+        if (ia === -1) ia = ORDER.length;
+        if (ib === -1) ib = ORDER.length;
+        return ia - ib;
+      });
+      var per = Math.ceil(CONFIG.workCount / collections.length);
+      var picks = [];
+      collections.forEach(function (c) { picks = picks.concat(c.works.slice(0, per)); });
+      return picks.slice(0, CONFIG.workCount);
+    }
+    function buildWorkHTML() {
+      var picks = pickWork();
+      if (!picks.length) return '';
+      return picks.map(function (w, i) {
+        var imgHTML = w.coverImage
+          ? '<img src="' + w.coverImage + '" alt="' + w.title + '"' + (i < 2 ? '' : ' loading="lazy"') + ' decoding="async" />'
+          : '';
+        var roleHTML = (CONFIG.showRoles && w.role) ? '<span class="resume-work-role">' + w.role + '</span>' : '';
+        return '<div class="resume-work-item">'
+          + '<div class="resume-work-thumb">' + imgHTML + '</div>'
+          + '<div class="resume-work-title"><strong>' + w.title + '</strong>' + roleHTML + (w.year || '') + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
+    var CONTENT_BUILDERS = {
+      experience: buildExperienceHTML,
+      education: buildEducationHTML,
+      work: buildWorkHTML,
+      skills: buildSkillsHTML,
+      languages: buildLanguagesHTML
+    };
+
+    // ── apply CONFIG to the page ──
+    function applyStyleVars() {
+      var root = document.documentElement;
+      root.style.setProperty('--resume-lh', String(CONFIG.lineSpacing));
+      root.style.setProperty('--resume-scale', String(CONFIG.density / 100));
+    }
+    function applyAccent() {
+      var root = document.documentElement;
+      var val = CONFIG.accent || (D.theme && D.theme.accentSoft) || '#85916d';
+      root.style.setProperty('--accent-soft', val);
+    }
+    function applyPhoto() {
+      var showPhoto = CONFIG.photo && hasRealPhoto;
+      $('resume-photo').hidden = !showPhoto;
+      $('resume-photo-placeholder').hidden = showPhoto;
+    }
+    function renderSections() {
+      $('resume-summary').hidden = !CONFIG.visible.summary;
+      var container = $('resumeSectionsContainer');
+      container.innerHTML = '';
+      CONFIG.order.forEach(function (key) {
+        if (!CONFIG.visible[key]) return;
+        var builder = CONTENT_BUILDERS[key];
+        var html = builder ? builder() : '';
+        if (!html) return;
+        var el = document.createElement('section');
+        el.className = 'resume-section';
+        var label = document.createElement('div');
+        label.className = 'resume-block-label';
+        label.textContent = SECTION_META[key].label;
+        el.appendChild(label);
+        var body = document.createElement('div');
+        if (key === 'skills') body.className = 'skills-list';
+        if (key === 'languages') body.className = 'resume-languages';
+        if (key === 'work') body.className = 'resume-work-strip';
+        body.innerHTML = html;
+        if (key === 'work') body.style.setProperty('--work-cols', String(Math.min(body.children.length, 6)));
+        el.appendChild(body);
+        container.appendChild(el);
+      });
+    }
+
+    // ── Customize panel: build + wire ──
+    function openPanel() { $('customizePanel').classList.add('is-open'); $('customizeBackdrop').classList.add('is-open'); }
+    function closePanel() { $('customizePanel').classList.remove('is-open'); $('customizeBackdrop').classList.remove('is-open'); }
+
+    function moveSection(idx, dir) {
+      var newIdx = idx + dir;
+      if (newIdx < 0 || newIdx >= CONFIG.order.length) return;
+      var tmp = CONFIG.order[idx];
+      CONFIG.order[idx] = CONFIG.order[newIdx];
+      CONFIG.order[newIdx] = tmp;
+      commit();
+    }
+
+    function setSegmented(id, activeVal, onPick) {
+      var wrap = $(id);
+      Array.prototype.forEach.call(wrap.children, function (btn) {
+        btn.classList.toggle('is-active', btn.getAttribute('data-val') === activeVal);
+        btn.onclick = function () { onPick(btn.getAttribute('data-val')); };
+      });
+    }
+
+    function buildPanelLists() {
+      // reorderable / toggleable sections
+      var listEl = $('sectionToggleList');
+      listEl.innerHTML = '';
+      CONFIG.order.forEach(function (key, idx) {
+        var row = document.createElement('div');
+        row.className = 'section-toggle-row';
+
+        var label = document.createElement('label');
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = CONFIG.visible[key];
+        cb.addEventListener('change', function () { CONFIG.visible[key] = cb.checked; commit(); });
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(' ' + SECTION_META[key].label));
+        row.appendChild(label);
+
+        var btns = document.createElement('div');
+        btns.className = 'reorder-btns';
+        var up = document.createElement('button');
+        up.type = 'button'; up.textContent = '↑'; up.setAttribute('aria-label', 'Move ' + SECTION_META[key].label + ' up');
+        up.disabled = idx === 0;
+        up.addEventListener('click', function () { moveSection(idx, -1); });
+        var down = document.createElement('button');
+        down.type = 'button'; down.textContent = '↓'; down.setAttribute('aria-label', 'Move ' + SECTION_META[key].label + ' down');
+        down.disabled = idx === CONFIG.order.length - 1;
+        down.addEventListener('click', function () { moveSection(idx, 1); });
+        btns.appendChild(up); btns.appendChild(down);
+        row.appendChild(btns);
+
+        listEl.appendChild(row);
+      });
+
+      // skill category checkboxes
+      var skillListEl = $('skillToggleList');
+      skillListEl.innerHTML = '';
+      var skillsData = (D.about && D.about.skills) || [];
+      var allCats = skillsData.map(function (s) { return s.category; });
+      skillsData.forEach(function (s) {
+        var row = document.createElement('label');
+        row.className = 'customize-check';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !CONFIG.skillCategories || CONFIG.skillCategories.indexOf(s.category) !== -1;
+        cb.addEventListener('change', function () {
+          var current = CONFIG.skillCategories ? CONFIG.skillCategories.slice() : allCats.slice();
+          if (cb.checked) {
+            if (current.indexOf(s.category) === -1) current.push(s.category);
+          } else {
+            current = current.filter(function (c) { return c !== s.category; });
+          }
+          CONFIG.skillCategories = (current.length === allCats.length) ? null : current;
+          commit();
+        });
+        row.appendChild(cb);
+        row.appendChild(document.createTextNode(' ' + s.category));
+        skillListEl.appendChild(row);
+      });
+
+      // accent swatches (rebuilt so the active ring follows CONFIG.accent)
+      var swatchWrap = $('accentSwatches');
+      var customInput = $('accentCustom');
+      Array.prototype.slice.call(swatchWrap.querySelectorAll('.swatch')).forEach(function (n) { n.remove(); });
+      ACCENT_PRESETS.forEach(function (p) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'swatch' + (CONFIG.accent === p.value ? ' is-active' : '');
+        b.style.background = p.value || (D.theme && D.theme.accentSoft) || '#85916d';
+        b.title = p.name;
+        b.addEventListener('click', function () { CONFIG.accent = p.value; commit(); });
+        swatchWrap.insertBefore(b, customInput);
+      });
+
+      setSegmented('workCountSeg', String(CONFIG.workCount), function (val) { CONFIG.workCount = parseInt(val, 10); commit(); });
+    }
+
+    function syncStaticControls() {
+      $('toggleSummary').checked = CONFIG.visible.summary;
+      $('togglePhoto').checked = CONFIG.photo;
+      $('toggleRoles').checked = CONFIG.showRoles;
+      $('lineSpacingSlider').value = CONFIG.lineSpacing;
+      $('lineSpacingValue').textContent = CONFIG.lineSpacing.toFixed(2);
+      $('densitySlider').value = CONFIG.density;
+      $('densityValueLabel').textContent = CONFIG.density + '%';
+      $('accentCustom').value = CONFIG.accent || (D.theme && D.theme.accentSoft) || '#85916d';
+    }
+
+    // Full pipeline: persist, apply CSS-level effects, rebuild content and
+    // the panel's own controls so they stay in sync with CONFIG.
+    function commit() {
+      saveConfig();
+      applyAccent();
+      applyStyleVars();
+      applyPhoto();
+      renderSections();
+      buildPanelLists();
+      syncStaticControls();
+    }
+
+    // ── static control wiring (attached once — these elements are never
+    // recreated, unlike the section/skill lists above) ──
+    $('toggleSummary').addEventListener('change', function (e) { CONFIG.visible.summary = e.target.checked; commit(); });
+    $('togglePhoto').addEventListener('change', function (e) { CONFIG.photo = e.target.checked; commit(); });
+    $('toggleRoles').addEventListener('change', function (e) { CONFIG.showRoles = e.target.checked; commit(); });
+    $('accentCustom').addEventListener('input', function (e) { CONFIG.accent = e.target.value; applyAccent(); saveConfig(); buildPanelLists(); });
+
+    // Sliders update live while dragging without the heavier full commit()
+    // (no content changes when spacing/density move, only CSS variables).
+    $('lineSpacingSlider').addEventListener('input', function (e) {
+      CONFIG.lineSpacing = parseFloat(e.target.value);
+      $('lineSpacingValue').textContent = CONFIG.lineSpacing.toFixed(2);
+      applyStyleVars(); saveConfig();
+    });
+    $('densitySlider').addEventListener('input', function (e) {
+      CONFIG.density = parseInt(e.target.value, 10);
+      $('densityValueLabel').textContent = CONFIG.density + '%';
+      applyStyleVars(); saveConfig();
+    });
+
+    $('btnCustomize').addEventListener('click', openPanel);
+    $('btnCloseCustomize').addEventListener('click', closePanel);
+    $('customizeBackdrop').addEventListener('click', closePanel);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePanel(); });
+
+    $('btnResetCustomize').addEventListener('click', function () {
+      CONFIG = cloneDefault();
+      commit();
+    });
+
+    $('btnPrint').addEventListener('click', function () { window.print(); });
+
+    // ── boot ──
+    applyAccent();
+    applyStyleVars();
+    applyPhoto();
+    renderSections();
+    buildPanelLists();
+    syncStaticControls();
+  })();
+  </script>
+</body>
+</html>
