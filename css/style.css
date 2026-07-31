@@ -524,7 +524,11 @@ ul { list-style: none; }
   font-weight: 400;
 }
 .about-bio strong { color: var(--fg); font-weight: 600; }
-#about-bio:empty { min-height: 7rem; }
+/* Reserves roughly today's real rendered height for the bio paragraphs,
+   so the swap-in when render.js populates this from data.js doesn't shove
+   everything below it down. Text-height, not screen-height, drives this —
+   re-measure and bump if the bio copy grows a lot. */
+#about-bio:empty { min-height: 16rem; }
 
 .skills-grid {
   display: grid;
@@ -534,7 +538,9 @@ ul { list-style: none; }
   padding-top: 2.5rem;
   border-top: 1px solid var(--border);
 }
-.skills-grid:empty { min-height: 14rem; border-top: none; }
+/* Same idea as #about-bio above — sized for the current 7 skill categories.
+   Grows if more categories are added later. */
+.skills-grid:empty { min-height: 40rem; border-top: none; }
 .skill-group h4 {
   font-size: 0.65rem;
   font-weight: 700;
@@ -620,6 +626,7 @@ ul { list-style: none; }
 .col-tab:hover          { color: var(--fg); }
 .col-tab.active         { color: var(--fg); }
 .col-tab.active::after  { width: 100%; }
+.collection-tabs:empty { min-height: 3rem; }
 
 /* Works grid */
 .works-grid {
@@ -630,10 +637,14 @@ ul { list-style: none; }
 }
 /* Every section below #projects is pushed down the instant render.js fills
    this grid, which is the site's single biggest layout-shift source (see
-   CLS notes at the bottom of this file). Empty, it reserves roughly the
-   space four cards will occupy; the moment JS inserts them, :empty stops
-   matching and this rule gets out of the way on its own. */
-.works-grid:empty { min-height: 60vh; }
+   CLS notes at the bottom of this file). This value is sized for the
+   homepage's bounded 4-card preview grid (HOME_LIMIT in render.js) — the
+   moment JS inserts real cards, :empty stops matching and this rule gets
+   out of the way on its own. works.html shows the full, unbounded archive
+   instead, so it overrides this with its own much larger #worksGrid:empty
+   rule in its <style> block — do not raise this shared value to cover
+   that case, it would waste space on every homepage load. */
+.works-grid:empty { min-height: 62rem; }
 .work-card {
   background: var(--bg);
   overflow: hidden;
@@ -790,7 +801,9 @@ ul { list-style: none; }
   position: relative;
   padding-left: 2.5rem;
 }
-.timeline:empty { min-height: 45vh; }
+/* Sized for the current 6 experience entries — text-height driven, same
+   idea as the reservations above. Re-measure if entries are added. */
+.timeline:empty { min-height: 100rem; }
 .timeline::before {
   content: '';
   position: absolute;
@@ -1048,6 +1061,12 @@ footer {
 @media (max-width: 560px) {
   .contact-cta { padding: 1.75rem 1.5rem; }
   .skills-grid { grid-template-columns: 1fr; }
+  /* Narrow columns wrap text to far more lines, so the empty-state
+     reservations above are too short here — bump them to match. */
+  #about-bio:empty     { min-height: 28rem; }
+  .skills-grid:empty   { min-height: 56rem; }
+  .works-grid:empty    { min-height: 86rem; }
+  .timeline:empty      { min-height: 160rem; }
   footer      { padding: 1.5rem; }
   .footer-inner { flex-direction: column; gap: 0.75rem; text-align: center; }
 
