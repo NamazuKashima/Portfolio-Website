@@ -218,7 +218,9 @@
     setContactLink('contact-website', 'https://' + (D.contact.website || '').replace(/^https?:\/\//,''), D.contact.website);
     if (D.contact.instagram) setContactLink('contact-instagram', 'https://www.instagram.com/' + D.contact.instagram + '/', '@' + D.contact.instagram);
     if (D.contact.facebook)  setContactLink('contact-facebook',  'https://www.facebook.com/'  + D.contact.facebook,        'facebook.com/' + D.contact.facebook);
-    setText('contact-location', D.contact.location);
+    // NOTE: don't setText() the whole #contact-location div — it also holds
+    // the pin-icon <span>, and textContent= would silently wipe it out.
+    // Only touch the .contact-text child, same as setContactLink() does.
     var locText = $id('contact-location') && $id('contact-location').querySelector('.contact-text');
     if (locText && D.contact.location) locText.textContent = D.contact.location;
   }

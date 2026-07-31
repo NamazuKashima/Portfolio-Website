@@ -25,9 +25,11 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 .
 ├── index.html              Homepage
 ├── works.html              Project archive
+├── resume.html             Résumé generator/customizer (noindex, not linked publicly)
 ├── editor.html             Visual content editor (noindex, not linked publicly)
+├── 404.html                Custom not-found page
 ├── CNAME                   Custom domain for GitHub Pages
-├── robots.txt              Keeps the editor out of search results
+├── robots.txt              Keeps the editor + résumé generator out of search results
 ├── sitemap.xml
 ├── assets/
 │   ├── works/              Project covers, one file per work
@@ -39,6 +41,7 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 ├── js/
 │   ├── data.js             ← All site content (paths only, ~24 KB)
 │   ├── render.js           Renders data into the homepage
+│   ├── seo.js               Injects Person JSON-LD (schema.org) from data.js
 │   └── main.js             Cursor, wordmark split, nav, scroll reveals
 └── .github/workflows/
     └── cache-bust.yml      Auto-versions css/js on every push
@@ -182,11 +185,23 @@ AAAA   @     →  2606:50c0:8000::153, 2606:50c0:8001::153,
 
 ## Analytics
 
-**Cloudflare Web Analytics** runs on `index.html` and `works.html` only — not
-on `editor.html`, since that's a private tool and its own edits shouldn't
-skew traffic numbers. A ~1 line beacon script, no cookies, no DNS change
-required. View data at [dash.cloudflare.com](https://dash.cloudflare.com) →
-Web Analytics.
+**Cloudflare Web Analytics** runs on `index.html`, `works.html`, and `404.html`
+— not on `editor.html` or `resume.html`, since those are private tools and
+their own edits/generations shouldn't skew traffic numbers. A ~1 line beacon
+script, no cookies, no DNS change required. View data at
+[dash.cloudflare.com](https://dash.cloudflare.com) → Web Analytics.
+
+---
+
+## SEO
+
+`js/seo.js` builds a schema.org `Person` JSON-LD block straight from
+`data.js` (name, job title, photo, bio, address, contact, skills as
+`knowsAbout`, school as `alumniOf`) and injects it into `<head>` on
+`index.html` and `works.html`. Same principle as `render.js` — generated
+from the live data, so it can't drift out of sync with what's on the page.
+`404.html` is marked `noindex` and doesn't get this block; there's nothing
+to index there.
 
 ---
 

@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /editor.html
+Disallow: /resume.html
 
 Sitemap: https://www.victorqixunwu.com/sitemap.xml

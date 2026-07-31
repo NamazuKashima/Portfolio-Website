@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+
+  <!-- Cloudflare Web Analytics -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4e25d59b201446058587263a5480ddc1"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+
+  <title>Page Not Found — Victor Qixun Wu</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000a02'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='30' font-weight='700' fill='%23fcfaf2' text-anchor='middle' letter-spacing='-1'%3EVW.%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css?v=20260731074645" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── 404 page specific ── */
+    #notfound {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 2.5rem 4rem;
+    }
+    .notfound-inner { max-width: var(--w); margin: 0 auto; text-align: center; }
+    .notfound-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .notfound-eyebrow::before, .notfound-eyebrow::after {
+      content: '';
+      width: 28px; height: 1px;
+      background: var(--accent);
+    }
+
+    /* Contained echo of the homepage wordmark's RGB misregistration —
+       "for a colorist, misregistration is the subject" — without the
+       hero mark's crop-to-114% sizing math, which is tuned specifically
+       to the "VICTOR WU" string and won't measure right for other text. */
+    .notfound-mark {
+      position: relative;
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 20vw, 11rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+    .notfound-mark span { display: block; }
+    .notfound-mark .base { position: relative; color: var(--fg); }
+    .notfound-mark .r, .notfound-mark .g, .notfound-mark .b {
+      position: absolute; left: 0; top: 0;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+    .notfound-mark .r { color: #e8402a; transform: translate(-0.045em, -0.02em); }
+    .notfound-mark .g { color: #3fd07a; transform: translate( 0.035em,  0.025em); }
+    .notfound-mark .b { color: #3b7bd4; transform: translate( 0.015em, -0.03em); }
+
+    .notfound-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 400;
+      color: var(--fg);
+      margin-bottom: 0.75rem;
+    }
+    .notfound-desc {
+      font-size: 0.95rem;
+      color: var(--gray);
+      max-width: 32rem;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+    .notfound-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .notfound-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray);
+      transition: color var(--t);
+    }
+    .notfound-secondary:hover { color: var(--accent); }
+
+    @media (max-width: 560px) {
+      #notfound { padding: 7rem 1.5rem 3rem; }
+      .notfound-actions { flex-direction: column; gap: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar" class="scrolled">
+    <a class="nav-logo" id="nav-logo" href="index.html">VW.</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#projects">Portfolio</a></li>
+      <li><a href="index.html#experience">Experience</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <button class="menu-btn" aria-label="Toggle menu">
+      <span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- 404 -->
+  <section id="notfound">
+    <div class="notfound-inner">
+      <div class="notfound-eyebrow">Error</div>
+      <div class="notfound-mark" aria-label="404">
+        <span class="r" aria-hidden="true">404</span>
+        <span class="g" aria-hidden="true">404</span>
+        <span class="b" aria-hidden="true">404</span>
+        <span class="base">404</span>
+      </div>
+      <h1 class="notfound-title">This page didn't make the final cut.</h1>
+      <p class="notfound-desc">The page you're looking for doesn't exist, or it's been moved. Try heading back to the homepage, or browse the full archive of work.</p>
+      <div class="notfound-actions">
+        <a href="index.html" class="btn-primary">Back to Home →</a>
+        <a href="works.html" class="notfound-secondary">View All Work</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-inner">
+      <span class="footer-logo" id="footer-logo">VW.</span>
+      <span class="footer-copy" id="footer-copy">© 2026 Victor Qixun Wu. All rights reserved.</span>
+      <div class="footer-socials">
+        <a href="https://www.victorqixunwu.com" target="_blank" rel="noopener noreferrer">Website</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js?v=20260731074645"></script>
+  <script>
+  (function () {
+    var D = window.PORTFOLIO_DATA;
+    if (!D) return;
+    // theme (shared tokens) — kept in sync so a custom accent/theme edit
+    // in the editor doesn't leave this page looking out of place.
+    if (D.theme) {
+      var root = document.documentElement;
+      var map = { bg:'--bg', surface:'--surface', border:'--border', fg:'--fg',
+                  muted:'--muted', gray:'--gray', accent:'--accent',
+                  accentSoft:'--accent-soft', earth:'--earth', sand:'--sand' };
+      Object.keys(map).forEach(function(k){ if (D.theme[k]) root.style.setProperty(map[k], D.theme[k]); });
+      if (D.theme.washiOpacity != null) root.style.setProperty('--washi-opacity', String(D.theme.washiOpacity));
+    }
+    // logo + footer (shared content)
+    if (D.footer) {
+      var nLogo = document.getElementById('nav-logo');
+      var fLogo = document.getElementById('footer-logo');
+      var fCopy = document.getElementById('footer-copy');
+      if (nLogo && D.footer.logo)      nLogo.textContent = D.footer.logo;
+      if (fLogo && D.footer.logo)      fLogo.textContent = D.footer.logo;
+      if (fCopy && D.footer.copyright) fCopy.textContent = D.footer.copyright;
+    }
+  })();
+  </script>
+  <script src="js/main.js?v=20260731074645"></script>
+</body>
+</html>
