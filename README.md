@@ -1,8 +1,11 @@
 # Victor Qixun Wu — Portfolio
 
 Personal portfolio site for a colorist and editor based in Vancouver, BC.
-Static site, no build step, no dependencies — deployed on GitHub Pages at
-**[www.victorqixunwu.com](https://www.victorqixunwu.com)**.
+Static site, no build step — deployed on GitHub Pages at
+**[www.victorqixunwu.com](https://www.victorqixunwu.com)**. The only runtime
+dependencies are GSAP + ScrollTrigger and Lenis, loaded from a CDN for the
+motion layer; the page still renders fully (static, no animation) if they
+fail to load.
 
 ---
 
@@ -40,9 +43,10 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 │   └── style.css           All styles — design tokens live in :root
 ├── js/
 │   ├── data.js             ← All site content (paths only, ~24 KB)
+│   ├── portfolio.js        Shared work cards / archive rows / detail panel / hover preview
 │   ├── render.js           Renders data into the homepage
 │   ├── seo.js               Injects Person JSON-LD (schema.org) from data.js
-│   └── main.js             Cursor, wordmark split, nav, scroll reveals
+│   └── main.js             Motion engine — loader, Lenis, cursor, reveals, theme morph, transitions
 └── .github/workflows/
     └── cache-bust.yml      Auto-versions css/js on every push
 ```
@@ -128,37 +132,68 @@ served with their own filenames and cached normally.
 
 ## Design
 
-Dark and editorial. Every colour is an authentic 日本の伝統色 (traditional
-Japanese colour) used at its documented hex — nothing is mixed or approximated.
-They live as CSS custom properties in `css/style.css` and are overridden at
-runtime by `theme` in `data.js`, so the Theme panel in the editor restyles the
-whole site without touching code.
+**Japanese traditional palette.** The editorial grid keeps the v3 layout,
+but the palette is the original 日本の伝統色 set — near-black
+sumi (`#000a02`) and glossed-silk shironeri (`#fcfaf2`), with a single
+chroma, matsuba pine (`#4a593d`), reserved for hover states, rules and
+small accents. One ground throughout — no per-section theme tweening.
 
-```css
---bg:      #000a02;   /* 墨色   SUMI       ink */
---surface: #0c0c0c;   /* 呂色   ROIRO      wet black lacquer */
---border:  #373c38;   /* 藍墨茶 AISUMICHA  indigo-ink tea */
---fg:      #fcfaf2;   /* 白練   SHIRONERI  glossed white silk */
---accent:  #3f7735;   /* 松葉色 MATSUBA    pine needle */
---muted:   #bcb09c;   /* 灰汁色 AKU        lye */
-```
+**Type** — [Libre Caslon Display](https://fonts.google.com/specimen/Libre+Caslon+Display)
+for headlines and other display text (`--font-serif`), [Zen Kaku Gothic New]
+(https://fonts.google.com/specimen/Zen+Kaku+Gothic+New) for body and every
+piece of metadata — years, roles, tags, indexes, the timecode clock. No mono
+face. Libre Caslon Display ships one weight and no italic, so emphasized
+words (`<em>` inside headlines, `.hero-word`, `.notfound-mark`) are set
+upright in walnut brown (`--emphasis`, `#7c5c3e`) rather than faked-italic.
 
-**Type** — [Inter Tight](https://fonts.google.com/specimen/Inter+Tight) for the
-wordmark and headings, [Zen Kaku Gothic New](https://fonts.google.com/specimen/Zen+Kaku+Gothic+New)
-for body. Both fall back to system Japanese faces if the CDN is unreachable.
+**Layout** — a full-width 12-column grid (`--gutter`, `--col-gap`). The hero
+name is set in caps at ~29vw so it runs edge to edge and overlaps the lead
+image; Selected Work is an asymmetric editorial grid (7/12 + 4/12 offset,
+then 4/12 + 7/12) rather than a uniform card wall; skills and experience are
+hairline index rows.
 
-**The wordmark** — the name is set larger than the window that frames it, so it
-is cropped on all four sides, and drawn four times: once per R/G/B channel plus
-a white base, blended with `mix-blend-mode: screen`. The channels drift with the
-pointer, breathe when it is still, and separate further as you scroll (capped at
-1.5×). For a colorist, misregistration is the subject. Geometry is driven by
-three variables on `.hero-title`: `--over` (how far the word overruns the frame),
-`--frame` (window height) and `--lift` (vertical trim).
+Big nameplate text sized this way (`#hero-line1`, `#footer-name`,
+`.notfound-mark`) is re-measured in `js/main.js` after render and again once
+webfonts finish loading: if the actual rendered text is wider than its box
+(a font swap, an uppercase transform, or a narrow viewport can all do that
+to a `clamp(…vw…)` value tuned for one typeface), its font-size is scaled
+down to fit rather than letting `overflow: hidden` clip it. Re-checked on
+resize.
 
-**Details** — custom dot-and-ring cursor, a faint 和紙 paper grain over the whole
-page (`--washi-opacity`, editable), scroll-triggered reveals, 16:9 covers with
-hover overlays. Fully responsive; on touch devices the custom cursor and hover
-overlays are disabled and the wordmark stops animating.
+**Hero image** — a single frame, cycling through the lead work of each
+collection every ~5 s with a crossfade. (An earlier draft faked a Log vs.
+Rec.709 compare slider over these covers — removed, since there are no
+actual Log-footage screenshots to back it.)
+
+**Motion** (`js/main.js`, GSAP + ScrollTrigger + Lenis)
+- Loader on the first homepage visit of a session (name, 0→100 counter,
+  spectrum bar), then a curtain; internal links marked `data-transition`
+  reuse the same veil as a page transition.
+- Lenis smooth scroll, synced to ScrollTrigger; anchors scroll through it.
+- Headlines split into lines that rise from a mask (`data-split="lines"`);
+  the bio's first paragraph brightens word by word as you read
+  (`data-split="words"`); images clip-reveal with a settle; work covers
+  parallax inside their frames; rows stagger in.
+- Custom cursor: a dot that inverts over whatever it crosses, and a
+  pine-colored label ("Open", "Play") on interactive targets.
+  Magnetic buttons (`data-magnetic`). Ticker of every project title whose
+  speed follows scroll velocity. Detail panel slides in from the right with
+  prev/next through the current list (← → keys, Esc to close).
+- `prefers-reduced-motion`, touch devices and a failed CDN all fall back to
+  a fully visible static page — every "hidden until revealed" state lives
+  under `html.js.has-motion` in the CSS and is only applied once GSAP is
+  confirmed present.
+
+**Archive** (`works.html`) — All / Commercial / Film filters, Grid or List
+view (List shows a floating cover preview that follows the cursor; the
+choice is remembered), and the same detail panel as the homepage.
+
+> **Theme panel in the editor.** The v3 design defines its own palette in
+> `css/style.css` and no longer reads the `theme` block of `data.js`;
+> editing colours in the editor's Theme panel only affects `resume.html`,
+> which still applies those tokens itself. Everything else in the editor —
+> hero copy, bio, skills, languages, works, experience, contact, logo and
+> footer — renders exactly as before.
 
 ---
 
@@ -207,6 +242,6 @@ to index there.
 
 ## Notes
 
-- No build tooling, no package manager, no framework — open the HTML files directly and they work
+- No build tooling, no package manager, no framework — open the HTML files directly and they work (the motion layer needs GSAP/Lenis from the CDN; without network you get the static fallback)
 - The contact section links out (email, phone, socials); there is no form, so there's no backend to maintain
 - `editor.html` ships with the site but isn't linked from anywhere public

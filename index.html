@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('js');</script>
 
   <!-- Cloudflare Web Analytics -->
   <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4e25d59b201446058587263a5480ddc1"}'></script>
@@ -27,180 +28,267 @@
 
   <!-- Favicon: the VW. mark, drawn inline so there is no extra request -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000a02'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='30' font-weight='700' fill='%23fcfaf2' text-anchor='middle' letter-spacing='-1'%3EVW.%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="css/style.css?v=20260801041001" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=20260801041001" />
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav id="navbar">
-    <div class="nav-logo" id="nav-logo">VW.</div>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#projects">Portfolio</a></li>
-      <li><a href="#experience">Experience</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <button class="menu-btn" aria-label="Toggle menu">
-      <span></span><span></span>
-    </button>
-  </nav>
-
-  <!-- HERO -->
-  <section id="hero">
-    <div class="hero-inner">
-      <p class="hero-label" id="hero-label">Colorist · Vancouver, BC</p>
-      <h1 class="hero-title" aria-label="Victor Qixun Wu">
-        <span class="chroma" aria-hidden="true">
-          <span class="ch r"    id="hero-ch-r">victor wu</span>
-          <span class="ch g"    id="hero-ch-g">victor wu</span>
-          <span class="ch b"    id="hero-ch-b">victor wu</span>
-          <span class="ch base" id="hero-line1">victor wu</span>
-        </span>
-      </h1>
-      <p class="hero-sig" id="hero-line2">Victor Qixun Wu</p>
-      <p class="hero-desc" id="hero-desc">Imaging and color specialist with 7+ years of post-production experience across color grading, digital imaging pipelines, and on-set media workflows — 60+ delivered projects spanning narrative film, VFX-adjacent productions, and branded campaigns.</p>
-      <div class="hero-actions">
-        <a href="#" id="hero-reel" class="btn-reel">
-          <span class="reel-play" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
-          </span>
-          <span class="reel-label" id="hero-reel-label">Watch Showreel</span>
-        </a>
-        <a href="#projects" class="btn-primary">View my work ↓</a>
-      </div>
+  <!-- VEIL: loader on first visit, curtain on page transitions -->
+  <div class="veil" id="veil" aria-hidden="true">
+    <div class="veil-top">
+      <div class="veil-name" id="veilName">Victor Qixun Wu</div>
+      <span class="veil-label" id="veilLabel">Colorist · Vancouver, BC</span>
     </div>
-    <div class="hero-bg-text" id="hero-bg-text" aria-hidden="true">VW</div>
-    <div class="hero-scroll-hint">Scroll</div>
-  </section>
+    <div class="veil-bottom">
+      <span class="veil-label">Loading</span>
+      <div class="veil-count"><span id="veilCount">00</span><sup>%</sup></div>
+    </div>
+    <div class="veil-bar" id="veilBar"></div>
+  </div>
 
-  <!-- ABOUT -->
-  <section id="about">
-    <div class="container">
-      <div class="section-label">01 — About</div>
-      <div class="about-grid">
-        <div class="about-left">
-          <h2 class="section-title">About<br/><em>Me</em></h2>
-          <div class="about-avatar">
-            <div class="avatar-placeholder">V</div>
+  <!-- NAV -->
+  <header class="nav" id="navbar">
+    <a class="nav-logo" id="nav-logo" href="index.html">VW.</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#about"><sup>01</sup>About</a>
+      <a href="#projects"><sup>02</sup>Portfolio</a>
+      <a href="#experience"><sup>03</sup>Experience</a>
+      <a href="#contact"><sup>04</sup>Contact</a>
+    </nav>
+    <div class="nav-right">
+      <span class="nav-clock" id="navClock" aria-hidden="true"><i></i><span>VAN 00:00:00</span></span>
+      <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="menuOverlay">
+        <span>Menu</span>
+        <span class="bars"><span></span><span></span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE MENU -->
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ul>
+      <li><a href="#about"><sup>01</sup>About</a></li>
+      <li><a href="#projects"><sup>02</sup>Portfolio</a></li>
+      <li><a href="#experience"><sup>03</sup>Experience</a></li>
+      <li><a href="#contact"><sup>04</sup>Contact</a></li>
+      <li><a href="works.html" data-transition><sup>05</sup>All Work</a></li>
+    </ul>
+    <div class="menu-foot">
+      <a href="https://www.instagram.com/victorqixunwu/" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://www.facebook.com/victorqixunwu" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a href="mailto:colorgradingvw@gmail.com" id="menu-email">colorgradingvw@gmail.com</a>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- HERO -->
+    <section id="hero" class="hero wrap">
+      <div class="hero-inner">
+        <p class="hero-label mono-label" id="hero-label">Colorist · Vancouver, BC</p>
+
+        <figure class="hero-media" id="heroMedia">
+          <div class="grade" id="grade">
+            <div class="grade-stack" id="gradeStack"></div>
+            <span class="hero-index" id="heroIndex">01 / 04</span>
+          </div>
+          <figcaption class="mono-label">
+            <span id="heroMediaTitle"></span>
+            <span id="heroMediaMeta"></span>
+          </figcaption>
+        </figure>
+
+        <h1 class="hero-title display" aria-label="Victor Qixun Wu">
+          <span class="hero-word" id="hero-line1" aria-hidden="true">victor wu</span>
+        </h1>
+
+        <p class="hero-desc" id="hero-desc">Imaging and color specialist with 7+ years of post-production experience across color grading, digital imaging pipelines, and on-set media workflows — 60+ delivered projects spanning narrative film, VFX-adjacent productions, and branded campaigns.</p>
+
+        <div class="hero-foot">
+          <p class="hero-sig mono-label" id="hero-line2">Victor Qixun Wu</p>
+          <div class="hero-actions">
+            <a href="#" id="hero-reel" class="btn btn-solid" data-magnetic data-cursor="Play">
+              <span class="btn-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>
+              </span>
+              <span id="hero-reel-label">Watch Showreel</span>
+            </a>
+            <a href="#projects" class="btn" data-magnetic>
+              <span>View my work</span>
+              <span class="btn-arrow" aria-hidden="true">↓</span>
+            </a>
           </div>
         </div>
-        <div class="about-right">
-          <div id="about-bio"></div>
-          <div class="skills-grid" id="skills-grid"></div>
-          <a href="#" id="about-cv" class="btn-cv" download>
-            <span class="cv-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></svg>
-            </span>
-            <span class="cv-label" id="about-cv-label">Download CV</span>
-          </a>
+      </div>
+    </section>
+
+    <!-- TICKER: every project title in the archive, in one line -->
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+
+    <!-- ABOUT -->
+    <section id="about" class="section wrap">
+      <div class="sec-head">
+        <span class="sec-label mono-label" data-reveal>01 — About</span>
+      </div>
+      <div class="about-grid">
+        <div class="about-media">
+          <figure class="about-photo reveal-img">
+            <img src="assets/portrait.jpg" alt="Portrait of Victor Qixun Wu" width="640" height="800" loading="lazy" decoding="async" />
+          </figure>
+          <div class="about-photo-cap mono-label" data-reveal>
+            <span id="about-cap-name">Victor Qixun Wu</span>
+            <span id="about-cap-loc">Vancouver, BC</span>
+          </div>
+          <ul class="about-langs mono-label" id="about-langs" data-reveal></ul>
+        </div>
+        <div class="about-body">
+          <h2 class="sec-title" data-split="lines">About <em>Me</em></h2>
+          <div class="about-bio" id="about-bio"></div>
+          <div class="about-cta" data-reveal>
+            <a href="#" id="about-cv" class="btn" download data-magnetic>
+              <span class="btn-ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></svg>
+              </span>
+              <span id="about-cv-label">Download CV</span>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+      <div class="skills" id="skills-grid"></div>
+    </section>
 
-  <!-- PORTFOLIO -->
-  <section id="projects">
-    <div class="container">
-      <div class="section-label">02 — Portfolio</div>
-      <h2 class="section-title">Selected<br/><em>Work</em></h2>
-      <div class="collection-tabs" id="collectionTabs"></div>
-      <div class="works-grid" id="worksGrid"></div>
-    </div>
-  </section>
+    <!-- PORTFOLIO -->
+    <section id="projects" class="section wrap">
+      <div class="sec-head">
+        <span class="sec-label mono-label" data-reveal>02 — Portfolio</span>
+        <h2 class="sec-title" data-split="lines">Selected <em>Work</em></h2>
+        <div class="sec-aside">
+          <div class="collection-tabs" id="collectionTabs" data-reveal></div>
+        </div>
+      </div>
+      <div class="works-editorial" id="worksGrid"></div>
+      <div class="view-all-row" id="viewAllRow" data-reveal>
+        <a href="works.html" class="view-all" data-transition data-cursor="All">
+          <span>View all projects</span>
+          <span class="btn-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </span>
+        </a>
+      </div>
+    </section>
 
-  <!-- EXPERIENCE -->
-  <section id="experience">
-    <div class="container">
-      <div class="section-label">03 — Experience</div>
-      <h2 class="section-title">Work<br/><em>History</em></h2>
-      <div class="timeline" id="timeline"></div>
-    </div>
-  </section>
+    <!-- EXPERIENCE -->
+    <section id="experience" class="section wrap">
+      <div class="sec-head">
+        <span class="sec-label mono-label" data-reveal>03 — Experience</span>
+        <h2 class="sec-title" data-split="lines">Work <em>History</em></h2>
+      </div>
+      <ol class="timeline" id="timeline"></ol>
+    </section>
 
-  <!-- CONTACT -->
-  <section id="contact">
-    <div class="container">
-      <div class="section-label">04 — Contact</div>
+    <!-- CONTACT -->
+    <section id="contact" class="section wrap">
+      <div class="sec-head">
+        <span class="sec-label mono-label" data-reveal>04 — Contact</span>
+      </div>
       <div class="contact-grid">
-        <div class="contact-left">
-          <h2 class="section-title">Let's<br/><em>Connect</em></h2>
-          <p class="contact-desc" id="contact-message">Whether it's a new project, a collaboration, or just a conversation about color — my inbox is always open.</p>
-          <div class="contact-links">
-            <a href="mailto:colorgradingvw@gmail.com" id="contact-email" class="contact-link">
-              <span class="link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="m3 6 9 7 9-7"/></svg>
+        <div class="contact-main">
+          <h2 class="sec-title" data-split="lines">Let's <em>Connect</em></h2>
+          <p class="contact-desc" id="contact-message" data-reveal>Whether it's a new project, a collaboration, or just a conversation about color — my inbox is always open.</p>
+          <a href="mailto:colorgradingvw@gmail.com" id="contact-cta" class="contact-cta" data-reveal data-cursor="Mail">
+            <span class="cta-label mono-label">Get in touch</span>
+            <span class="cta-row">
+              <span class="cta-mail" id="contact-cta-mail">colorgradingvw@gmail.com</span>
+              <span class="cta-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
               </span>
+            </span>
+          </a>
+        </div>
+        <ul class="contact-links" data-reveal>
+          <li>
+            <a href="mailto:colorgradingvw@gmail.com" id="contact-email" class="contact-link">
+              <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="m3 6 9 7 9-7"/></svg></span>
               <span class="contact-text">colorgradingvw@gmail.com</span>
             </a>
+          </li>
+          <li>
             <a href="tel:+15145704877" id="contact-phone" class="contact-link">
-              <span class="link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
-              </span>
+              <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></span>
               <span class="contact-text">+1 514-570-4877</span>
             </a>
+          </li>
+          <li>
             <a href="https://www.victorqixunwu.com" target="_blank" rel="noopener noreferrer" id="contact-website" class="contact-link">
-              <span class="link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13.5 13.5 0 0 1 0 18M12 3a13.5 13.5 0 0 0 0 18"/></svg>
-              </span>
+              <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13.5 13.5 0 0 1 0 18M12 3a13.5 13.5 0 0 0 0 18"/></svg></span>
               <span class="contact-text">www.victorqixunwu.com</span>
             </a>
+          </li>
+          <li>
             <a href="https://www.instagram.com/victorqixunwu/" target="_blank" rel="noopener noreferrer" id="contact-instagram" class="contact-link">
-              <span class="link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg>
-              </span>
+              <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none"/></svg></span>
               <span class="contact-text">@victorqixunwu</span>
             </a>
+          </li>
+          <li>
             <a href="https://www.facebook.com/victorqixunwu" target="_blank" rel="noopener noreferrer" id="contact-facebook" class="contact-link">
-              <span class="link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 8.5V7a1.5 1.5 0 0 1 1.5-1.5h1.5V2.8A19 19 0 0 0 15.2 2.7c-2.3 0-3.9 1.4-3.9 4v1.8H8.5v3h2.8V21.2h3.2V11.5h2.9l.5-3z"/></svg>
-              </span>
+              <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 8.5V7a1.5 1.5 0 0 1 1.5-1.5h1.5V2.8A19 19 0 0 0 15.2 2.7c-2.3 0-3.9 1.4-3.9 4v1.8H8.5v3h2.8V21.2h3.2V11.5h2.9l.5-3z"/></svg></span>
               <span class="contact-text">facebook.com/victorqixunwu</span>
             </a>
+          </li>
+          <li>
             <div class="contact-link" id="contact-location">
-              <span class="link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-              </span>
+              <span class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
               <span class="contact-text">Vancouver, BC, Canada</span>
             </div>
-          </div>
-        </div>
-        <div class="contact-right">
-          <a href="mailto:colorgradingvw@gmail.com" id="contact-cta" class="contact-cta">
-            <span class="cta-label">Get in touch</span>
-            <span class="cta-mail" id="contact-cta-mail">colorgradingvw@gmail.com</span>
-            <span class="cta-arrow">→</span>
-          </a>
-        </div>
+          </li>
+        </ul>
       </div>
-    </div>
-  </section>
+    </section>
+
+  </main>
 
   <!-- FOOTER -->
-  <footer>
-    <div class="container footer-inner">
+  <footer class="footer wrap">
+    <div class="footer-name" id="footer-name" aria-hidden="true">Victor Qixun Wu</div>
+    <div class="footer-inner">
       <span class="footer-logo" id="footer-logo">VW.</span>
       <span class="footer-copy" id="footer-copy">© 2026 Victor Qixun Wu. All rights reserved.</span>
       <div class="footer-socials">
         <a href="https://www.instagram.com/victorqixunwu/" target="_blank" rel="noopener noreferrer">Instagram</a>
         <a href="https://www.facebook.com/victorqixunwu" target="_blank" rel="noopener noreferrer">Facebook</a>
       </div>
+      <a href="#hero" class="to-top" aria-label="Back to top" data-magnetic>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+      </a>
     </div>
   </footer>
 
   <!-- SHOWREEL LIGHTBOX -->
-  <div class="reel-modal" id="reelModal">
+  <div class="reel-modal" id="reelModal" aria-hidden="true">
     <div class="reel-backdrop" id="reelBackdrop"></div>
     <div class="reel-card">
-      <button class="reel-close" id="reelClose" aria-label="Close">×</button>
+      <button class="reel-close" id="reelClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
       <div class="reel-frame" id="reelFrame"></div>
     </div>
   </div>
 
+  <!-- custom cursor -->
+  <div class="cursor" aria-hidden="true"><i></i></div>
+  <div class="cursor-label" aria-hidden="true"><span></span></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
   <script src="js/data.js?v=20260801041001"></script>
   <script src="js/seo.js?v=20260801041001"></script>
+  <script src="js/portfolio.js?v=20260801041001"></script>
   <script src="js/render.js?v=20260801041001"></script>
   <script src="js/main.js?v=20260801041001"></script>
 </body>

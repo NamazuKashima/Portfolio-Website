@@ -4,148 +4,89 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex" />
+  <script>document.documentElement.classList.add('js');</script>
 
   <!-- Cloudflare Web Analytics -->
   <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4e25d59b201446058587263a5480ddc1"}'></script>
   <!-- End Cloudflare Web Analytics -->
 
   <title>Page Not Found — Victor Qixun Wu</title>
+  <meta name="theme-color" content="#000a02" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000a02'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='30' font-weight='700' fill='%23fcfaf2' text-anchor='middle' letter-spacing='-1'%3EVW.%3C/text%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="css/style.css?v=20260801041001" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet" />
-  <style>
-    /* ── 404 page specific ── */
-    #notfound {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8rem 2.5rem 4rem;
-    }
-    .notfound-inner { max-width: var(--w); margin: 0 auto; text-align: center; }
-    .notfound-eyebrow {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gray);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .notfound-eyebrow::before, .notfound-eyebrow::after {
-      content: '';
-      width: 28px; height: 1px;
-      background: var(--accent);
-    }
-
-    /* Contained echo of the homepage wordmark's RGB misregistration —
-       "for a colorist, misregistration is the subject" — without the
-       hero mark's crop-to-114% sizing math, which is tuned specifically
-       to the "VICTOR WU" string and won't measure right for other text. */
-    .notfound-mark {
-      position: relative;
-      display: inline-block;
-      font-family: var(--font-display);
-      font-size: clamp(5rem, 20vw, 11rem);
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -0.02em;
-      margin-bottom: 1.5rem;
-    }
-    .notfound-mark span { display: block; }
-    .notfound-mark .base { position: relative; color: var(--fg); }
-    .notfound-mark .r, .notfound-mark .g, .notfound-mark .b {
-      position: absolute; left: 0; top: 0;
-      mix-blend-mode: screen;
-      pointer-events: none;
-    }
-    .notfound-mark .r { color: #e8402a; transform: translate(-0.045em, -0.02em); }
-    .notfound-mark .g { color: #3fd07a; transform: translate( 0.035em,  0.025em); }
-    .notfound-mark .b { color: #3b7bd4; transform: translate( 0.015em, -0.03em); }
-
-    .notfound-title {
-      font-family: var(--font-display);
-      font-size: clamp(1.3rem, 3vw, 1.8rem);
-      font-weight: 400;
-      color: var(--fg);
-      margin-bottom: 0.75rem;
-    }
-    .notfound-desc {
-      font-size: 0.95rem;
-      color: var(--gray);
-      max-width: 32rem;
-      margin: 0 auto 2.5rem;
-      line-height: 1.7;
-    }
-    .notfound-actions {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-    }
-    .notfound-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--gray);
-      transition: color var(--t);
-    }
-    .notfound-secondary:hover { color: var(--accent); }
-
-    @media (max-width: 560px) {
-      #notfound { padding: 7rem 1.5rem 3rem; }
-      .notfound-actions { flex-direction: column; gap: 1.25rem; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=20260801041001" />
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav id="navbar" class="scrolled">
-    <a class="nav-logo" id="nav-logo" href="index.html">VW.</a>
-    <ul class="nav-links">
-      <li><a href="index.html#about">About</a></li>
-      <li><a href="index.html#projects">Portfolio</a></li>
-      <li><a href="index.html#experience">Experience</a></li>
-      <li><a href="index.html#contact">Contact</a></li>
-    </ul>
-    <button class="menu-btn" aria-label="Toggle menu">
-      <span></span><span></span>
-    </button>
-  </nav>
-
-  <!-- 404 -->
-  <section id="notfound">
-    <div class="notfound-inner">
-      <div class="notfound-eyebrow">Error</div>
-      <div class="notfound-mark" aria-label="404">
-        <span class="r" aria-hidden="true">404</span>
-        <span class="g" aria-hidden="true">404</span>
-        <span class="b" aria-hidden="true">404</span>
-        <span class="base">404</span>
-      </div>
-      <h1 class="notfound-title">This page didn't make the final cut.</h1>
-      <p class="notfound-desc">The page you're looking for doesn't exist, or it's been moved. Try heading back to the homepage, or browse the full archive of work.</p>
-      <div class="notfound-actions">
-        <a href="index.html" class="btn-primary">Back to Home →</a>
-        <a href="works.html" class="notfound-secondary">View All Work</a>
-      </div>
+  <div class="veil" id="veil" aria-hidden="true">
+    <div class="veil-top">
+      <div class="veil-name" id="veilName">Victor Qixun Wu</div>
+      <span class="veil-label">Error</span>
     </div>
-  </section>
+    <div class="veil-bottom">
+      <span class="veil-label">Loading</span>
+      <div class="veil-count"><span id="veilCount">00</span><sup>%</sup></div>
+    </div>
+    <div class="veil-bar" id="veilBar"></div>
+  </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="container footer-inner">
+  <!-- NAV -->
+  <header class="nav" id="navbar">
+    <a class="nav-logo" id="nav-logo" href="index.html" data-transition>VW.</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html#about" data-transition><sup>01</sup>About</a>
+      <a href="index.html#projects" data-transition><sup>02</sup>Portfolio</a>
+      <a href="index.html#experience" data-transition><sup>03</sup>Experience</a>
+      <a href="index.html#contact" data-transition><sup>04</sup>Contact</a>
+    </nav>
+    <div class="nav-right">
+      <span class="nav-clock" id="navClock" aria-hidden="true"><i></i><span>VAN 00:00:00</span></span>
+      <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="menuOverlay">
+        <span>Menu</span>
+        <span class="bars"><span></span><span></span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+    <ul>
+      <li><a href="index.html#about" data-transition><sup>01</sup>About</a></li>
+      <li><a href="index.html#projects" data-transition><sup>02</sup>Portfolio</a></li>
+      <li><a href="index.html#experience" data-transition><sup>03</sup>Experience</a></li>
+      <li><a href="index.html#contact" data-transition><sup>04</sup>Contact</a></li>
+      <li><a href="works.html" data-transition><sup>05</sup>All Work</a></li>
+    </ul>
+    <div class="menu-foot">
+      <a href="https://www.instagram.com/victorqixunwu/" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://www.facebook.com/victorqixunwu" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a href="mailto:colorgradingvw@gmail.com" id="menu-email">colorgradingvw@gmail.com</a>
+    </div>
+  </div>
+
+  <main id="main">
+    <section id="notfound" class="notfound wrap">
+      <span class="sec-label mono-label" data-reveal>Error</span>
+      <div class="notfound-mark" aria-label="404" data-reveal>4<em>0</em>4</div>
+      <div class="notfound-grid">
+        <h1 class="notfound-title" data-split="lines">This page didn't make the final cut.</h1>
+        <p class="notfound-desc" data-reveal>The page you're looking for doesn't exist, or it's been moved. Try heading back to the homepage, or browse the full archive of work.</p>
+        <div class="notfound-actions" data-reveal>
+          <a href="index.html" class="btn btn-solid" data-transition data-magnetic>
+            <span>Back to Home</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="works.html" class="btn" data-transition data-magnetic>
+            <span>View All Work</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer wrap">
+    <div class="footer-inner">
       <span class="footer-logo" id="footer-logo">VW.</span>
       <span class="footer-copy" id="footer-copy">© 2026 Victor Qixun Wu. All rights reserved.</span>
       <div class="footer-socials">
@@ -154,30 +95,24 @@
     </div>
   </footer>
 
+  <div class="cursor" aria-hidden="true"><i></i></div>
+  <div class="cursor-label" aria-hidden="true"><span></span></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
   <script src="js/data.js?v=20260801041001"></script>
   <script>
   (function () {
     var D = window.PORTFOLIO_DATA;
     if (!D) return;
-    // theme (shared tokens) — kept in sync so a custom accent/theme edit
-    // in the editor doesn't leave this page looking out of place.
-    if (D.theme) {
-      var root = document.documentElement;
-      var map = { bg:'--bg', surface:'--surface', border:'--border', fg:'--fg',
-                  muted:'--muted', gray:'--gray', accent:'--accent',
-                  accentSoft:'--accent-soft', earth:'--earth', sand:'--sand' };
-      Object.keys(map).forEach(function(k){ if (D.theme[k]) root.style.setProperty(map[k], D.theme[k]); });
-      if (D.theme.washiOpacity != null) root.style.setProperty('--washi-opacity', String(D.theme.washiOpacity));
-    }
-    // logo + footer (shared content)
+    var $id = function (id) { return document.getElementById(id); };
     if (D.footer) {
-      var nLogo = document.getElementById('nav-logo');
-      var fLogo = document.getElementById('footer-logo');
-      var fCopy = document.getElementById('footer-copy');
-      if (nLogo && D.footer.logo)      nLogo.textContent = D.footer.logo;
-      if (fLogo && D.footer.logo)      fLogo.textContent = D.footer.logo;
-      if (fCopy && D.footer.copyright) fCopy.textContent = D.footer.copyright;
+      if (D.footer.logo) { $id('nav-logo').textContent = D.footer.logo; $id('footer-logo').textContent = D.footer.logo; }
+      if (D.footer.copyright) $id('footer-copy').textContent = D.footer.copyright;
     }
+    if (D.meta && D.meta.name) $id('veilName').textContent = D.meta.name;
+    if (D.contact && D.contact.email) { var mm = $id('menu-email'); mm.href = 'mailto:' + D.contact.email; mm.textContent = D.contact.email; }
   })();
   </script>
   <script src="js/main.js?v=20260801041001"></script>
