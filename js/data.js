@@ -159,7 +159,7 @@
           ],
           "coverImage": "assets/works/film-avec-le-vent-et-les-feuilles.jpg",
           "links": {
-            "live": "",
+            "live": "https://youtu.be/BromN4-cKPA",
             "case_study": "https://www.imdb.com/title/tt39126986/"
           }
         },
@@ -239,7 +239,7 @@
           ],
           "coverImage": "assets/works/film-foosball-fever.jpg",
           "links": {
-            "live": "",
+            "live": "https://youtu.be/gVvnMKCedvc",
             "case_study": ""
           }
         },
