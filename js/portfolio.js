@@ -63,10 +63,14 @@
 
   // ── VIDEO ──────────────────────────────────────────────────────
   // A work's "Watch / Live URL" (links.live in data.js, set in the editor)
-  // is its video: for a film, the trailer. YouTube, Vimeo (including
-  // private links with a hash) and plain video files play in the page;
-  // anything else opens in a new tab.
+  // is its video: for a film, the trailer — or the whole film when the
+  // link ends in #film (e.g. https://vimeo.com/123#film), which only
+  // changes the wording to "Watch film". YouTube, Vimeo (including private
+  // links with a hash), Instagram reels and plain video files play in the
+  // page; anything else opens in a new tab.
   function videoOf(w) { return String((w && w.links && w.links.live) || '').trim(); }
+  function isFullFilm(v) { return /#film\b/i.test(String(v || '')); }
+  function bare(v) { return String(v || '').replace(/#film\b/i, ''); }   // the link as the host knows it
   function seconds(s) {
     var m = String(s || '').match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
     return m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : 0;
@@ -88,10 +92,24 @@
       var h = m[2] || (url.match(/[?&]h=(\w+)/) || [])[1];
       return { src: 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1&title=0&byline=0&portrait=0&dnt=1' + (h ? '&h=' + h : ''), host: 'Vimeo' };
     }
-    if (/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(url)) return { video: url, host: '' };
+    // Instagram reels / posts: the official embed, shown upright
+    m = url.match(/instagram\.com\/(?:[\w.]+\/)?(reels?|p|tv)\/([\w-]+)/);
+    if (m) return { src: 'https://www.instagram.com/' + (m[1] === 'reels' ? 'reel' : m[1]) + '/' + m[2] + '/embed/', host: 'Instagram', vertical: true };
+    if (/\.(mp4|webm|mov|m4v)(\?.*)?(#.*)?$/i.test(url)) return { video: bare(url), host: '' };
     return null;
   }
-  function videoKind(w) { return w._kind === 'film' ? 'Trailer' : (w._coll || ''); }
+  function videoKind(w) {
+    if (w._kind !== 'film') return w._coll || '';
+    return isFullFilm(videoOf(w)) ? 'Full film' : 'Trailer';
+  }
+  // the words on the button, and what a screen reader hears
+  function watchLabel(w) {
+    if (w._kind !== 'film') return 'Watch';
+    return isFullFilm(videoOf(w)) ? 'Watch film' : 'Watch trailer';
+  }
+  function playLabel(w) {
+    return w._kind === 'film' && !isFullFilm(videoOf(w)) ? 'Play the trailer for ' + w.title : 'Play ' + w.title;
+  }
   // attributes that make any element play this work's video when clicked
   function playAttrs(w) {
     var v = videoOf(w);
@@ -112,8 +130,8 @@
     var v = videoOf(w);
     if (v) {
       var film = w._kind === 'film', inPage = !!embedOf(v);
-      out += '<a class="' + (film ? 'link-play' : 'link') + '" href="' + esc(v) + '" target="_blank" rel="noopener noreferrer"' + playAttrs(w) + '>'
-        + (film ? PLAY + 'Watch trailer' : 'Watch')
+      out += '<a class="' + (film ? 'link-play' : 'link') + '" href="' + esc(bare(v)) + '" target="_blank" rel="noopener noreferrer"' + playAttrs(w) + '>'
+        + (film ? PLAY : '') + watchLabel(w)
         + (inPage ? '' : EXT + '<span class="sr-only"> (opens in a new tab)</span>')
         + '</a>';
     }
@@ -138,7 +156,7 @@
   function screeningHTML(w, o) {
     o = o || {};
     var media = videoOf(w)
-      ? '<button type="button" class="screening-media"' + playAttrs(w) + ' data-cursor="Play" aria-label="' + esc('Play the trailer for ' + w.title) + '">'
+      ? '<button type="button" class="screening-media"' + playAttrs(w) + ' data-cursor="Play" aria-label="' + esc(playLabel(w)) + '">'
       : '<button type="button" class="screening-media" data-open data-cursor="' + (o.cursor || 'Details') + '" aria-label="' + esc((o.verb || 'Open details for') + ' ' + w.title) + '">';
     return '<article class="screening" data-wid="' + esc(w.id) + '"' + (o.anchor ? ' id="' + anchorId(w) + '"' : '') + '>'
       + '<div class="screening-aside">'
@@ -160,9 +178,10 @@
   }
 
   // I · Film — a line of the credits; the line opens the details, the
-  // trailer button beside it plays the trailer
+  // button beside it plays the trailer (or the film)
   function creditHTML(w) {
     var v = videoOf(w);
+    var word = isFullFilm(v) ? 'Film' : 'Trailer';
     return '<li class="credit' + (v ? ' has-video' : '') + '">'
       + '<button type="button" class="credit-btn" data-wid="' + esc(w.id) + '" data-cursor="Details">'
       +   '<span class="credit-thumb">' + frameHTML(w, { alt: '' }) + '</span>'
@@ -170,7 +189,7 @@
       +   (w.role ? '<span class="credit-role">' + esc(clean(w.role)) + '</span>' : '')
       +   '<span class="credit-year">' + esc(year(w)) + '</span>'
       + '</button>'
-      + (v ? '<button type="button" class="credit-play"' + playAttrs(w) + ' aria-label="' + esc('Play the trailer for ' + w.title) + '">' + PLAY + 'Trailer</button>' : '')
+      + (v ? '<button type="button" class="credit-play"' + playAttrs(w) + ' aria-label="' + esc(playLabel(w)) + '">' + PLAY + word + '</button>' : '')
       + '</li>';
   }
 
@@ -293,7 +312,7 @@
     var g = function (id) { return modal.querySelector('#' + id); };
     // with a trailer, the frame in the panel plays it too
     g('modalFrame').innerHTML  = videoOf(w)
-      ? '<button type="button" class="modal-play"' + playAttrs(w) + ' data-cursor="Play" aria-label="' + esc('Play the trailer for ' + w.title) + '">' + frameHTML(w, { eager: true }) + '</button>'
+      ? '<button type="button" class="modal-play"' + playAttrs(w) + ' data-cursor="Play" aria-label="' + esc(playLabel(w)) + '">' + frameHTML(w, { eager: true }) + '</button>'
       : frameHTML(w, { eager: true });
     g('modalColl').textContent  = w._coll || '';
     g('modalYear').textContent  = year(w);
@@ -501,16 +520,18 @@
   function play(url, o) {
     o = o || {};
     var e = embedOf(url);
-    if (!e) { window.open(url, '_blank', 'noopener'); return; }
+    if (!e) { window.open(bare(url), '_blank', 'noopener'); return; }
     ensurePlayer();
     pLast = document.activeElement;
     var t = player.querySelector('.player-title');
     t.innerHTML = esc(o.title || '') + (o.kind ? '<span>' + esc(o.kind) + '</span>' : '');
+    // Instagram reels are upright: the player switches to a 9:16 frame
+    player.classList.toggle('player--vertical', !!e.vertical);
     player.querySelector('.player-frame').innerHTML = e.video
       ? '<video src="' + esc(e.video) + '" controls autoplay playsinline></video>'
       : '<iframe src="' + esc(e.src) + '" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen title="' + esc((o.title || 'Video') + (o.kind ? ' — ' + o.kind : '')) + '"></iframe>';
     var ext = player.querySelector('.player-foot a');
-    ext.href = url;
+    ext.href = bare(url);
     ext.innerHTML = (e.host ? 'Open on ' + e.host : 'Open the video file') + EXT + '<span class="sr-only"> (opens in a new tab)</span>';
     pOpen = true;
     player.classList.add('open');
@@ -657,7 +678,7 @@
     tagsHTML: tagsHTML, linksHTML: linksHTML, frameHTML: frameHTML,
     screeningHTML: screeningHTML, creditHTML: creditHTML, lookHTML: lookHTML, runHTML: runHTML, rowHTML: rowHTML,
     markLoaded: markLoaded,
-    videoOf: videoOf, embedOf: embedOf, videoKind: videoKind,
+    videoOf: videoOf, embedOf: embedOf, videoKind: videoKind, playLabel: playLabel, isFullFilm: isFullFilm,
     play: play, closePlayer: closePlayer,
     open: open, close: close, view: view, closeViewer: closeViewer,
     bindOpen: bindOpen, bindScreen: bindScreen, bindPreview: bindPreview

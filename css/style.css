@@ -1381,6 +1381,9 @@ body.menu-open { overflow: hidden; }
 .player-close:hover { background: var(--fg); color: var(--bg); }
 .player-frame { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
 .player-frame iframe, .player-frame video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+/* Instagram reels: an upright card, sized to the screen's height */
+.player--vertical .player-card { max-width: min(26rem, calc((100svh - 2 * var(--gutter) - 7rem) * 0.5625)); }
+.player--vertical .player-frame { aspect-ratio: 9 / 16; background: var(--fg); }
 .player-foot { margin-top: 0.85rem; display: flex; justify-content: flex-end; }
 
 /* "Watch trailer": the one filled action on a film — the trailer comes first */

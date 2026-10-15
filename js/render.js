@@ -122,7 +122,7 @@
         stack.setAttribute('data-title', w.title);
         stack.setAttribute('data-kind', P.videoKind(w));
         stack.setAttribute('data-cursor', 'Play');
-        stack.setAttribute('aria-label', (w._kind === 'film' ? 'Play the trailer for ' : 'Play ') + w.title);
+        stack.setAttribute('aria-label', P.playLabel(w));
       } else {
         ['data-play', 'data-title', 'data-kind'].forEach(function (a) { stack.removeAttribute(a); });
         stack.setAttribute('data-cursor', 'Details');

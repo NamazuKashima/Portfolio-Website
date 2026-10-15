@@ -108,7 +108,7 @@
           "coverImage": "assets/works/film-crocs-of-the-caribbean.jpg",
           "links": {
             "live": "",
-            "case_study": "https://www.rotatingplanet.com/project/crocs-of-the-caribbean"
+            "case_study": "https://www.natgeotv.com/za/programs/nationalgeographicwild/wild-crocs-of-the-caribbean"
           }
         },
         {
@@ -176,7 +176,7 @@
           ],
           "coverImage": "assets/works/film-https-www-imdb-com-title-tt28486771-ref-nm-knf-t.jpg",
           "links": {
-            "live": "",
+            "live": "https://vimeo.com/951239808#film",
             "case_study": "https://www.imdb.com/title/tt28486771/?ref_=nm_knf_t_1"
           }
         },
@@ -192,7 +192,7 @@
           ],
           "coverImage": "assets/works/film-ouija-la-voix-silencieuse.jpg",
           "links": {
-            "live": "",
+            "live": "https://vimeo.com/1075284899",
             "case_study": "https://www.imdb.com/title/tt36576706/?ref_=nm_flmg_job_3_accord_2_cdt_t_3"
           }
         },
@@ -223,7 +223,7 @@
           ],
           "coverImage": "assets/works/film-untold-valor.jpg",
           "links": {
-            "live": "",
+            "live": "https://vimeo.com/1117100585?share=copy&fl=cl&fe=ci#film",
             "case_study": "https://www.imdb.com/title/tt31065576/?ref_=nm_flmg_job_1_accord_2_cdt_c_1"
           }
         },
