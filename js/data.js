@@ -223,7 +223,7 @@
           ],
           "coverImage": "assets/works/film-untold-valor.jpg",
           "links": {
-            "live": "https://vimeo.com/1117100585?share=copy&fl=cl&fe=ci#film",
+            "live": "https://vimeo.com/1117100585?share=copy&fl=cl&fe=ci",
             "case_study": "https://www.imdb.com/title/tt31065576/?ref_=nm_flmg_job_1_accord_2_cdt_c_1"
           }
         },
@@ -254,7 +254,7 @@
           ],
           "coverImage": "assets/works/film-frank-and-edna-take-on-le-mans.jpg",
           "links": {
-            "live": "",
+            "live": "https://www.instagram.com/reel/DdsV46mx6HF/",
             "case_study": "https://www.imdb.com/title/tt14818650/?ref_=nm_knf_t_4"
           }
         },

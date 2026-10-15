@@ -66,8 +66,8 @@
   // is its video: for a film, the trailer — or the whole film when the
   // link ends in #film (e.g. https://vimeo.com/123#film), which only
   // changes the wording to "Watch film". YouTube, Vimeo (including private
-  // links with a hash), Instagram reels and plain video files play in the
-  // page; anything else opens in a new tab.
+  // links with a hash) and plain video files play in the page; anything
+  // else (an Instagram reel, say) opens in a new tab, its buttons marked ↗.
   function videoOf(w) { return String((w && w.links && w.links.live) || '').trim(); }
   function isFullFilm(v) { return /#film\b/i.test(String(v || '')); }
   function bare(v) { return String(v || '').replace(/#film\b/i, ''); }   // the link as the host knows it
@@ -92,12 +92,12 @@
       var h = m[2] || (url.match(/[?&]h=(\w+)/) || [])[1];
       return { src: 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1&title=0&byline=0&portrait=0&dnt=1' + (h ? '&h=' + h : ''), host: 'Vimeo' };
     }
-    // Instagram reels / posts: the official embed, shown upright
-    m = url.match(/instagram\.com\/(?:[\w.]+\/)?(reels?|p|tv)\/([\w-]+)/);
-    if (m) return { src: 'https://www.instagram.com/' + (m[1] === 'reels' ? 'reel' : m[1]) + '/' + m[2] + '/embed/', host: 'Instagram', vertical: true };
     if (/\.(mp4|webm|mov|m4v)(\?.*)?(#.*)?$/i.test(url)) return { video: bare(url), host: '' };
+    // anything else — Instagram included, whose embed is a white social
+    // card with the video overlapping its own footer — opens in a new tab
     return null;
   }
+  function plays(w) { return !!embedOf(videoOf(w)); }   // in the page, or in a new tab
   function videoKind(w) {
     if (w._kind !== 'film') return w._coll || '';
     return isFullFilm(videoOf(w)) ? 'Full film' : 'Trailer';
@@ -108,8 +108,11 @@
     return isFullFilm(videoOf(w)) ? 'Watch film' : 'Watch trailer';
   }
   function playLabel(w) {
-    return w._kind === 'film' && !isFullFilm(videoOf(w)) ? 'Play the trailer for ' + w.title : 'Play ' + w.title;
+    return (w._kind === 'film' && !isFullFilm(videoOf(w)) ? 'Play the trailer for ' + w.title : 'Play ' + w.title)
+      + (plays(w) ? '' : ' (opens in a new tab)');
   }
+  // the word beside the cursor over anything that plays it
+  function playCursor(w) { return plays(w) ? 'Play' : 'Play ↗'; }
   // attributes that make any element play this work's video when clicked
   function playAttrs(w) {
     var v = videoOf(w);
@@ -156,7 +159,7 @@
   function screeningHTML(w, o) {
     o = o || {};
     var media = videoOf(w)
-      ? '<button type="button" class="screening-media"' + playAttrs(w) + ' data-cursor="Play" aria-label="' + esc(playLabel(w)) + '">'
+      ? '<button type="button" class="screening-media"' + playAttrs(w) + ' data-cursor="' + esc(playCursor(w)) + '" aria-label="' + esc(playLabel(w)) + '">'
       : '<button type="button" class="screening-media" data-open data-cursor="' + (o.cursor || 'Details') + '" aria-label="' + esc((o.verb || 'Open details for') + ' ' + w.title) + '">';
     return '<article class="screening" data-wid="' + esc(w.id) + '"' + (o.anchor ? ' id="' + anchorId(w) + '"' : '') + '>'
       + '<div class="screening-aside">'
@@ -189,7 +192,7 @@
       +   (w.role ? '<span class="credit-role">' + esc(clean(w.role)) + '</span>' : '')
       +   '<span class="credit-year">' + esc(year(w)) + '</span>'
       + '</button>'
-      + (v ? '<button type="button" class="credit-play"' + playAttrs(w) + ' aria-label="' + esc(playLabel(w)) + '">' + PLAY + word + '</button>' : '')
+      + (v ? '<button type="button" class="credit-play"' + playAttrs(w) + ' aria-label="' + esc(playLabel(w)) + '">' + PLAY + word + (plays(w) ? '' : EXT) + '</button>' : '')
       + '</li>';
   }
 
@@ -312,7 +315,7 @@
     var g = function (id) { return modal.querySelector('#' + id); };
     // with a trailer, the frame in the panel plays it too
     g('modalFrame').innerHTML  = videoOf(w)
-      ? '<button type="button" class="modal-play"' + playAttrs(w) + ' data-cursor="Play" aria-label="' + esc(playLabel(w)) + '">' + frameHTML(w, { eager: true }) + '</button>'
+      ? '<button type="button" class="modal-play"' + playAttrs(w) + ' data-cursor="' + esc(playCursor(w)) + '" aria-label="' + esc(playLabel(w)) + '">' + frameHTML(w, { eager: true }) + '</button>'
       : frameHTML(w, { eager: true });
     g('modalColl').textContent  = w._coll || '';
     g('modalYear').textContent  = year(w);
@@ -525,8 +528,6 @@
     pLast = document.activeElement;
     var t = player.querySelector('.player-title');
     t.innerHTML = esc(o.title || '') + (o.kind ? '<span>' + esc(o.kind) + '</span>' : '');
-    // Instagram reels are upright: the player switches to a 9:16 frame
-    player.classList.toggle('player--vertical', !!e.vertical);
     player.querySelector('.player-frame').innerHTML = e.video
       ? '<video src="' + esc(e.video) + '" controls autoplay playsinline></video>'
       : '<iframe src="' + esc(e.src) + '" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen title="' + esc((o.title || 'Video') + (o.kind ? ' — ' + o.kind : '')) + '"></iframe>';
@@ -613,7 +614,7 @@
         b.classList.toggle('is-on', b.getAttribute('data-wid') === String(id));
       });
       if (cap) cap.textContent = [w.title, year(w)].filter(Boolean).join(', ');
-      screenEl.setAttribute('data-cursor', videoOf(w) ? 'Play' : 'Details');
+      screenEl.setAttribute('data-cursor', videoOf(w) ? playCursor(w) : 'Details');
       if (pal && R) {
         R.analyze(w.coverImage).then(function (r) {
           if (on !== id) return;
@@ -678,7 +679,7 @@
     tagsHTML: tagsHTML, linksHTML: linksHTML, frameHTML: frameHTML,
     screeningHTML: screeningHTML, creditHTML: creditHTML, lookHTML: lookHTML, runHTML: runHTML, rowHTML: rowHTML,
     markLoaded: markLoaded,
-    videoOf: videoOf, embedOf: embedOf, videoKind: videoKind, playLabel: playLabel, isFullFilm: isFullFilm,
+    videoOf: videoOf, embedOf: embedOf, videoKind: videoKind, playLabel: playLabel, playCursor: playCursor, isFullFilm: isFullFilm,
     play: play, closePlayer: closePlayer,
     open: open, close: close, view: view, closeViewer: closeViewer,
     bindOpen: bindOpen, bindScreen: bindScreen, bindPreview: bindPreview
