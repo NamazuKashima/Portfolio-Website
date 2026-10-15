@@ -61,8 +61,46 @@
   }
   function year(w) { return clean(w.year).replace(/\s*-\s*/, '–'); }
 
+  // ── VIDEO ──────────────────────────────────────────────────────
+  // A work's "Watch / Live URL" (links.live in data.js, set in the editor)
+  // is its video: for a film, the trailer. YouTube, Vimeo (including
+  // private links with a hash) and plain video files play in the page;
+  // anything else opens in a new tab.
+  function videoOf(w) { return String((w && w.links && w.links.live) || '').trim(); }
+  function seconds(s) {
+    var m = String(s || '').match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/);
+    return m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : 0;
+  }
+  function embedOf(url) {
+    url = String(url || '').trim();
+    if (!url) return null;
+    var m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{6,})/);
+    if (m) {
+      var t = url.match(/[?&#](?:t|start)=([\dhms]+)/);
+      var start = t ? seconds(t[1]) : 0;
+      return {
+        src: 'https://www.youtube-nocookie.com/embed/' + m[1] + '?autoplay=1&rel=0&modestbranding=1&playsinline=1' + (start ? '&start=' + start : ''),
+        host: 'YouTube'
+      };
+    }
+    m = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/(\w+))?/);
+    if (m) {
+      var h = m[2] || (url.match(/[?&]h=(\w+)/) || [])[1];
+      return { src: 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1&title=0&byline=0&portrait=0&dnt=1' + (h ? '&h=' + h : ''), host: 'Vimeo' };
+    }
+    if (/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(url)) return { video: url, host: '' };
+    return null;
+  }
+  function videoKind(w) { return w._kind === 'film' ? 'Trailer' : (w._coll || ''); }
+  // attributes that make any element play this work's video when clicked
+  function playAttrs(w) {
+    var v = videoOf(w);
+    return v ? ' data-play="' + esc(v) + '" data-title="' + esc(w.title) + '" data-kind="' + esc(videoKind(w)) + '"' : '';
+  }
+
   // ── TEMPLATES ──────────────────────────────────────────────────
   var EXT = '<svg class="ext" viewBox="0 0 10 10" aria-hidden="true"><path d="M2.5 7.5l5-5M3.6 2.5h3.9v3.9" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>';
+  var PLAY = '<svg class="play" viewBox="0 0 10 10" aria-hidden="true"><path d="M2.6 1.4v7.2L8.6 5z" fill="currentColor"/></svg>';
 
   function tagsHTML(tags, cls) {
     if (!tags || !tags.length) return '';
@@ -71,7 +109,14 @@
 
   function linksHTML(w) {
     var l = w.links || {}, out = '';
-    if (l.live) out += '<a class="link" href="' + esc(l.live) + '" target="_blank" rel="noopener noreferrer">Watch' + EXT + '<span class="sr-only"> (opens in a new tab)</span></a>';
+    var v = videoOf(w);
+    if (v) {
+      var film = w._kind === 'film', inPage = !!embedOf(v);
+      out += '<a class="' + (film ? 'link-play' : 'link') + '" href="' + esc(v) + '" target="_blank" rel="noopener noreferrer"' + playAttrs(w) + '>'
+        + (film ? PLAY + 'Watch trailer' : 'Watch')
+        + (inPage ? '' : EXT + '<span class="sr-only"> (opens in a new tab)</span>')
+        + '</a>';
+    }
     if (l.case_study) out += '<a class="link" href="' + esc(l.case_study) + '" target="_blank" rel="noopener noreferrer">More info' + EXT + '<span class="sr-only"> (opens in a new tab)</span></a>';
     return out ? '<div class="links">' + out + '</div>' : '';
   }
@@ -87,16 +132,21 @@
   }
 
   // I · Film — a screening: year and tags in the margin, the frame wide,
-  // its measured palette under it, then the title card and notes
+  // its measured palette under it, then the title card and notes.
+  // With a trailer, the frame plays it; without, it opens the details
+  // (or, on film.html, the still full-screen).
   function screeningHTML(w, o) {
     o = o || {};
+    var media = videoOf(w)
+      ? '<button type="button" class="screening-media"' + playAttrs(w) + ' data-cursor="Play" aria-label="' + esc('Play the trailer for ' + w.title) + '">'
+      : '<button type="button" class="screening-media" data-open data-cursor="' + (o.cursor || 'Details') + '" aria-label="' + esc((o.verb || 'Open details for') + ' ' + w.title) + '">';
     return '<article class="screening" data-wid="' + esc(w.id) + '"' + (o.anchor ? ' id="' + anchorId(w) + '"' : '') + '>'
       + '<div class="screening-aside">'
       +   '<p class="screening-year">' + esc(year(w)) + '</p>'
       +   tagsHTML(w.tags)
       +   (w.coverImage ? '<canvas class="scope screening-scope" data-scope="' + esc(w.coverImage) + '" data-bloom aria-hidden="true"></canvas>' : '')
       + '</div>'
-      + '<button type="button" class="screening-media" data-open data-cursor="' + (o.cursor || 'Details') + '" aria-label="' + esc((o.verb || 'Open details for') + ' ' + w.title) + '">'
+      + media
       +   frameHTML(w, { eager: o.eager, cls: 'frame--film' })
       + '</button>'
       + (w.coverImage ? '<div class="palette" data-palette="' + esc(w.coverImage) + '"></div>' : '')
@@ -109,15 +159,18 @@
       + '</article>';
   }
 
-  // I · Film — a line of the credits
+  // I · Film — a line of the credits; the line opens the details, the
+  // trailer button beside it plays the trailer
   function creditHTML(w) {
-    return '<li class="credit">'
+    var v = videoOf(w);
+    return '<li class="credit' + (v ? ' has-video' : '') + '">'
       + '<button type="button" class="credit-btn" data-wid="' + esc(w.id) + '" data-cursor="Details">'
       +   '<span class="credit-thumb">' + frameHTML(w, { alt: '' }) + '</span>'
       +   '<span class="credit-title">' + esc(w.title) + '</span>'
       +   (w.role ? '<span class="credit-role">' + esc(clean(w.role)) + '</span>' : '')
       +   '<span class="credit-year">' + esc(year(w)) + '</span>'
       + '</button>'
+      + (v ? '<button type="button" class="credit-play"' + playAttrs(w) + ' aria-label="' + esc('Play the trailer for ' + w.title) + '">' + PLAY + 'Trailer</button>' : '')
       + '</li>';
   }
 
@@ -219,7 +272,7 @@
     modal.querySelector('#modalPrev').addEventListener('click', function () { step(-1); });
     modal.querySelector('#modalNext').addEventListener('click', function () { step(1); });
     document.addEventListener('keydown', function (e) {
-      if (!isOpen) return;
+      if (!isOpen || pOpen) return;     // a playing trailer takes the keys first
       if (e.key === 'Escape') close();
       if (e.key === 'ArrowLeft') step(-1);
       if (e.key === 'ArrowRight') step(1);
@@ -238,7 +291,10 @@
 
   function fill(w) {
     var g = function (id) { return modal.querySelector('#' + id); };
-    g('modalFrame').innerHTML  = frameHTML(w, { eager: true });
+    // with a trailer, the frame in the panel plays it too
+    g('modalFrame').innerHTML  = videoOf(w)
+      ? '<button type="button" class="modal-play"' + playAttrs(w) + ' data-cursor="Play" aria-label="' + esc('Play the trailer for ' + w.title) + '">' + frameHTML(w, { eager: true }) + '</button>'
+      : frameHTML(w, { eager: true });
     g('modalColl').textContent  = w._coll || '';
     g('modalYear').textContent  = year(w);
     g('modalTitle').textContent = w.title || '';
@@ -406,11 +462,100 @@
     if (vLast && vLast.focus) vLast.focus({ preventScroll: true });
   }
 
+  // ── PLAYER: trailers, videos and the showreel, in the page ──────
+  // Opens over everything (including the detail panel). Closing removes
+  // the iframe, so playback stops. "Open on YouTube/Vimeo" is always
+  // offered, for videos whose owners don't allow embedding.
+  var player, pOpen = false, pLast = null;
+  function ensurePlayer() {
+    if (player) return player;
+    player = document.createElement('div');
+    player.className = 'player';
+    player.setAttribute('role', 'dialog');
+    player.setAttribute('aria-modal', 'true');
+    player.setAttribute('aria-labelledby', 'playerTitle');
+    player.setAttribute('aria-hidden', 'true');
+    player.innerHTML =
+        '<div class="player-backdrop"></div>'
+      + '<div class="player-card">'
+      +   '<div class="player-bar">'
+      +     '<p class="player-title" id="playerTitle"></p>'
+      +     '<button type="button" class="player-close">' + ICON_X + 'Close</button>'
+      +   '</div>'
+      +   '<div class="player-frame"></div>'
+      +   '<p class="player-foot"><a class="link" href="#" target="_blank" rel="noopener noreferrer"></a></p>'
+      + '</div>';
+    document.body.appendChild(player);
+    player.querySelector('.player-close').addEventListener('click', closePlayer);
+    player.querySelector('.player-backdrop').addEventListener('click', closePlayer);
+    // capture phase: a playing video gets Esc / Tab before the panel underneath
+    document.addEventListener('keydown', function (e) {
+      if (!pOpen) return;
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closePlayer(); }
+      else if (e.key === 'Tab') { e.stopPropagation(); trapFocus(e, player); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+    }, true);
+    return player;
+  }
+
+  function play(url, o) {
+    o = o || {};
+    var e = embedOf(url);
+    if (!e) { window.open(url, '_blank', 'noopener'); return; }
+    ensurePlayer();
+    pLast = document.activeElement;
+    var t = player.querySelector('.player-title');
+    t.innerHTML = esc(o.title || '') + (o.kind ? '<span>' + esc(o.kind) + '</span>' : '');
+    player.querySelector('.player-frame').innerHTML = e.video
+      ? '<video src="' + esc(e.video) + '" controls autoplay playsinline></video>'
+      : '<iframe src="' + esc(e.src) + '" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen title="' + esc((o.title || 'Video') + (o.kind ? ' — ' + o.kind : '')) + '"></iframe>';
+    var ext = player.querySelector('.player-foot a');
+    ext.href = url;
+    ext.innerHTML = (e.host ? 'Open on ' + e.host : 'Open the video file') + EXT + '<span class="sr-only"> (opens in a new tab)</span>';
+    pOpen = true;
+    player.classList.add('open');
+    player.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    if (window.VW && VW.lenis) VW.lenis.stop();
+    if (motionOK()) {
+      gsap.fromTo(player.querySelector('.player-backdrop'), { opacity: 0 }, { opacity: 1, duration: 0.45, ease: 'power2.out' });
+      gsap.fromTo(player.querySelector('.player-card'), { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' });
+    }
+    setTimeout(function () { var c = player.querySelector('.player-close'); if (c) c.focus({ preventScroll: true }); }, 60);
+  }
+
+  function closePlayer() {
+    if (!pOpen) return;
+    pOpen = false;
+    player.classList.remove('open');
+    player.setAttribute('aria-hidden', 'true');
+    player.querySelector('.player-frame').innerHTML = '';   // stops playback
+    if (!isOpen && !vOpen) {
+      document.body.style.overflow = '';
+      if (window.VW && VW.lenis) VW.lenis.start();
+    }
+    if (pLast && pLast.focus) pLast.focus({ preventScroll: true });
+  }
+
+  // Anything carrying data-play plays in the player — frames, trailer
+  // links, credit buttons. Modified clicks on links keep their default
+  // (open in a new tab); a URL that can't play in the page opens in a tab.
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest ? e.target.closest('[data-play]') : null;
+    if (!el) return;
+    var url = el.getAttribute('data-play');
+    if (el.tagName === 'A' && (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    play(url, { title: el.getAttribute('data-title'), kind: el.getAttribute('data-kind') });
+  });
+
   // ── BINDINGS ───────────────────────────────────────────────────
   // Click on a frame, a credit, a row or a title in a run → resolve → open
   function bindOpen(root, resolve, opener) {
     root.addEventListener('click', function (e) {
-      var hit = e.target.closest('[data-open], .credit-btn, .row, .also-list button, [data-wid] > button');
+      if (e.target.closest('[data-play]')) return;   // trailers are the player's
+      var hit = e.target.closest('[data-open], .credit-btn, .row, .also-list button');
       if (!hit || !root.contains(hit)) return;
       var holder = hit.hasAttribute('data-wid') ? hit : hit.closest('[data-wid]');
       if (!holder) return;
@@ -447,6 +592,7 @@
         b.classList.toggle('is-on', b.getAttribute('data-wid') === String(id));
       });
       if (cap) cap.textContent = [w.title, year(w)].filter(Boolean).join(', ');
+      screenEl.setAttribute('data-cursor', videoOf(w) ? 'Play' : 'Details');
       if (pal && R) {
         R.analyze(w.coverImage).then(function (r) {
           if (on !== id) return;
@@ -465,6 +611,14 @@
     listEl.addEventListener('focusin', function (e) {
       var b = e.target.closest('.credit-btn');
       if (b) show(b.getAttribute('data-wid'));
+    });
+    // the screen itself: plays the trailer on it, or opens its details
+    screenEl.addEventListener('click', function () {
+      var w = works.filter(function (x) { return String(x.id) === String(on); })[0];
+      if (!w) return;
+      if (videoOf(w)) { play(videoOf(w), { title: w.title, kind: videoKind(w) }); return; }
+      var b = listEl.querySelector('.credit-btn[data-wid="' + String(on).replace(/"/g, '') + '"]');
+      if (b) b.click();
     });
     show(String(works[0].id));
   }
@@ -503,6 +657,8 @@
     tagsHTML: tagsHTML, linksHTML: linksHTML, frameHTML: frameHTML,
     screeningHTML: screeningHTML, creditHTML: creditHTML, lookHTML: lookHTML, runHTML: runHTML, rowHTML: rowHTML,
     markLoaded: markLoaded,
+    videoOf: videoOf, embedOf: embedOf, videoKind: videoKind,
+    play: play, closePlayer: closePlayer,
     open: open, close: close, view: view, closeViewer: closeViewer,
     bindOpen: bindOpen, bindScreen: bindScreen, bindPreview: bindPreview
   };

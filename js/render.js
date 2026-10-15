@@ -57,14 +57,20 @@
       nameEl.setAttribute('aria-label', D.hero.line2 || NAME);
     }
 
+    // showreel: plays in the shared player (portfolio.js); a link that can't
+    // play in the page opens in a new tab
     var reelEl = $id('hero-reel');
     if (reelEl) {
       var url = (D.hero.reelUrl || '').trim();
       if (url) {
         reelEl.href = url;
         reelEl.hidden = false;
+        reelEl.target = '_blank';
+        reelEl.rel = 'noopener noreferrer';
+        reelEl.setAttribute('data-play', url);
+        reelEl.setAttribute('data-title', NAME);
+        reelEl.setAttribute('data-kind', 'Showreel');
         if (D.hero.reelLabel) setText('hero-reel-label', D.hero.reelLabel);
-        setupReelLightbox(reelEl, url);
       } else {
         reelEl.hidden = true;
       }
@@ -103,12 +109,25 @@
     var canvas = $id('heroScopeCanvas');
     var scope = (R && canvas) ? new R.Scope(canvas, { labels: true, gain: 1 }) : null;
 
+    // the frame on screen plays its video (a film's trailer) when it has one,
+    // otherwise it opens the details
     function caption(i) {
       var w = picks[i];
       setText('heroCapTitle', w.title);
       setText('heroCapMeta', [P.clean(w.role), P.year(w)].filter(Boolean).join(', '));
       setText('heroIdx', (i + 1) + ' / ' + picks.length);
-      stack.setAttribute('aria-label', 'Open details for ' + w.title);
+      var v = P.videoOf(w);
+      if (v) {
+        stack.setAttribute('data-play', v);
+        stack.setAttribute('data-title', w.title);
+        stack.setAttribute('data-kind', P.videoKind(w));
+        stack.setAttribute('data-cursor', 'Play');
+        stack.setAttribute('aria-label', (w._kind === 'film' ? 'Play the trailer for ' : 'Play ') + w.title);
+      } else {
+        ['data-play', 'data-title', 'data-kind'].forEach(function (a) { stack.removeAttribute(a); });
+        stack.setAttribute('data-cursor', 'Details');
+        stack.setAttribute('aria-label', 'Open details for ' + w.title);
+      }
     }
     caption(0);
 
@@ -157,14 +176,21 @@
       new IntersectionObserver(function (en) { inView = en[0].isIntersecting; }, { threshold: 0.2 }).observe(stack);
     }
 
-    // the hero frame opens its details like any other frame
+    // without a video, the hero frame opens its details like any other frame
+    // (with one, the shared [data-play] handler in portfolio.js plays it)
     function openCurrent() {
+      if (stack.hasAttribute('data-play')) return;
       var w = picks[idx];
       var list = all.filter(function (x) { return x._collId === w._collId; });
       P.open(list.filter(function (x) { return x.id === w.id; })[0] || w, list);
     }
     stack.addEventListener('click', openCurrent);
-    stack.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCurrent(); } });
+    stack.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      if (stack.hasAttribute('data-play')) P.play(stack.getAttribute('data-play'), { title: stack.getAttribute('data-title'), kind: stack.getAttribute('data-kind') });
+      else openCurrent();
+    });
 
     // Which frame opens the site: a different one each visit, picked from
     // the first four that actually carry colour (a monochrome frame would
@@ -349,51 +375,4 @@
   P.markLoaded(document);
   if (R) R.mount(document);
 
-  // ── SHOWREEL LIGHTBOX ──────────────────────────────────────────
-  function toEmbedUrl(url) {
-    var m;
-    m = url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/);
-    if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1&rel=0&modestbranding=1';
-    m = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/([\w]+))?/);
-    if (m) {
-      var src = 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1&title=0&byline=0&portrait=0';
-      if (m[2]) src += '&h=' + m[2];
-      return src;
-    }
-    if (/\.(mp4|webm|mov|m4v)(\?.*)?$/i.test(url)) return { video: url };
-    return null;
-  }
-
-  function setupReelLightbox(trigger, url) {
-    var modal = $id('reelModal'), frame = $id('reelFrame'), closeBt = $id('reelClose'), backdrop = $id('reelBackdrop');
-    if (!modal || !frame) return;
-    var embed = toEmbedUrl(url);
-    var last = null;
-    trigger.addEventListener('click', function (e) {
-      if (!embed) { trigger.target = '_blank'; trigger.rel = 'noopener'; return; }
-      e.preventDefault();
-      last = document.activeElement;
-      frame.innerHTML = embed.video
-        ? '<video src="' + esc(embed.video) + '" controls autoplay playsinline></video>'
-        : '<iframe src="' + embed + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Showreel"></iframe>';
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-      if (window.VW && VW.lenis) VW.lenis.stop();
-      if (window.gsap && window.VW && VW.motion) gsap.fromTo(modal.querySelector('.reel-card'), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' });
-      if (closeBt) setTimeout(function () { closeBt.focus({ preventScroll: true }); }, 50);
-    });
-    function close() {
-      if (!modal.classList.contains('open')) return;
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden', 'true');
-      frame.innerHTML = '';
-      document.body.style.overflow = '';
-      if (window.VW && VW.lenis) VW.lenis.start();
-      if (last && last.focus) last.focus({ preventScroll: true });
-    }
-    if (closeBt) closeBt.onclick = close;
-    if (backdrop) backdrop.onclick = close;
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
-  }
 })();

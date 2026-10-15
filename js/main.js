@@ -180,7 +180,7 @@
     }, { passive: true });
     document.addEventListener('mouseover', function (e) {
       var t = e.target.closest ? e.target.closest('[data-cursor]') : null;
-      if (t && !t.closest('.work-modal, .viewer')) { labelText.textContent = t.getAttribute('data-cursor'); html.classList.add('cursor-has-label'); }
+      if (t && !t.closest('.viewer, .player')) { labelText.textContent = t.getAttribute('data-cursor'); html.classList.add('cursor-has-label'); }
       else html.classList.remove('cursor-has-label');
       html.classList.toggle('cursor-hover', !!(e.target.closest && e.target.closest('a, button, [role="button"]')));
     });

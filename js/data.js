@@ -142,7 +142,7 @@
           ],
           "coverImage": "assets/works/film-anastasia.jpg",
           "links": {
-            "live": "",
+            "live": "https://vimeo.com/924277903",
             "case_study": "https://www.imdb.com/title/tt27598145/"
           }
         },
@@ -208,7 +208,7 @@
           ],
           "coverImage": "assets/works/film-halloween-stalks-ii.jpg",
           "links": {
-            "live": "",
+            "live": "https://www.youtube.com/watch?v=6HEGDla4SLE",
             "case_study": "https://www.imdb.com/title/tt30782276/?ref_=nm_flmg_job_3_accord_2_cdt_t_7"
           }
         },

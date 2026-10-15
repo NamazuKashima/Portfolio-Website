@@ -98,6 +98,7 @@ asks before deleting anything from disk.
 - **Works** — add, duplicate, reorder, delete; each has a title, year, role, description, tags, cover image, and links
 - **Image handling** — uploads are auto-compressed (max 2400px), then cropped to 16:9 (covers) or 4:5 (profile photo) with drag-to-pan and zoom; once connected to your folder, they're written to `assets/` immediately
 - **Showreel** — set a Vimeo/YouTube URL under Hero to show a play button on the homepage; leave empty to hide it
+- **Trailers** — paste a film's trailer link (YouTube, Vimeo — private links with a hash work too — or a direct .mp4/.webm/.mov file) into that work's **Watch / Live URL** field. The film's frame and a **Watch trailer** button then play it in the page, in the same player as the showreel, from the homepage, `film.html`, the credits list and the detail panel. Leave it empty and the frame opens the details instead. On commercial work the same field shows a **Watch** link that plays in the player too. A link that can't play in a page (anything other than YouTube, Vimeo or a video file) opens in a new tab.
 
 ### Editing by hand
 
@@ -198,8 +199,9 @@ that carry colour.
   which stays up across the page load and lifts on the new page;
 - film frames open with the same masking when they first come on screen;
   chapter titles rise from a mask;
-- everything else answers an action: detail panel (←/→, Esc), full-screen
-  frame viewer on `film.html`, the "More films" screen that follows the
+- everything else answers an action: the trailer/showreel player (Esc closes
+  it before anything underneath), detail panel (←/→, Esc), full-screen
+  frame viewer on `film.html` for films without a trailer, the "More films" screen that follows the
   credit you point at, the index preview, the menu.
 - `prefers-reduced-motion`, touch devices and a failed CDN all fall back to a
   complete static page — every hidden state lives under `html.js.has-motion`.
