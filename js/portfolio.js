@@ -66,8 +66,9 @@
   // is its video: for a film, the trailer — or the whole film when the
   // link ends in #film (e.g. https://vimeo.com/123#film), which only
   // changes the wording to "Watch film". YouTube, Vimeo (including private
-  // links with a hash) and plain video files play in the page; anything
-  // else (an Instagram reel, say) opens in a new tab, its buttons marked ↗.
+  // links with a hash), Facebook videos and plain video files play in the
+  // page; anything else (an Instagram reel, say) opens in a new tab, its
+  // buttons marked ↗.
   function videoOf(w) { return String((w && w.links && w.links.live) || '').trim(); }
   function isFullFilm(v) { return /#film\b/i.test(String(v || '')); }
   function bare(v) { return String(v || '').replace(/#film\b/i, ''); }   // the link as the host knows it
@@ -91,6 +92,12 @@
     if (m) {
       var h = m[2] || (url.match(/[?&]h=(\w+)/) || [])[1];
       return { src: 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1&title=0&byline=0&portrait=0&dnt=1' + (h ? '&h=' + h : ''), host: 'Vimeo' };
+    }
+    // Facebook videos: Facebook's own player — dark, full-bleed, no login
+    // wall. It draws at the size it's asked for (sized: see play()).
+    if (/^https?:\/\/(?:(?:www|m|web)\.)?facebook\.com\/(?:[^?#]+\/videos\/|watch\/?\?(?:[^#]*&)?v=\d|reel\/\d)|^https?:\/\/fb\.watch\//i.test(url)) {
+      var href = bare(url).replace(/^https?:\/\/(?:(?:www|m|web)\.)?facebook\.com/i, 'https://www.facebook.com');
+      return { src: 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(href) + '&show_text=false&autoplay=true', host: 'Facebook', sized: true };
     }
     if (/\.(mp4|webm|mov|m4v)(\?.*)?(#.*)?$/i.test(url)) return { video: bare(url), host: '' };
     // anything else — Instagram included, whose embed is a white social
@@ -528,14 +535,18 @@
     pLast = document.activeElement;
     var t = player.querySelector('.player-title');
     t.innerHTML = esc(o.title || '') + (o.kind ? '<span>' + esc(o.kind) + '</span>' : '');
-    player.querySelector('.player-frame').innerHTML = e.video
-      ? '<video src="' + esc(e.video) + '" controls autoplay playsinline></video>'
-      : '<iframe src="' + esc(e.src) + '" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen title="' + esc((o.title || 'Video') + (o.kind ? ' — ' + o.kind : '')) + '"></iframe>';
     var ext = player.querySelector('.player-foot a');
     ext.href = bare(url);
     ext.innerHTML = (e.host ? 'Open on ' + e.host : 'Open the video file') + EXT + '<span class="sr-only"> (opens in a new tab)</span>';
     pOpen = true;
     player.classList.add('open');
+    // the frame has its size once the player is shown; a player that draws
+    // at a given size (Facebook's) is asked for exactly the frame's
+    var fr = player.querySelector('.player-frame'), src = e.src;
+    if (e.sized) src += '&width=' + Math.round(fr.clientWidth) + '&height=' + Math.round(fr.clientHeight);
+    fr.innerHTML = e.video
+      ? '<video src="' + esc(e.video) + '" controls autoplay playsinline></video>'
+      : '<iframe src="' + esc(src) + '" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen title="' + esc((o.title || 'Video') + (o.kind ? ' — ' + o.kind : '')) + '"></iframe>';
     player.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     if (window.VW && VW.lenis) VW.lenis.stop();

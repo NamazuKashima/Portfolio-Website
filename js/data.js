@@ -124,7 +124,7 @@
           ],
           "coverImage": "assets/works/film-we-re-more-than-sunsets.jpg",
           "links": {
-            "live": "",
+            "live": "https://www.facebook.com/100086294474873/videos/d%C3%A9voilement-de-la-bande-annonceya-pas-juste-la-mer-r%C3%A9alis%C3%A9-par-antony-boudreau-s/1810449206782305/",
             "case_study": "https://www.themoviedb.org/movie/1621846-y-a-pas-juste-la-mer"
           }
         },
