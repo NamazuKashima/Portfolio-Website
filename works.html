@@ -3,78 +3,65 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script>document.documentElement.classList.add('js');</script>
+  <script>document.documentElement.classList.add('js');try{if(sessionStorage.getItem('vw_transition'))document.documentElement.classList.add('is-arriving');}catch(e){}</script>
 
   <!-- Cloudflare Web Analytics -->
   <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "4e25d59b201446058587263a5480ddc1"}'></script>
   <!-- End Cloudflare Web Analytics -->
 
-  <title>All Work — Victor Qixun Wu</title>
-  <meta name="description" content="Full archive of colour grading and editing work by Victor Qixun Wu — feature film, documentary, fashion and commercial projects." />
-  <link rel="canonical" href="https://www.victorqixunwu.com/works.html" />
+  <title>Index of all work — Victor Qixun Wu</title>
+  <meta name="description" content="Every project Victor Qixun Wu has graded or shot, film and commercial, on one page." />
   <meta name="theme-color" content="#000a02" />
+  <link rel="canonical" href="https://www.victorqixunwu.com/works.html" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="All Work — Victor Qixun Wu" />
-  <meta property="og:description" content="Full archive of colour grading and editing work — film and commercial." />
+  <meta property="og:site_name" content="Victor Qixun Wu" />
+  <meta property="og:title" content="Index of all work — Victor Qixun Wu" />
+  <meta property="og:description" content="Every project, film and commercial, on one page." />
   <meta property="og:url" content="https://www.victorqixunwu.com/works.html" />
   <meta property="og:image" content="https://www.victorqixunwu.com/assets/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000a02'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='30' font-weight='700' fill='%23fcfaf2' text-anchor='middle' letter-spacing='-1'%3EVW.%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260905135646" />
-  <style>
-    /* ── archive page ── */
-    .archive { padding-top: calc(var(--nav-h) + clamp(2rem, 6vw, 5rem)); padding-bottom: clamp(6rem, 12vw, 11rem); min-height: 100svh; }
-    .archive .sec-head { margin-bottom: clamp(2rem, 4vw, 3rem); }
-    .archive .sec-head .sec-title { grid-column: 1 / 8; }
-    .archive .sec-head .sec-aside { display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; text-align: right; }
-    .archive-total { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1; letter-spacing: -0.02em; }
-    .archive-total sup { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; vertical-align: top; margin-left: 0.4em; top: 0.35em; position: relative; color: var(--fg-3); }
-    @media (max-width: 900px) {
-      .archive .sec-head .sec-aside { align-items: flex-start; text-align: left; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wdth,wght@0,62.5..100,100..400;1,62.5..100,100..400&amp;family=Zen+Kaku+Gothic+New:wght@400;500&amp;display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500&amp;text=%E5%A2%A8%E6%9D%BE%E6%B1%81%E7%81%B0%E7%99%BD%E7%AB%B9%E7%B7%B4%E8%80%81%E8%89%B2%E8%8C%B6%E8%91%89%E8%97%8D&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=20261015000000" />
 </head>
-<body>
+<body id="top" data-page="index">
 
-  <div class="veil" id="veil" aria-hidden="true">
-    <div class="veil-top">
-      <div class="veil-name" id="veilName">Victor Qixun Wu</div>
-      <span class="veil-label" id="veilLabel">Archive</span>
-    </div>
-    <div class="veil-bottom">
-      <span class="veil-label">Loading</span>
-      <div class="veil-count"><span id="veilCount">00</span><sup>%</sup></div>
-    </div>
-    <div class="veil-bar" id="veilBar"></div>
-  </div>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- VEIL: the title card between pages -->
+  <div class="veil" id="veil" aria-hidden="true"><span class="veil-title" id="veilTitle">Index</span></div>
 
   <!-- NAV -->
   <header class="nav" id="navbar">
-    <a class="nav-logo" id="nav-logo" href="index.html" data-transition>VW.</a>
-    <nav class="nav-links" aria-label="Primary">
-      <a href="index.html#about" data-transition><sup>01</sup>About</a>
-      <a href="index.html#projects" data-transition><sup>02</sup>Portfolio</a>
-      <a href="index.html#experience" data-transition><sup>03</sup>Experience</a>
-      <a href="index.html#contact" data-transition><sup>04</sup>Contact</a>
-    </nav>
-    <div class="nav-right">
-      <span class="nav-clock" id="navClock" aria-hidden="true"><i></i><span>VAN 00:00:00</span></span>
-      <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="menuOverlay">
-        <span>Menu</span>
-        <span class="bars"><span></span><span></span></span>
-      </button>
+    <div class="nav-inner wrap">
+      <a class="nav-logo" id="nav-logo" href="index.html" data-transition data-veil="Victor Qixun Wu" aria-label="Victor Qixun Wu, home">VW.</a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="film.html" data-nav="film" data-transition data-veil="Film">Film</a>
+        <a href="commercial.html" data-nav="other" data-transition data-veil="Commercial">Commercial</a>
+        <a href="index.html#about" data-transition data-veil="Victor Qixun Wu">About</a>
+        <a href="index.html#contact" data-transition data-veil="Victor Qixun Wu">Contact</a>
+      </nav>
+      <div class="nav-right">
+        <span class="nav-clock" id="navClock" aria-hidden="true"><i></i><span>VAN 00:00:00:00</span></span>
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="menuOverlay">
+          <span>Menu</span>
+          <span class="bars"><span></span><span></span></span>
+        </button>
+      </div>
     </div>
   </header>
 
+  <!-- MOBILE MENU -->
   <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
     <ul>
-      <li><a href="index.html#about" data-transition><sup>01</sup>About</a></li>
-      <li><a href="index.html#projects" data-transition><sup>02</sup>Portfolio</a></li>
-      <li><a href="index.html#experience" data-transition><sup>03</sup>Experience</a></li>
-      <li><a href="index.html#contact" data-transition><sup>04</sup>Contact</a></li>
-      <li><a href="index.html" data-transition><sup>05</sup>Home</a></li>
+      <li><a href="film.html" data-nav="film" data-transition data-veil="Film">Film<small>I</small></a></li>
+      <li><a href="commercial.html" data-nav="other" data-transition data-veil="Commercial">Commercial<small>II</small></a></li>
+      <li><a href="index.html#about" data-transition data-veil="Victor Qixun Wu">About</a></li>
+      <li><a href="index.html#contact" data-transition data-veil="Victor Qixun Wu">Contact</a></li>
+      <li><a href="works.html" data-transition data-veil="Index">Index<small>All work</small></a></li>
     </ul>
     <div class="menu-foot">
       <a href="https://www.instagram.com/victorqixunwu/" target="_blank" rel="noopener noreferrer">Instagram</a>
@@ -83,136 +70,52 @@
     </div>
   </div>
 
-  <main id="main">
-    <section id="archive" class="archive wrap">
-      <a href="index.html#projects" class="back-link mono-label" data-transition data-reveal>
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></svg>
-        Back to home
-      </a>
-      <div class="sec-head">
-        <span class="sec-label mono-label" data-reveal>Archive</span>
-        <h1 class="sec-title" data-split="lines">All <em>Work</em></h1>
-        <div class="sec-aside" data-reveal>
-          <div class="archive-total" id="archiveTotal"></div>
-        </div>
-      </div>
+  <main id="main" class="page page--index">
+    <header class="page-head wrap">
+      <a class="crumb" href="index.html" data-transition data-veil="Victor Qixun Wu" id="crumbName">Victor Qixun Wu</a>
+      <h1 class="chapter-title" id="pageTitle" data-split>Index</h1>
+      <p class="chapter-meta" id="pageMeta"></p>
+    </header>
 
-      <div class="archive-tools" data-reveal>
-        <div class="collection-tabs" id="collectionTabs"></div>
-        <div class="archive-right">
-          <div class="view-toggle" id="viewToggle" role="group" aria-label="View">
-            <button type="button" data-view="grid" class="active">Grid</button>
-            <button type="button" data-view="list">List</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="works-editorial" id="worksGrid"></div>
-    </section>
+    <div class="wrap" id="index"></div>
   </main>
 
+  <!-- FOOTER: colophon + the palette the site is built from -->
   <footer class="footer wrap">
-    <div class="footer-name" id="footer-name" aria-hidden="true">Victor Qixun Wu</div>
-    <div class="footer-inner">
+    <div class="colophon">
+      <p class="colophon-note">Set in Noto Serif Display and Zen Kaku Gothic New, in colors from the Japanese traditional palette.</p>
+      <ul class="swatches">
+        <li class="swatch"><i style="background:#000a02"></i><b>墨色</b><span>Sumi</span><code>#000A02</code></li>
+        <li class="swatch"><i style="background:#373c38"></i><b>藍墨茶</b><span>Aisumicha</span><code>#373C38</code></li>
+        <li class="swatch"><i style="background:#fcfaf2"></i><b>白練</b><span>Shironeri</span><code>#FCFAF2</code></li>
+        <li class="swatch"><i style="background:#bcb09c"></i><b>灰汁色</b><span>Aku</span><code>#BCB09C</code></li>
+        <li class="swatch"><i style="background:#4a593d"></i><b>松葉色</b><span>Matsuba</span><code>#4A593D</code></li>
+        <li class="swatch"><i style="background:#769164"></i><b>老竹色</b><span>Oitake</span><code>#769164</code></li>
+      </ul>
+    </div>
+    <div class="footer-bar">
       <span class="footer-logo" id="footer-logo">VW.</span>
       <span class="footer-copy" id="footer-copy">© 2026 Victor Qixun Wu. All rights reserved.</span>
-      <div class="footer-socials">
-        <a href="https://www.victorqixunwu.com" target="_blank" rel="noopener noreferrer">Website</a>
-      </div>
-      <a href="#top" class="to-top" aria-label="Back to top" data-magnetic>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
-      </a>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="works.html" data-transition data-veil="Index">Index of all work</a>
+        <a href="https://www.instagram.com/victorqixunwu/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.facebook.com/victorqixunwu" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="#top" class="to-top">Back to top</a>
+      </nav>
     </div>
   </footer>
 
+  <!-- custom cursor -->
   <div class="cursor" aria-hidden="true"><i></i></div>
   <div class="cursor-label" aria-hidden="true"><span></span></div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
-  <script src="js/data.js?v=20260905135646"></script>
-  <script src="js/seo.js?v=20260905135646"></script>
-  <script src="js/portfolio.js?v=20260905135646"></script>
-  <script>
-  (function () {
-    var D = window.PORTFOLIO_DATA, P = window.VWPortfolio;
-    if (!D || !D.portfolio || !P) return;
-    var esc = P.esc, pad = P.pad;
-    function $id(id) { return document.getElementById(id); }
-
-    // shared chrome (logo, footer, menu mail, big name)
-    var NAME = (D.meta && D.meta.name) || 'Victor Qixun Wu';
-    if (D.footer) {
-      if (D.footer.logo) { $id('nav-logo').textContent = D.footer.logo; $id('footer-logo').textContent = D.footer.logo; }
-      if (D.footer.copyright) $id('footer-copy').textContent = D.footer.copyright;
-    }
-    $id('veilName').textContent = NAME;
-    $id('footer-name').textContent = NAME;
-    if (D.contact && D.contact.email) { var mm = $id('menu-email'); mm.href = 'mailto:' + D.contact.email; mm.textContent = D.contact.email; }
-
-    var tabsEl = $id('collectionTabs'), gridEl = $id('worksGrid'), totalEl = $id('archiveTotal');
-    var collections = P.collections(D);
-    var all = P.flatten(collections);
-    var activeId = 'all';
-    var view = 'grid';
-    try { view = localStorage.getItem('vw_archive_view') === 'list' ? 'list' : 'grid'; } catch (e) {}
-    if (!window.matchMedia('(hover:hover) and (pointer:fine)').matches) view = 'grid';   // no hover preview on touch
-
-    function buildTabs() {
-      var html = '<button type="button" class="col-tab' + (activeId === 'all' ? ' active' : '') + '" data-id="all">All<sup>' + all.length + '</sup></button>';
-      html += collections.map(function (c) {
-        return '<button type="button" class="col-tab' + (c.id === activeId ? ' active' : '') + '" data-id="' + esc(c.id) + '">' + esc(c.name) + '<sup>' + (c.works || []).length + '</sup></button>';
-      }).join('');
-      tabsEl.innerHTML = html;
-    }
-    function activeWorks() {
-      return activeId === 'all' ? all : all.filter(function (w) { return w._collId === activeId; });
-    }
-    function gridHTML() {
-      var works = activeWorks();
-      totalEl.innerHTML = pad(works.length) + '<sup>/ ' + pad(all.length) + ' Projects</sup>';
-      if (!works.length) return '<p class="works-empty">No works yet.</p>';
-      if (view === 'list') return works.map(function (w, i) { return P.rowHTML(w, i); }).join('');
-      return works.map(function (w, i) { return P.cardHTML(w, i, { eager: i < 2, corner: true }); }).join('');
-    }
-    function render() {
-      gridEl.className = view === 'list' ? 'works-list' : 'works-editorial';
-      gridEl.innerHTML = gridHTML();
-    }
-    function rerender() {
-      if (window.VW && VW.swapGrid) VW.swapGrid(gridEl, render); else render();
-    }
-
-    buildTabs();
-    render();
-    var toggle = $id('viewToggle');
-    toggle.querySelectorAll('button').forEach(function (b) { b.classList.toggle('active', b.dataset.view === view); });
-
-    tabsEl.addEventListener('click', function (e) {
-      var btn = e.target.closest('.col-tab');
-      if (!btn || btn.dataset.id === activeId) return;
-      activeId = btn.dataset.id;
-      tabsEl.querySelectorAll('.col-tab').forEach(function (b) { b.classList.toggle('active', b === btn); });
-      rerender();
-    });
-    toggle.addEventListener('click', function (e) {
-      var btn = e.target.closest('button');
-      if (!btn || btn.dataset.view === view) return;
-      view = btn.dataset.view;
-      try { localStorage.setItem('vw_archive_view', view); } catch (err) {}
-      toggle.querySelectorAll('button').forEach(function (b) { b.classList.toggle('active', b === btn); });
-      rerender();
-    });
-
-    // detail panel — prev/next moves through the filtered list
-    P.bindOpen(gridEl, function (id) {
-      var list = activeWorks();
-      return { work: list.find(function (w) { return w.id === id; }), list: list };
-    });
-    P.bindPreview(gridEl);
-  })();
-  </script>
-  <script src="js/main.js?v=20260905135646"></script>
+  <script src="js/data.js?v=20261015000000"></script>
+  <script src="js/seo.js?v=20261015000000"></script>
+  <script src="js/readings.js?v=20261015000000"></script>
+  <script src="js/portfolio.js?v=20261015000000"></script>
+  <script src="js/archive.js?v=20261015000000"></script>
+  <script src="js/main.js?v=20261015000000"></script>
 </body>
 </html>

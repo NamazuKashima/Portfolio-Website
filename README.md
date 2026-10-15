@@ -16,8 +16,10 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 
 | Page | Purpose |
 |---|---|
-| `index.html` | Homepage — hero, about, selected work, experience, contact |
-| `works.html` | Full project archive with filtering and detail modals |
+| `index.html` | Homepage — hero, **I · Film**, **II · Commercial**, about, experience, contact |
+| `film.html` | Every film as a full "screening" (frame, measured palette + vectorscope, notes) |
+| `commercial.html` | Every commercial project as a lookbook, with notes under each frame |
+| `works.html` | Index — every project on one line, grouped by collection, hover preview |
 | `editor.html` | Visual content editor (local tool, not linked publicly) |
 
 ---
@@ -27,7 +29,9 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 ```
 .
 ├── index.html              Homepage
-├── works.html              Project archive
+├── film.html               I · Film — every film as a screening
+├── commercial.html         II · Commercial — every other collection as a lookbook
+├── works.html              Index of all work (kept at its old URL)
 ├── resume.html             Résumé generator/customizer (noindex, not linked publicly)
 ├── editor.html             Visual content editor (noindex, not linked publicly)
 ├── 404.html                Custom not-found page
@@ -43,10 +47,12 @@ browser-based visual editor (`editor.html`) is included for editing it without t
 │   └── style.css           All styles — design tokens live in :root
 ├── js/
 │   ├── data.js             ← All site content (paths only, ~24 KB)
-│   ├── portfolio.js        Shared work cards / archive rows / detail panel / hover preview
+│   ├── readings.js         Vectorscope + palette, measured from each cover image's pixels
+│   ├── portfolio.js        Shared templates (screening, credit, look, row), detail panel, frame viewer
 │   ├── render.js           Renders data into the homepage
-│   ├── seo.js               Injects Person JSON-LD (schema.org) from data.js
-│   └── main.js             Motion engine — loader, Lenis, cursor, reveals, theme morph, transitions
+│   ├── archive.js          Renders film.html, commercial.html and works.html
+│   ├── seo.js              Injects Person JSON-LD (schema.org) from data.js
+│   └── main.js             Motion engine — title cards, Lenis, cursor, projector-masking reveals
 └── .github/workflows/
     └── cache-bust.yml      Auto-versions css/js on every push
 ```
@@ -130,70 +136,85 @@ served with their own filenames and cached normally.
 
 ---
 
-## Design
+## Design — v4 「暗室」
 
-**Japanese traditional palette.** The editorial grid keeps the v3 layout,
-but the palette is the original 日本の伝統色 set — near-black
-sumi (`#000a02`) and glossed-silk shironeri (`#fcfaf2`), with a single
-chroma, matsuba pine (`#4a593d`), reserved for hover states, rules and
-small accents. One ground throughout — no per-section theme tweening.
+**Concept.** The grading suite at night: the frame is the only light in the
+room, and everything around it stays quiet and measured. The work is split
+into two chapters with two different visual registers:
 
-**Type** — [Libre Caslon Display](https://fonts.google.com/specimen/Libre+Caslon+Display)
-for headlines and other display text (`--font-serif`), [Zen Kaku Gothic New]
-(https://fonts.google.com/specimen/Zen+Kaku+Gothic+New) for body and every
-piece of metadata — years, roles, tags, indexes, the timecode clock. No mono
-face. Libre Caslon Display ships one weight and no italic, so emphasized
-words (`<em>` inside headlines, `.hero-word`, `.notfound-mark`) are set
-upright in walnut brown (`--emphasis`, `#7c5c3e`) rather than faked-italic.
+| | I · Film | II · Commercial |
+|---|---|---|
+| Layout | one wide frame per film, year + tags in the margin, title card under it | asymmetric lookbook grid (8+4 / 4+4+4) |
+| Type | condensed serif titles, credits in true italic | editorial captions in the sans |
+| Motion | frames open like projector masking: a slit → 2.39 scope → full frame | frames simply cut in |
+| Readings | palette strip + small vectorscope beside every frame | in the detail panel |
 
-**Layout** — a full-width 12-column grid (`--gutter`, `--col-gap`). The hero
-name is set in caps at ~29vw so it runs edge to edge and overlaps the lead
-image; Selected Work is an asymmetric editorial grid (7/12 + 4/12 offset,
-then 4/12 + 7/12) rather than a uniform card wall; skills and experience are
-hairline index rows.
+**Which collection is "film".** The collection whose id is `film` (or whose
+name contains film / cinema / narrative). Every other collection — Commercial
+today, anything added in the editor later — is shown in the commercial
+register, as its own chapter (II, III …) on the homepage and as a group on
+`commercial.html`.
 
-Big nameplate text sized this way (`#hero-line1`, `#footer-name`,
-`.notfound-mark`) is re-measured in `js/main.js` after render and again once
-webfonts finish loading: if the actual rendered text is wider than its box
-(a font swap, an uppercase transform, or a narrow viewport can all do that
-to a `clamp(…vw…)` value tuned for one typeface), its font-size is scaled
-down to fit rather than letting `overflow: hidden` clip it. Re-checked on
-resize.
+**Palette** — unchanged 日本の伝統色: 墨 sumi `#000a02` ground, 白練
+shironeri `#fcfaf2` type, 灰汁 aku / 青白橡 for secondary text, 藍墨茶
+hairlines, 松葉 matsuba `#4a593d` and 老竹 oitake `#769164` as the only
+chroma. The footer colophon shows the six colours with their names.
 
-**Hero image** — a single frame, cycling through the lead work of each
-collection every ~5 s with a crossfade. (An earlier draft faked a Log vs.
-Rec.709 compare slider over these covers — removed, since there are no
-actual Log-footage screenshots to back it.)
+**Type** — [Noto Serif Display](https://fonts.google.com/specimen/Noto+Serif+Display)
+(variable width: condensed 62.5% for titles, 87.5% italic for credits/roles),
+[Zen Kaku Gothic New](https://fonts.google.com/specimen/Zen+Kaku+Gothic+New)
+for text and interface, a tiny Shippori Mincho subset for the kanji in the
+colophon. No all-caps tracked labels, no pill tags — tags are plain words
+separated by slashes.
 
-**Motion** (`js/main.js`, GSAP + ScrollTrigger + Lenis)
-- Loader on the first homepage visit of a session (name, 0→100 counter,
-  spectrum bar), then a curtain; internal links marked `data-transition`
-  reuse the same veil as a page transition.
-- Lenis smooth scroll, synced to ScrollTrigger; anchors scroll through it.
-- Headlines split into lines that rise from a mask (`data-split="lines"`);
-  the bio's first paragraph brightens word by word as you read
-  (`data-split="words"`); images clip-reveal with a settle; work covers
-  parallax inside their frames; rows stagger in.
-- Custom cursor: a dot that inverts over whatever it crosses, and a
-  pine-colored label ("Open", "Play") on interactive targets.
-  Magnetic buttons (`data-magnetic`). Ticker of every project title whose
-  speed follows scroll velocity. Detail panel slides in from the right with
-  prev/next through the current list (← → keys, Esc to close).
-- `prefers-reduced-motion`, touch devices and a failed CDN all fall back to
-  a fully visible static page — every "hidden until revealed" state lives
-  under `html.js.has-motion` in the CSS and is only applied once GSAP is
-  confirmed present.
+**Frames are never altered.** No gradient overlays, filters, tints or
+brightness changes on any image, in any state. Frames are shown whole —
+letterboxed/pillarboxed on monitor black (`--screen: #000`) when their ratio
+isn't 16:9 — except the commercial lookbook, which crops to 16:9 like a
+magazine layout.
 
-**Archive** (`works.html`) — All / Commercial / Film filters, Grid or List
-view (List shows a floating cover preview that follows the cursor; the
-choice is remembered), and the same detail panel as the homepage.
+**Readings (`js/readings.js`).** The hero vectorscope, the palette strips and
+the small scopes are computed in the browser from each cover image's own
+pixels (Rec.709 coefficients, 2× zoom, skin-tone line in 老竹). They are
+measurements, not illustrations: a black-and-white frame (Foosball Fever,
+Prada) really collapses to a point. The hero scope morphs sample-for-sample
+from one frame's reading to the next. Browsers only allow this when the page
+is served over http(s) — opened straight from disk (`file://`) the scopes
+show an empty graticule. To preview locally with the readings, run
+`python -m http.server` in the folder and open http://localhost:8000.
 
-> **Theme panel in the editor.** The v3 design defines its own palette in
-> `css/style.css` and no longer reads the `theme` block of `data.js`;
-> editing colours in the editor's Theme panel only affects `resume.html`,
-> which still applies those tokens itself. Everything else in the editor —
-> hero copy, bio, skills, languages, works, experience, contact, logo and
-> footer — renders exactly as before.
+**Hero.** A frame and its vectorscope side by side, role and notes under the
+circle, the name as a title card along the bottom; every size is derived from
+the viewport height so the whole composition lands on the first screen
+(checked at 1024×768, 1280×800, 1366×768, 1440×900, 1536×864, 1920×1080).
+Each visit opens on a different frame, picked from the first four hero frames
+that carry colour.
+
+**Motion** (`js/main.js`, GSAP + ScrollTrigger + Lenis) — spent in a few places:
+- the opening: a title card ("Victor Qixun Wu", first visit of a session),
+  then the hero frame opens like projector masking while its scope blooms out
+  of the centre and the name rises;
+- page transitions: the curtain drops with the destination's title card,
+  which stays up across the page load and lifts on the new page;
+- film frames open with the same masking when they first come on screen;
+  chapter titles rise from a mask;
+- everything else answers an action: detail panel (←/→, Esc), full-screen
+  frame viewer on `film.html`, the "More films" screen that follows the
+  credit you point at, the index preview, the menu.
+- `prefers-reduced-motion`, touch devices and a failed CDN all fall back to a
+  complete static page — every hidden state lives under `html.js.has-motion`.
+  A CSS failsafe also clears the veil after 4.5 s if `main.js` never runs.
+
+**resume.html** shares `css/style.css`. Its tokens (`--border`, `--muted`,
+`--gray`, `--accent-soft`, `--earth`, `--sand`, `--font-display`, `--w`, `--t`)
+and the base rules it relies on (`body` metrics, `.nav-logo`, `.footer-logo`)
+are kept exactly as v3 had them, so it renders identically.
+
+> **Theme panel in the editor.** Like v3, the site defines its own palette in
+> `css/style.css` and does not read the `theme` block of `data.js`; editing
+> colours in the editor's Theme panel only affects `resume.html`. Everything
+> else in the editor — hero copy, bio, skills, languages, works, experience,
+> contact, logo and footer — renders exactly as before.
 
 ---
 
@@ -220,7 +241,7 @@ AAAA   @     →  2606:50c0:8000::153, 2606:50c0:8001::153,
 
 ## Analytics
 
-**Cloudflare Web Analytics** runs on `index.html`, `works.html`, and `404.html`
+**Cloudflare Web Analytics** runs on `index.html`, `film.html`, `commercial.html`, `works.html` and `404.html`
 — not on `editor.html` or `resume.html`, since those are private tools and
 their own edits/generations shouldn't skew traffic numbers. A ~1 line beacon
 script, no cookies, no DNS change required. View data at
@@ -233,7 +254,7 @@ script, no cookies, no DNS change required. View data at
 `js/seo.js` builds a schema.org `Person` JSON-LD block straight from
 `data.js` (name, job title, photo, bio, address, contact, skills as
 `knowsAbout`, school as `alumniOf`) and injects it into `<head>` on
-`index.html` and `works.html`. Same principle as `render.js` — generated
+`index.html`, `film.html`, `commercial.html` and `works.html`. Same principle as `render.js` — generated
 from the live data, so it can't drift out of sync with what's on the page.
 `404.html` is marked `noindex` and doesn't get this block; there's nothing
 to index there.
