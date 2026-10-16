@@ -20,7 +20,7 @@
     "line1": "victor wu",
     "line2": "Victor Qixun Wu",
     "description": "Imaging and color specialist with 7+ years of post-production experience across color grading, digital imaging pipelines, and on-set media workflows — 60+ delivered projects spanning narrative film, VFX-adjacent productions, and branded campaigns.",
-    "reelUrl": "https://vimeo.com/1084473056?share=copy&fl=cl&fe=ci"
+    "reelUrl": ""
   },
   "about": {
     "photo": "assets/portrait.jpg",
@@ -142,7 +142,7 @@
             "DCP",
             "Festival"
           ],
-          "coverImage": "assets/works/film-we-re-more-than-sunsets.jpg",
+          "coverImage": "assets/works/film-we-re-more-than-sunsets-2.jpg",
           "links": {
             "live": "https://www.facebook.com/100086294474873/videos/d%C3%A9voilement-de-la-bande-annonceya-pas-juste-la-mer-r%C3%A9alis%C3%A9-par-antony-boudreau-s/1810449206782305/",
             "case_study": "https://www.themoviedb.org/movie/1621846-y-a-pas-juste-la-mer"
