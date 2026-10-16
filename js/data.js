@@ -97,38 +97,6 @@
       "name": "Film",
       "works": [
         {
-          "id": "film-1",
-          "title": "Crocs of the Caribbean - National Geographic",
-          "year": "2026",
-          "role": "Colorist",
-          "description": "Color grading for a National Geographic documentary production. Currently in post-production.",
-          "tags": [
-            "Documentary"
-          ],
-          "coverImage": "assets/works/film-crocs-of-the-caribbean.jpg",
-          "links": {
-            "live": "",
-            "case_study": "https://www.natgeotv.com/za/programs/nationalgeographicwild/wild-crocs-of-the-caribbean"
-          }
-        },
-        {
-          "id": "film-2",
-          "title": "We’re More than Sunsets",
-          "year": "2026",
-          "role": "Colorist",
-          "description": "Feature-length film. Executed complete color pipeline — from dailies review through DCP final delivery — with full post supervision and director collaboration. Managed color space conversions, display calibration, and delivery specifications throughout.",
-          "tags": [
-            "Feature Film",
-            "DCP",
-            "Festival"
-          ],
-          "coverImage": "assets/works/film-we-re-more-than-sunsets.jpg",
-          "links": {
-            "live": "https://www.facebook.com/100086294474873/videos/d%C3%A9voilement-de-la-bande-annonceya-pas-juste-la-mer-r%C3%A9alis%C3%A9-par-antony-boudreau-s/1810449206782305/",
-            "case_study": "https://www.themoviedb.org/movie/1621846-y-a-pas-juste-la-mer"
-          }
-        },
-        {
           "id": "film-3",
           "title": "Anastasia",
           "year": "2024",
@@ -164,6 +132,69 @@
           }
         },
         {
+          "id": "film-2",
+          "title": "We’re More than Sunsets",
+          "year": "2026",
+          "role": "Colorist",
+          "description": "Feature-length film. Executed complete color pipeline — from dailies review through DCP final delivery — with full post supervision and director collaboration. Managed color space conversions, display calibration, and delivery specifications throughout.",
+          "tags": [
+            "Feature Film",
+            "DCP",
+            "Festival"
+          ],
+          "coverImage": "assets/works/film-we-re-more-than-sunsets.jpg",
+          "links": {
+            "live": "https://www.facebook.com/100086294474873/videos/d%C3%A9voilement-de-la-bande-annonceya-pas-juste-la-mer-r%C3%A9alis%C3%A9-par-antony-boudreau-s/1810449206782305/",
+            "case_study": "https://www.themoviedb.org/movie/1621846-y-a-pas-juste-la-mer"
+          }
+        },
+        {
+          "id": "film-1785224727258",
+          "title": "Foosball Fever",
+          "year": "2024",
+          "role": "Colorist",
+          "description": "Served as colorist on Foosball Fever (2024), a short film shot in black and white using an infrared camera and Red Komodo. Developed a grade that preserved the distinctive infrared texture and tonal contrast inherent to the camera combination.",
+          "tags": [
+            "Short",
+            "Experimental"
+          ],
+          "coverImage": "assets/works/film-foosball-fever.jpg",
+          "links": {
+            "live": "https://youtu.be/gVvnMKCedvc",
+            "case_study": ""
+          }
+        },
+        {
+          "id": "film-1785178888690",
+          "title": "Untold Valor",
+          "year": "2026",
+          "role": "Colorist",
+          "description": "Served as colorist on Untold Valor, a war drama exploring themes of sacrifice and courage. Developed a gritty, immersive grade to support the film's emotional weight and combat authenticity.",
+          "tags": [
+            "Short Film"
+          ],
+          "coverImage": "assets/works/film-untold-valor.jpg",
+          "links": {
+            "live": "https://vimeo.com/1117100585?share=copy&fl=cl&fe=ci",
+            "case_study": "https://www.imdb.com/title/tt31065576/?ref_=nm_flmg_job_1_accord_2_cdt_c_1"
+          }
+        },
+        {
+          "id": "film-1",
+          "title": "Crocs of the Caribbean - National Geographic",
+          "year": "2026",
+          "role": "Colorist",
+          "description": "Color grading for a National Geographic documentary production.",
+          "tags": [
+            "Documentary"
+          ],
+          "coverImage": "assets/works/film-crocs-of-the-caribbean.jpg",
+          "links": {
+            "live": "https://youtu.be/uFVrQNft-x0",
+            "case_study": "https://www.natgeotv.com/za/programs/nationalgeographicwild/wild-crocs-of-the-caribbean"
+          }
+        },
+        {
           "id": "film-1785556645375",
           "title": "Under A Burnt Orange Sky",
           "year": "2023",
@@ -178,7 +209,8 @@
           "links": {
             "live": "https://vimeo.com/951239808#film",
             "case_study": "https://www.imdb.com/title/tt28486771/?ref_=nm_knf_t_1"
-          }
+          },
+          "hideFromHome": true
         },
         {
           "id": "film-1785181057530",
@@ -210,37 +242,6 @@
           "links": {
             "live": "https://www.youtube.com/watch?v=6HEGDla4SLE",
             "case_study": "https://www.imdb.com/title/tt30782276/?ref_=nm_flmg_job_3_accord_2_cdt_t_7"
-          }
-        },
-        {
-          "id": "film-1785178888690",
-          "title": "Untold Valor",
-          "year": "2026",
-          "role": "Colorist",
-          "description": "Served as colorist on Untold Valor, a war drama exploring themes of sacrifice and courage. Developed a gritty, immersive grade to support the film's emotional weight and combat authenticity.",
-          "tags": [
-            "Short Film"
-          ],
-          "coverImage": "assets/works/film-untold-valor.jpg",
-          "links": {
-            "live": "https://vimeo.com/1117100585?share=copy&fl=cl&fe=ci",
-            "case_study": "https://www.imdb.com/title/tt31065576/?ref_=nm_flmg_job_1_accord_2_cdt_c_1"
-          }
-        },
-        {
-          "id": "film-1785224727258",
-          "title": "Foosball Fever",
-          "year": "2024",
-          "role": "Colorist",
-          "description": "Served as colorist on Foosball Fever (2024), a short film shot in black and white using an infrared camera and Red Komodo. Developed a grade that preserved the distinctive infrared texture and tonal contrast inherent to the camera combination.",
-          "tags": [
-            "Short",
-            "Experimental"
-          ],
-          "coverImage": "assets/works/film-foosball-fever.jpg",
-          "links": {
-            "live": "https://youtu.be/gVvnMKCedvc",
-            "case_study": ""
           }
         },
         {
@@ -292,7 +293,7 @@
           ],
           "coverImage": "assets/works/commercial-prada-story-special.jpg",
           "links": {
-            "live": "",
+            "live": "https://youtu.be/S6ZOHw5fdCs",
             "case_study": ""
           }
         },

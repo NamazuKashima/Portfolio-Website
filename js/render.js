@@ -35,7 +35,12 @@
   var cols = P.collections(D);
   var filmCols = cols.filter(P.isFilm);
   var otherCols = cols.filter(function (c) { return !P.isFilm(c); });
-  var all = P.flatten(cols);
+  // A work with "hideFromHome": true in js/data.js stays off this page (hero,
+  // screenings, credits, lookbook) but still shows on film.html /
+  // commercial.html and in the index.
+  function onHome(w) { return !(w && w.hideFromHome); }
+  function homeWorks(c) { return P.worksOf(c).filter(onHome); }
+  var all = P.flatten(cols).filter(onHome);
 
   // ── HERO ───────────────────────────────────────────────────────
   if (D.hero) {
@@ -83,7 +88,7 @@
   (function heroFrames() {
     var stack = $id('heroStack');
     if (!stack) return;
-    var lanes = [P.flatten(filmCols), P.flatten(otherCols)].filter(function (l) { return l.length; });
+    var lanes = [P.flatten(filmCols).filter(onHome), P.flatten(otherCols).filter(onHome)].filter(function (l) { return l.length; });
     var picks = [], depth = 0;
     while (picks.length < 6) {
       var added = false;
@@ -231,16 +236,16 @@
     if (!host) return;
     var out = '';
     cols.forEach(function (c, ci) {
-      var works = P.worksOf(c);
+      var every = P.worksOf(c), works = every.filter(onHome);   // counts and years describe the whole collection
       if (!works.length) return;
       var film = P.isFilm(c);
       var num = P.roman(ci + 1);
       var id = film ? 'film' : (c.id === 'commercial' || !$id(c.id) ? c.id : 'c-' + c.id);
-      var span = P.yearSpan(works);
+      var span = P.yearSpan(every);
       var head = '<header class="chapter-head">'
         + '<p class="chapter-num" aria-hidden="true">' + num + '</p>'
         + '<h2 class="chapter-title" id="' + esc(id) + '-title" data-split>' + esc(c.name) + '</h2>'
-        + '<p class="chapter-meta"><strong>' + works.length + '</strong><span>' + P.noun(works.length, film ? 'film' : 'other') + (span ? ', ' + span : '') + '</span></p>'
+        + '<p class="chapter-meta"><strong>' + every.length + '</strong><span>' + P.noun(every.length, film ? 'film' : 'other') + (span ? ', ' + span : '') + '</span></p>'
         + '</header>';
       var body = '', page = film ? 'film.html' : 'commercial.html' + (c.id === (otherCols[0] && otherCols[0].id) ? '' : '#' + esc(c.id));
 
@@ -263,7 +268,7 @@
         }
       }
       body += '<div class="chapter-foot"><a class="chapter-link" href="' + page + '" data-transition data-veil="' + esc(c.name) + '">'
-        + 'All ' + esc(String(c.name).toLowerCase()) + ' work <small>' + works.length + '</small></a></div>';
+        + 'All ' + esc(String(c.name).toLowerCase()) + ' work <small>' + every.length + '</small></a></div>';
 
       out += '<section class="chapter chapter--' + (film ? 'film' : 'other') + '" id="' + esc(id) + '" data-coll="' + esc(c.id) + '" aria-labelledby="' + esc(id) + '-title">'
         + '<div class="chapter-rail" aria-hidden="true"><span><b>' + num + '</b> ' + esc(c.name) + '</span></div>'
@@ -285,7 +290,7 @@
     Array.prototype.forEach.call(host.querySelectorAll('.chapter'), function (sec) {
       var c = cols.filter(function (x) { return String(x.id) === sec.getAttribute('data-coll'); })[0];
       if (!c) return;
-      var list = P.worksOf(c);
+      var list = homeWorks(c);
       P.bindOpen(sec, function (id) {
         return { work: list.filter(function (w) { return String(w.id) === String(id); })[0], list: list };
       });

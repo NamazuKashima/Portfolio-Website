@@ -48,7 +48,6 @@
   --font-serif: 'Noto Serif Display', 'Libre Caslon Display', Georgia, 'Times New Roman', serif;
   --font-sans:  'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Yu Gothic',
                 system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-kanji: 'Shippori Mincho', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
 
   --fs-meta:  0.8125rem;   /* 13 */
   --fs-ui:    0.875rem;    /* 14 */
@@ -1074,34 +1073,6 @@ body.menu-open { overflow: hidden; }
 
 /* ---------- FOOTER ---------- */
 .footer { padding-top: clamp(8rem, 14vw, 12rem); padding-bottom: 1.75rem; }
-.colophon {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--col-gap);
-  row-gap: 1.5rem;
-  padding-bottom: clamp(2.5rem, 5vw, 4rem);
-}
-.colophon-note {
-  grid-column: 1 / 5;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 300;
-  font-stretch: 87.5%;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--fg-3);
-}
-.swatches {
-  grid-column: 5 / 13;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  column-gap: var(--col-gap);
-  row-gap: 1.25rem;
-}
-.swatch i { display: block; aspect-ratio: 3 / 2; border: 1px solid var(--line-soft); margin-bottom: 0.6rem; }
-.swatch b { display: block; font-family: var(--font-kanji); font-weight: 500; font-size: 1.05rem; line-height: 1.2; color: var(--fg); }
-.swatch span { display: block; font-size: 0.75rem; line-height: 1.5; color: var(--fg-3); }
-.swatch code { font-family: var(--font-sans); font-size: 0.75rem; color: var(--fg-2); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
 .footer-bar {
   display: flex;
   flex-wrap: wrap;
@@ -1541,8 +1512,6 @@ html.js.has-motion [data-split] { visibility: hidden; }
 
   .contact-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-  .colophon-note, .swatches { grid-column: 1 / 13; }
-  .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .footer-links { margin-left: 0; }
 
   .page-head .chapter-title { grid-column: 1 / 13; }
@@ -1568,7 +1537,6 @@ html.js.has-motion [data-split] { visibility: hidden; }
   .lookbook { grid-template-columns: minmax(0, 1fr); }
   .look:nth-child(n) { grid-column: 1 / -1; }
   .contact-list { grid-template-columns: minmax(0, 1fr); }
-  .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .credit-btn { grid-template-columns: 6rem minmax(0, 1fr); }
   .credit-play { margin-left: calc(6rem + 1rem); }
   .credit-year { grid-column: 2; grid-row: 3; padding-top: 0.2rem; }

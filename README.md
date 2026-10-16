@@ -115,12 +115,18 @@ shape intact:
   about:      { photo, bio: [...], skills: [{ category, items: [...] }],
                 cvUrl, cvLabel, cvFileName },
   portfolio:  [{ id, name, works: [{ id, title, year, role,
-                                     description, tags, coverImage, links }] }],
+                                     description, tags, coverImage, links,
+                                     hideFromHome }] }],
   experience: [{ id, period, title, company, description, tags }],
   contact:    { email, phone, website, instagram, facebook, location, message },
   footer:     { logo, copyright }
 }
 ```
+
+Works show in the order they're listed (the editor's reorder does the same).
+To keep a work off the homepage but still on `film.html` / `commercial.html`
+and in the index, add `"hideFromHome": true` to it by hand — the editor keeps
+the field when it saves, but has no switch for it.
 
 ---
 
@@ -159,14 +165,13 @@ register, as its own chapter (II, III …) on the homepage and as a group on
 **Palette** — unchanged 日本の伝統色: 墨 sumi `#000a02` ground, 白練
 shironeri `#fcfaf2` type, 灰汁 aku / 青白橡 for secondary text, 藍墨茶
 hairlines, 松葉 matsuba `#4a593d` and 老竹 oitake `#769164` as the only
-chroma. The footer colophon shows the six colours with their names.
+chroma.
 
 **Type** — [Noto Serif Display](https://fonts.google.com/specimen/Noto+Serif+Display)
 (variable width: condensed 62.5% for titles, 87.5% italic for credits/roles),
 [Zen Kaku Gothic New](https://fonts.google.com/specimen/Zen+Kaku+Gothic+New)
-for text and interface, a tiny Shippori Mincho subset for the kanji in the
-colophon. No all-caps tracked labels, no pill tags — tags are plain words
-separated by slashes.
+for text and interface. No all-caps tracked labels, no pill tags — tags are
+plain words separated by slashes.
 
 **Frames are never altered.** No gradient overlays, filters, tints or
 brightness changes on any image, in any state. Frames are shown whole —
